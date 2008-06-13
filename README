@@ -1,0 +1,10 @@
+PHP_Mafia
+=========
+
+Author: Jon Baumann
+===================
+
+Goal:   This project hopes to bring the amazing game of Mafia (also known as 
+Werewolf) to the web in a non-forum manner. It won't be as detailed as some of
+the forum run games can be, due to the sheer number of special cases in roles
+but all basic roles will be represented, as well as most common roles.
