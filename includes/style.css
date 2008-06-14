@@ -13,16 +13,19 @@ img {
 }
 
 #logo {
-    width: 30%;
+    width: 20%;
     float: left;
     padding: 0px;
+    border: 1px solid #000000;
 }
 
 #nav_buttons {
-    margin-left: 30%;
+    //margin-left: 30%;
     text-align: center;
-    margin-right: 30%;
-    margin-top: .75em;
+    //margin-right: 30%;
+    //margin-top: .75em;
+    border: 1px solid #000000;
+    width: 30em;
 }
 
 #player_info {

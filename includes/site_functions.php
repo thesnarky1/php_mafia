@@ -21,6 +21,12 @@
         echo "<a href='./index.php'><img src='./images/logo.gif' /></a>\n";
         echo "</div>\n"; //Close logo
 
+        echo "<div id='nav_buttons'>\n";
+        echo "<span class='nav_button'><a href='./index.php'>Home</a></span>\n";
+        echo "<span class='nav_button'><a href='./games.php'>Games</a></span>\n";
+        echo "<span class='nav_button'><a href='./help.php'>Help</a></span>\n";
+        echo "</div>\n"; //Close nav_buttons
+
         echo "<div id='player_info'>\n";
         echo "<p class='player_name'>Thesnarky1</p>";
         echo "<span class='player_info_button'><a href='./account.php'>Account</a></span>\n";
@@ -30,15 +36,10 @@
 
         echo "</div>\n"; //Close upper_header
 
-        echo "<div id='lower_header'>\n";
+        //echo "<div id='lower_header'>\n";
 
-        echo "<div id='nav_buttons'>\n";
-        echo "<span class='nav_button'><a href='./index.php'>Home</a></span>\n";
-        echo "<span class='nav_button'><a href='./games.php'>Games</a></span>\n";
-        echo "<span class='nav_button'><a href='./help.php'>Help</a></span>\n";
-        echo "</div>\n"; //Close nav_buttons
 
-        echo "</div>\n"; //Close lower_header
+        //echo "</div>\n"; //Close lower_header
 
         echo "</div>\n"; //Close header
     }
