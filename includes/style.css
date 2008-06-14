@@ -7,38 +7,46 @@ img {
 }
 
 #header {
-    height: 10em;
+    height: 6em;
     background-color: #B3A285;
     border: 1px solid #191400;
+    padding: .5em;
 }
 
 #logo {
     width: 20%;
     float: left;
     padding: 0px;
-    border: 1px solid #000000;
 }
 
 #nav_buttons {
-    //margin-left: 30%;
+    margin-left: 30%;
     text-align: center;
-    //margin-right: 30%;
-    //margin-top: .75em;
-    border: 1px solid #000000;
-    width: 30em;
+    width: 30%;
+    margin-top: 2em;
 }
 
 #player_info {
     float: right;
     width: 20em;
-    height: 5em;
-    border: 1px solid #191400;
-    background-color: #E0DBC8;
+    height: 5.5em;
+    background-color: #191400;
+    margin-top: 0px;
+    color: #FF4C10;
 }
 
 #upper_header {
     height: 60%;
     padding: .5em;
+}
+
+.center {
+    text-align: center;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
 }
 
 .nav_button {
@@ -62,15 +70,11 @@ img {
 .nav_button a:hover {
     height: 2em;
     background-color: #DECFB6;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: .25em;
-    padding-bottom: .25em;
 }
 
 .player_info_button {
     background-color: #B3A285;
-    margin-left: .5em;
+    margin-left: .6em;
     padding-top: .25em;
     padding-bottom: .25em;
     color: #191400;
@@ -89,16 +93,13 @@ img {
 .player_info_button a:hover {
     height: 2em;
     background-color: #DECFB6;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: .25em;
-    padding-bottom: .25em;
 }
 
 .player_name {
     margin-top: .25em;
     text-align: center;
-    font-size: 10pt;
+    font-size: 12pt;
     margin-bottom: 2em;
 }
+
 
