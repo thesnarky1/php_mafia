@@ -16,7 +16,7 @@
         echo "<input name='user_name' type='text' />\n";
         echo "<br />\n";
         echo "<label>Password: </label>\n";
-        echo "<input name='user_pass' type='password' />\n";
+        echo "<input name='user_pass' type='password' style='margin-top: .25em;' />\n";
         echo "<br />\n";
         echo "<input type='submit' value='Login' style='margin-top: .25em;'/>\n";
         echo "</form>\n";
@@ -42,10 +42,25 @@
         echo "</div>\n"; //Close logo
 
         echo "<div id='player_info'>\n";
-        echo "<p class='player_name'>Thesnarky1</p>";
-        echo "<span class='player_info_button'><a href='./account.php'>Account</a></span>\n";
-        echo "<span class='player_info_button'><a href='./profile.php'>Profile</a></span>\n";
-        echo "<span class='player_info_button'><a href='./games.php'>Games</a></span>\n";
+
+        if(isset($_SESSION['user_name']) && isset($_SESSION['user_id'])) {
+            $user_name = $_SESSION['user_name'];
+            echo "<p class='player_name'>$user_name</p>";
+            echo "<span class='player_info_button'><a href='./account.php'>Account</a></span>\n";
+            echo "<span class='player_info_button'><a href='./profile.php'>Profile</a></span>\n";
+            echo "<span class='player_info_button'><a href='./games.php'>Games</a></span>\n";
+        } else {
+            echo "<form name='small_login_form' method='POST' action='./login.php' ".
+                 "style='padding: .25em; text-align: center;'>\n";
+            echo "<label>Username: </label>\n";
+            echo "<input type='text' name='user_name' />\n";
+            echo "<br />\n";
+            echo "<label>Password: </label>\n";
+            echo "<input type='password' name='user_pass' style='margin-top: .25em;' />\n";
+            echo "<br />\n";
+            echo "<input type='submit' value='Login' style='margin-top: .25em'/>\n";
+            echo "</form>\n";
+        }
         echo "</div>\n"; //Close player_info
 
         echo "<div id='nav_buttons'>\n";
