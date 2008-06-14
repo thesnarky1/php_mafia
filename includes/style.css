@@ -1,3 +1,38 @@
 body {
-   background-color: #B3A285;
+    background-color: #E0DBC8;
 }
+
+
+#header {
+    height: 10em;
+    background-color: #B3A285;
+    border: 1px solid #191400;
+}
+
+#upper_header {
+    height: 60%;
+    padding: .5em;
+}
+
+#logo {
+    width: 30%;
+    float: left;
+    padding: 0px;
+}
+
+#player_info {
+    float: right;
+    width: 20em;
+    height: 5em;
+    border: 1px solid #000000;
+    background-color: #E0DBC8;
+}
+
+.player_name {
+    margin-top: .25em;
+    text-align: center;
+    font-size: 10pt;
+}
+
+
+
