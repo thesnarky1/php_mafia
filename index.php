@@ -19,15 +19,16 @@
                 $news_text = substr($news_text, 0, 255) . "<a href='./news.php?news_id=$news_id'>...</a>";
             }
             echo "<div id='news_feed_item'>\n";
-            echo "<p class='news_title'><a href='./news.php?news_id='$news_id'>$news_title</a></p>\n";
+            echo "<p class='news_title'><a href='./news.php?news_id=$news_id'>$news_title</a></p>\n";
             echo "<p class='news_text'>$news_text</p>\n";
             echo "<span class='news_date'>$news_author - $news_date</span>\n";
             echo "</div>\n"; //Close news_feed_item
         }
     }
     echo "</div>\n"; //Close news_feed
-    
-
+    echo "<div id='index_content'>\n";
+    echo "<h2>Thieves Taver</h2>\n";
+    echo "</div>\n"; //Close index content
     render_footer();
 
 ?>

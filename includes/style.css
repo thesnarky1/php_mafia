@@ -66,15 +66,21 @@ img a {
 
 #news_feed {
     width: 15em;
-    border: 3px solid #191400;
+    border: 1px solid #191400;
     padding: .25em;
     margin-top: .25em;
     background-color: #B3A285;
+    float: right;
 }
 
 #news_feed h3 {
     text-align: center;
     margin-top: 0px;
+}
+
+#news_feed h3 a {
+    color: #191400;
+    border-bottom: 1px dashed #191400;
 }
 
 #news_feed .news_title {
