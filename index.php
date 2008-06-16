@@ -27,7 +27,20 @@
     }
     echo "</div>\n"; //Close news_feed
     echo "<div id='index_content'>\n";
-    echo "<h2>Thieves Taver</h2>\n";
+    echo "<h2>Thieves Tavern</h2>\n";
+    echo "<p>\n";
+    echo "<span class='bolded'>A little about the site - </span>\n";
+    echo "Thieves Tavern is a web based version of Mafia, without the need for ".
+         "a forum, or moderator. I believe it to be the first incarnation of such a site, though ".
+         "will give up that distinction if I'm wrong.";
+    echo "</p>\n";
+    echo "<p>\n";
+    echo "<span class='bolded'>A little about the game - </span>\n";
+    echo "Mafia is a great party game in person, and a fun strategic role-playing ".
+         "game. It dates back to the 1980's where it was first played in the Psychology ".
+         "Department of Moscow State University (as <a href='http://web.archive.org/web/19990302082118/http://members.theglobe.com/mafia_rules/ target='_blank''>".
+         "claimed</a> by Dmitri Davidoff). ";
+    echo "</p>\n";
     echo "</div>\n"; //Close index content
     render_footer();
 
