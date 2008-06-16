@@ -1,8 +1,21 @@
 <?php
 
-
     function harsh_replace($str) {
         $str = preg_replace("/[^\d\w]/", "", $str);
+        return $str;
+    }
+
+    function safetify_input($str) {
+        global $dbh;
+        $str = stripslashes($str);
+        $str = mysqli_real_escape_string($dbh, $str);
+        return $str;
+    }
+
+    function convert_to_html($str) {
+        $str = str_replace("\\r", "", $str);
+        $str = str_replace("\\n", "<br/>", $str);
+        //$str = str_replace(" ", "&nbsp;", $str);
         return $str;
     }
 
@@ -66,6 +79,7 @@
         echo "<div id='nav_buttons'>\n";
         echo "<span class='nav_button'><a href='./index.php'>Home</a></span>\n";
         echo "<span class='nav_button'><a href='./games.php'>Games</a></span>\n";
+        echo "<span class='nav_button'><a href='./news.php'>News</a></span>\n";
         echo "<span class='nav_button'><a href='./help.php'>Help</a></span>\n";
         echo "</div>\n"; //Close nav_buttons
 
