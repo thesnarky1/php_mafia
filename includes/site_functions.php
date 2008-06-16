@@ -1,5 +1,13 @@
 <?php
 
+    function is_logged_in() {
+        if(isset($_SESSION['user_id']) && isset($_SESSION['user_name'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function harsh_replace($str) {
         $str = preg_replace("/[^\d\w]/", "", $str);
         return $str;

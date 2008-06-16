@@ -40,6 +40,10 @@ img a {
     height: 1.5em;
 }
 
+#create_game_form {
+    text-align: center;
+}
+
 #header {
     height: 6em;
     background-color: #B3A285;
@@ -218,4 +222,6 @@ img a {
     margin-bottom: 2em;
 }
 
-
+.submit {
+    margin-top: .25em;
+}
