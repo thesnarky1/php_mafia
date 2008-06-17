@@ -61,6 +61,32 @@ img a {
     border: none;
 }
 
+#my_games {
+    text-align: center;
+}
+
+#my_games table {
+    text-align: center;
+    background-color: #DECFB6;
+}
+
+#my_games td {
+}
+
+#my_games .header {
+    background-color: #191400;
+    color: #FF4C10;
+}
+
+#my_games .name {
+    width: 15em;
+    text-align: right;
+}
+
+#my_games .small {
+    width: 5em;
+}
+
 #nav_buttons {
     margin-left: 25%;
     text-align: center;

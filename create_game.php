@@ -14,23 +14,31 @@
         if($game_name != "") {
             $game_name = safetify_input($game_name);
             if($game_pass == $game_pass2) {
-                $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
-                         "VALUES('$game_name', '$user_id', NOW(), 0, MD5('$game_pass'), NOW())";
+                $query = "SELECT game_id FROM game_players WHERE user_id='$user_id' AND player_alive='Y'";
                 $result = mysqli_query($dbh, $query);
-                if($result && mysqli_affected_rows($dbh) == 1) {
-                    //Successful
-                    $game_id = mysqli_insert_id($dbh);
-                    $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
-                             "VALUES('$game_id', '$user_id', 0)";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_affected_rows($dbh) == 1) {
-                        //Successful
-                        header("Location: games.php");
+                if($result) {
+                    if(mysqli_num_rows($result) >=5) {
+                        $error = "Sorry, you may only be in 5 games, alive, at any one time.";
                     } else {
-                        $error = "Game created, but unable to add player. Contact an admin.";
+                        $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
+                                 "VALUES('$game_name', '$user_id', NOW(), 0, MD5('$game_pass'), NOW())";
+                        $result = mysqli_query($dbh, $query);
+                        if($result && mysqli_affected_rows($dbh) == 1) {
+                            //Successful
+                            $game_id = mysqli_insert_id($dbh);
+                            $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
+                                     "VALUES('$game_id', '$user_id', 0)";
+                            $result = mysqli_query($dbh, $query);
+                            if($result && mysqli_affected_rows($dbh) == 1) {
+                                //Successful
+                                header("Location: games.php");
+                            } else {
+                                $error = "Game created, but unable to add player. Contact an admin.";
+                            }
+                        } else {
+                            $error = "Error occured during creation, please try again.";
+                        }
                     }
-                } else {
-                    $error = "Error occured during creation, please try again.";
                 }
             } else {
                 $error = "Passwords must match. To create a game with no password, leave both blank.";
