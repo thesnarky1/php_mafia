@@ -1,7 +1,8 @@
 <?php
 
     function is_logged_in() {
-        if(isset($_SESSION['user_id']) && isset($_SESSION['user_name'])) {
+        if(isset($_SESSION['user_id']) && isset($_SESSION['user_name']) &&
+            $_SESSION['user_name'] != "" && $_SESSION['user_id'] != "") {
             return true;
         } else {
             return false;
@@ -64,9 +65,9 @@
 
         echo "<div id='player_info'>\n";
 
-        if(isset($_SESSION['user_name']) && isset($_SESSION['user_id'])) {
+        if(is_logged_in()) {
             $user_name = $_SESSION['user_name'];
-            echo "<p class='player_name'>$user_name</p>";
+            echo "<p class='player_name'>$user_name <span class='small_text'><a href='./logout.php'>(logout)</a></span></p>";
             echo "<span class='player_info_button'><a href='./account.php'>Account</a></span>\n";
             echo "<span class='player_info_button'><a href='./profile.php'>Profile</a></span>\n";
             echo "<span class='player_info_button'><a href='./games.php'>Games</a></span>\n";

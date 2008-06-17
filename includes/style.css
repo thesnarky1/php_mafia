@@ -262,6 +262,10 @@ img a {
     margin-bottom: 2em;
 }
 
+.small_text {
+    font-size: 10pt;
+}
+
 .submit {
     margin-top: .25em;
 }

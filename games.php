@@ -10,14 +10,6 @@
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
             echo "<h3>Your Current Games</h3>\n";
-            echo "<table align='center'>\n";
-            echo "<tr class='header'>\n";
-            echo "<td class='name'>Name</td>\n";
-            echo "<td class='small'>Alive</td>\n";
-            echo "<td class='small'>Dead</td>\n";
-            echo "<td class='small'>Turn</td>\n";
-            echo "<td class='small'>Phase</td>\n";
-            echo "</tr>\n";
             $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name, ".
                      "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as alive, ".
                      "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='N') as dead ".
@@ -26,6 +18,14 @@
                      "AND games.game_phase != 3";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
+                echo "<table align='center'>\n";
+                echo "<tr class='header'>\n";
+                echo "<td class='name'>Name</td>\n";
+                echo "<td class='small'>Alive</td>\n";
+                echo "<td class='small'>Dead</td>\n";
+                echo "<td class='small'>Turn</td>\n";
+                echo "<td class='small'>Phase</td>\n";
+                echo "</tr>\n";
                 while($row = mysqli_fetch_array($result)) {
                     $game_name = $row['game_name'];
                     $game_id = $row['game_id'];
@@ -42,8 +42,10 @@
                     echo "<td>$game_phase</td>\n";
                     echo "</tr>\n";
                 }
+                echo "</table>\n";
+            } else {
+                echo "<p class='error'>You're not playing any games currently</p>\n";
             }
-            echo "</table>\n";
         }
         echo "</div>\n";
     } else {

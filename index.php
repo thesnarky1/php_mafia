@@ -38,7 +38,7 @@
     echo "<span class='bolded'>A little about the game - </span>\n";
     echo "Mafia is a great party game in person, and a fun strategic role-playing ".
          "game. It dates back to the 1980's where it was first played in the Psychology ".
-         "Department of Moscow State University (as <a href='http://web.archive.org/web/19990302082118/http://members.theglobe.com/mafia_rules/ target='_blank''>".
+         "Department of Moscow State University (as <a href='http://web.archive.org/web/19990302082118/http://members.theglobe.com/mafia_rules/' target='_blank'>".
          "claimed</a> by Dmitri Davidoff). ";
     echo "</p>\n";
     echo "</div>\n"; //Close index content
