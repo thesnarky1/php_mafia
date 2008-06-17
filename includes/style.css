@@ -62,29 +62,9 @@ img a {
 }
 
 #my_games {
+    float: right;
     text-align: center;
-}
-
-#my_games table {
-    text-align: center;
-    background-color: #DECFB6;
-}
-
-#my_games td {
-}
-
-#my_games .header {
-    background-color: #191400;
-    color: #FF4C10;
-}
-
-#my_games .name {
-    width: 15em;
-    text-align: right;
-}
-
-#my_games .small {
-    width: 5em;
+    width: 60%;
 }
 
 #nav_buttons {
@@ -149,6 +129,12 @@ img a {
 
 #news_post_form .submit {
     margin-top: .25em;
+}
+
+#open_games {
+    width: 35%;
+    float: left;
+    text-align: center;
 }
 
 #player_box {
@@ -229,6 +215,25 @@ img a {
 
 .game_player_Unknown {
     background-color: #B3A285;
+}
+
+.game_table {
+    text-align: center;
+    background-color: #DECFB6;
+}
+
+.game_table .header {
+    background-color: #191400;
+    color: #FF4C10;
+}
+
+.game_table .name {
+    width: 15em;
+    text-align: right;
+}
+
+.game_table .small {
+    width: 5em;
 }
 
 .nav_button {
