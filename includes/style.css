@@ -151,6 +151,31 @@ img a {
     margin-top: .25em;
 }
 
+#player_box {
+    width: 150px;
+    text-align: center;
+}
+
+#player_box a {
+    border-bottom: none;
+    display: block;
+    color: #191400;
+}
+
+#player_box a:hover {
+    background-color: #FF4C10;
+}
+
+#player_box .player_name {
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+}
+
+#player_box img {
+    margin-top: 5px;
+}
+
 #player_info {
     float: right;
     width: 20em;
@@ -192,6 +217,18 @@ img a {
     color: red;
     font-weight: bold;
     text-align: center;
+}
+
+.game_player_Town {
+    background-color: #009900;
+}
+
+.game_player_Antitown {
+    background-color: #990000;
+}
+
+.game_player_Unknown {
+    background-color: #B3A285;
 }
 
 .nav_button {
@@ -264,6 +301,10 @@ img a {
 
 .small_text {
     font-size: 10pt;
+}
+
+.strikeout {
+    text-decoration: line-through;
 }
 
 .submit {

@@ -107,7 +107,57 @@
                     echo "<p class='banner'>You aren't in this game.</p>\n";
                 }
             }
-            //Make person table
+
+//Make person table
+
+            $query = "SELECT users.user_name, users.user_avatar, ".
+                     "game_players.player_alive, users.user_id, ".
+                     "roles.role_name, roles.role_faction ".
+                     "FROM users, game_players, roles ".
+                     "WHERE game_players.game_id='$game_id' AND ".
+                     "roles.role_id=game_players.role_id AND ".
+                     "users.user_id=game_players.user_id ".
+                     "ORDER BY player_alive DESC";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result)) {
+                echo "<table align='center'>\n";
+                $x = 1;
+                while($row = mysqli_fetch_array($result)) {
+                    $player_id = $row['user_id'];
+                    $user_name = $row['user_name'];
+                    $user_avatar = $row['user_avatar'];
+                    $player_alive = $row['player_alive'];
+                    $role_name = $row['role_name'];
+                    $role_faction = $row['role_faction'];
+                    if($x % 4 == 1) {
+                        echo "<tr>\n";
+                    }
+                    echo "<td ";
+                    if($player_id == $user_id || $player_alive == 'N') {
+                        echo "class='game_player_" . $role_faction . "'";
+                    } else {
+                        echo "class='game_player_Unknown'";
+                    }
+                    echo ">";
+                    echo "<div id='player_box'>\n";
+                    if($player_alive == 'Y') {
+                        echo "<a href='#'>";
+                        echo "<img src='./images/$user_avatar'>";
+                        echo "<p class='player_name'>$user_name</p>\n";
+                        echo "</a>\n";
+                    } else {
+                        echo "<img src='./images/dead.png'>";
+                        echo "<p class='player_name'><span class='strikeout'>$user_name</span></p>\n";
+                    }
+                    echo "</div>\n";
+                    echo "</td>";
+                    if($x % 4 == 0) {
+                        echo "</tr>\n";
+                    }
+                    $x++;
+                }
+                echo "</table>\n";
+            }
         } else {
             //Game doesn't exist
             echo "<p class='error'>Sorry, that game doesn't exist.</p>\n";
