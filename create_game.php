@@ -19,7 +19,16 @@
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_affected_rows($dbh) == 1) {
                     //Successful
-                    header("Location: games.php");
+                    $game_id = mysqli_insert_id($dbh);
+                    $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
+                             "VALUES('$game_id', '$user_id', 0)";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_affected_rows($dbh) == 1) {
+                        //Successful
+                        header("Location: games.php");
+                    } else {
+                        $error = "Game created, but unable to add player. Contact an admin.";
+                    }
                 } else {
                     $error = "Error occured during creation, please try again.";
                 }
