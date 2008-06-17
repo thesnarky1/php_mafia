@@ -20,14 +20,17 @@
                     if(mysqli_num_rows($result) >=5) {
                         $error = "Sorry, you may only be in 5 games, alive, at any one time.";
                     } else {
+                        if($game_pass != "") {
+                            $game_pass = "MD5('$game_pass')";
+                        }
                         $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
-                                 "VALUES('$game_name', '$user_id', NOW(), 0, MD5('$game_pass'), NOW())";
+                                 "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
                         $result = mysqli_query($dbh, $query);
                         if($result && mysqli_affected_rows($dbh) == 1) {
                             //Successful
                             $game_id = mysqli_insert_id($dbh);
                             $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
-                                     "VALUES('$game_id', '$user_id', 0)";
+                                     "VALUES('$game_id', '$user_id', 5)";
                             $result = mysqli_query($dbh, $query);
                             if($result && mysqli_affected_rows($dbh) == 1) {
                                 //Successful

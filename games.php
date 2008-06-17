@@ -13,7 +13,8 @@
         $query = "SELECT games.game_id, games.game_name, ".
                  "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as players ".
                  "FROM games ".
-                 "WHERE games.game_phase=0";
+                 "WHERE games.game_phase=0 AND games.game_password=''".
+                 "LIMIT 20";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) > 0) {
             echo "<table class='game_table' align='center'>\n";
@@ -29,7 +30,7 @@
                 echo "<tr>\n";
                 echo "<td class='name'><a href='./games.php?game_id=$game_id'>$game_name</a></td>\n";
                 echo "<td>$game_players</td>\n";
-                echo "<td>Join</td>\n";
+                echo "<td><a href='./games.php?game_id=$game_id&join=true'>Join</a></td>\n";
                 echo "</tr>\n";
             }
             echo "</table>\n";
@@ -80,14 +81,61 @@
             }
         }
         echo "</div>\n";
-    } else {
-        //Have a game to view
+    } else { //Have a game to view
+        $error = "";
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
         } else {
             $user_id = false;
         }
         $game_id = $_GET['game_id'];
+        if(isset($_GET['join']) || isset($_POST['join'])) {
+            if($user_id) {
+                $query = "SELECT game_phase, game_password FROM games WHERE game_id='$game_id'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) == 1) {
+                    $row = mysqli_fetch_array($result);
+                    $game_password = $row['game_password'];
+                    if($row['game_phase'] == 0) {
+                        $query = "SELECT user_id FROM game_players ".
+                                 "WHERE user_id='$user_id' AND ".
+                                 "player_alive='Y'";
+                        $result = mysqli_query($dbh, $query);
+                        if($result && mysqli_num_rows($result) <= 4) {
+                            $query = "SELECT user_id FROM game_players ".
+                                     "WHERE game_id='$game_id' AND user_id='$user_id'";
+                            $result = mysqli_query($dbh, $query);
+                            if($result && mysqli_num_rows($result) == 0) {
+                                if($game_password != "") {
+                                    if(isset($_POST['password'])) {
+                                        //Check password
+                                    } else {
+                                        $error = "This game requires a password, please put it in and try again.";
+                                    }
+                                } else {
+                                    $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
+                                             "VALUES('$game_id', '$user_id', 5)";
+                                    $result = mysqli_query($dbh, $query);
+                                    if($result && mysqli_affected_rows($dbh) == 1) {
+                                        //Successful
+                                    } else {
+                                        $error = "Error joining game, please try again if its still open.";
+                                    }
+                                }
+                            } else {
+                                $error = "You're already playing this game!";
+                            }
+                        } else {
+                            $error = "Sorry, you may only be in 5 games, alive, at once.";
+                        }
+                    } else {
+                        $error = "Sorry, this game is already in progress.";
+                    }
+                }
+            } else {
+                echo "<p class='error'>Sorry, you must be <a href='./login.php'>logged in</a> to join a game.</p>";
+            }
+        }
         if($user_id) {
             $query = "SELECT * FROM game_players WHERE user_id='$user_id' AND game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
@@ -113,6 +161,9 @@
                 $role_id = $row['role_id'];
             }
             //Make banner
+            if($error != "") {
+                echo "<p class='banner'><span class='error'>$error</span></p>\n";
+            }
             if($game_phase == 0){
                 echo "<p class='banner'>Game not yet started.</p>\n";
             } else if($game_phase == 3) {
@@ -145,9 +196,9 @@
                      "WHERE game_players.game_id='$game_id' AND ".
                      "roles.role_id=game_players.role_id AND ".
                      "users.user_id=game_players.user_id ".
-                     "ORDER BY player_alive DESC";
+                     "ORDER BY game_players.player_alive DESC";
             $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result)) {
+            if($result && mysqli_num_rows($result) > 0) {
                 echo "<table align='center'>\n";
                 $x = 1;
                 while($row = mysqli_fetch_array($result)) {
