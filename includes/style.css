@@ -165,6 +165,20 @@ img a {
     padding: .5em;
 }
 
+.banner {
+    width: 100%;
+    font-size: 10pt;
+    border: 1px solid #191400;
+    text-align: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+    background-color: #B3A285;
+}
+.banner a {
+    color: #191400;
+    border-bottom: 1px dashed #191400;
+}
+
 .bolded {
     font-weight: bold;
     color: #191400;
