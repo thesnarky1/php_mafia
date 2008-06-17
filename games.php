@@ -5,7 +5,9 @@
     render_header("Thieves Tavern Games");
 
     if(!isset($_GET['game_id'])) {
-        echo "<p class='banner'><a href='./create_game.php'>Create a game</a>?</p>\n";
+        if(is_logged_in()) {
+            echo "<p class='banner'><a href='./create_game.php'>Create a game</a>?</p>\n";
+        }
         echo "<div id='my_games'>\n";
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
