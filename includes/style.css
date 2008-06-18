@@ -246,21 +246,17 @@ img a {
 }
 
 .game_player_list li {
-    padding: .25em;
+    padding-left: .25em;
+    margin: -5px;
+    margin-left: -30px;
+    text-decoration: none;
+    list-style: none;
 }
 
 .game_player_list a {
     border-bottom: 1px dashed #191400;
     color: #191400;
     margin-left: .5em;
-}
-
-.game_player_list_alive {
-    //background-color: #009900;
-}
-
-.game_player_list_dead {
-    //background-color: #990000;
 }
 
 .game_table {

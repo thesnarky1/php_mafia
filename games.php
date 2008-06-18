@@ -200,10 +200,11 @@
             //Game information
             $alive = array();
             $dead = array();
-            $query = "SELECT game_players.player_alive, users.user_name, users.user_id ".
-                     "FROM game_players, users ".
+            $query = "SELECT game_players.player_alive, users.user_name, users.user_id, ".
+                     "roles.role_name ".
+                     "FROM game_players, users, roles ".
                      "WHERE game_players.game_id='$game_id' ".
-                     "AND users.user_id=game_players.user_id ".
+                     "AND users.user_id=game_players.user_id AND roles.role_id=game_players.role_id ".
                      "ORDER BY users.user_name";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
@@ -213,10 +214,11 @@
                     $tmp_user_name = $row['user_name'];
                     $tmp_user_id = $row['user_id'];
                     $player_alive = $row['player_alive'];
+                    $role_name = $row['role_name'];
                     if($player_alive == 'Y') {
                         $alive[] = "<li class='game_player_list_alive'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a></li>\n";
                     } else {
-                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a></li>\n";
+                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a> ($role_name)</li>\n";
                     }
                 }
             }
