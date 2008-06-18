@@ -39,16 +39,17 @@
         }
         echo "</div>\n"; //Close open games
         echo "<div id='my_games'>\n";
+            echo "<h3>Your Current Games</h3>\n";
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
             //Current games
-            echo "<h3>Your Current Games</h3>\n";
             $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name, ".
                      "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as alive, ".
                      "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='N') as dead ".
                      "FROM game_players, games ".
                      "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
-                     "AND games.game_phase != 3";
+                     "AND games.game_phase != 3 ".
+                     "ORDER BY games.game_turn DESC";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
                 echo "<table class='game_table' align='center'>\n";
@@ -79,6 +80,8 @@
             } else {
                 echo "<p class='error'>You're not playing any games currently</p>\n";
             }
+        } else {
+            echo "<p class='error'>Please login to check your current games.</p>\n";
         }
         echo "</div>\n";
     } else { //Have a game to view
@@ -188,6 +191,56 @@
                     echo "<p class='banner'>You aren't in this game.</p>\n";
                 }
             }
+
+            //Game chat
+            echo "<div id='game_chat'>\n";
+            echo "<h3 class='game_h3'>Chat</h3>\n";
+            echo "</div>\n"; //Close game_chat
+
+            //Game information
+            $alive = array();
+            $dead = array();
+            $query = "SELECT game_players.player_alive, users.user_name, users.user_id ".
+                     "FROM game_players, users ".
+                     "WHERE game_players.game_id='$game_id' ".
+                     "AND users.user_id=game_players.user_id ".
+                     "ORDER BY users.user_name";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) > 0) {
+                $alive = array();
+                $dead = array();
+                while($row = mysqli_fetch_array($result)) {
+                    $user_name = $row['user_name'];
+                    $user_id = $row['user_id'];
+                    $player_alive = $row['player_alive'];
+                    if($player_alive == 'Y') {
+                        $alive[] = "<li class='game_player_list_alive'><a href='./profile.php?user_id=$user_id'>$user_name</a></li>\n";
+                    } else {
+                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$user_id'>$user_name</a></li>\n";
+                    }
+                }
+            }
+            $votes_to_lynch = ceil(count($alive) / 2);
+            echo "<div id='game_information'>\n";
+            echo "<h3 class='game_h3'>Game Information</h3>\n";
+            echo "<p>\n";
+            echo "Turn: $game_turn<br />\n";
+            echo "Phase: $phases[$game_phase]<br />\n";
+            echo "Votes to lynch: $votes_to_lynch<br />\n";
+            echo "</p>\n";
+            echo "Alive: " . count($alive);
+            echo "<ul class='game_player_list'>\n";
+            foreach($alive as $user) {
+                echo $user . "<br />\n";
+            }
+            echo "</ul>\n";
+            echo "Dead: " . count($dead) . "<br />\n";
+            echo "<ul class='game_player_list'>\n";
+            foreach($dead as $user) {
+                echo $user . "<br />\n";
+            }
+            echo "</ul>\n";
+            echo "</div>\n"; //Close game_information
             //Make person table
             $query = "SELECT users.user_name, users.user_avatar, ".
                      "game_players.player_alive, users.user_id, ".
@@ -199,6 +252,7 @@
                      "ORDER BY game_players.player_alive DESC";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
+                echo "<div id='player_box_table'>\n";
                 echo "<table align='center'>\n";
                 $x = 1;
                 while($row = mysqli_fetch_array($result)) {
@@ -236,6 +290,7 @@
                     $x++;
                 }
                 echo "</table>\n";
+                echo "</div>\n"; //Close player_box_table
             } else {
                 echo "$query";
             }
