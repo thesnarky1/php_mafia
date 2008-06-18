@@ -210,13 +210,13 @@
                 $alive = array();
                 $dead = array();
                 while($row = mysqli_fetch_array($result)) {
-                    $user_name = $row['user_name'];
-                    $user_id = $row['user_id'];
+                    $tmp_user_name = $row['user_name'];
+                    $tmp_user_id = $row['user_id'];
                     $player_alive = $row['player_alive'];
                     if($player_alive == 'Y') {
-                        $alive[] = "<li class='game_player_list_alive'><a href='./profile.php?user_id=$user_id'>$user_name</a></li>\n";
+                        $alive[] = "<li class='game_player_list_alive'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a></li>\n";
                     } else {
-                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$user_id'>$user_name</a></li>\n";
+                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a></li>\n";
                     }
                 }
             }
@@ -249,7 +249,7 @@
                      "WHERE game_players.game_id='$game_id' AND ".
                      "roles.role_id=game_players.role_id AND ".
                      "users.user_id=game_players.user_id ".
-                     "ORDER BY game_players.player_alive DESC";
+                     "ORDER BY game_players.player_alive DESC ";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
                 echo "<div id='player_box_table'>\n";
@@ -266,7 +266,7 @@
                         echo "<tr>\n";
                     }
                     echo "<td ";
-                    if($player_id == $user_id || $player_alive == 'N') {
+                    if($player_alive == 'N' || ($player_id == $user_id && is_logged_in())) {
                         echo "class='game_player_" . $role_faction . "'";
                     } else {
                         echo "class='game_player_Unknown'";
@@ -283,11 +283,14 @@
                         echo "<p class='player_name'><span class='strikeout'>$user_name</span></p>\n";
                     }
                     echo "</div>\n";
-                    echo "</td>";
+                    echo "</td>\n";
                     if($x % 4 == 0) {
                         echo "</tr>\n";
                     }
                     $x++;
+                }
+                if(($x - 1) % 4 != 0) {
+                    echo "</tr>\n";
                 }
                 echo "</table>\n";
                 echo "</div>\n"; //Close player_box_table
