@@ -16,6 +16,9 @@
                 $role_channel = $row['role_channel'];
                 $user_id = $row['user_id'];
                 if($role_channel != '') {
+                    if(substr($role_channel, strlen($role_channel) - 1) == "_") {
+                        $role_channel = $role_channel . $user_id;
+                    }
                     $channel_members[$user_id] = $role_channel;
                 }
                 $users[] = $user_id;
@@ -37,6 +40,12 @@
                              "VALUES('$channel_id', '$user_id')";
                     $result = mysqli_query($dbh, $query);
                 }
+            } else {
+                //Channel is created
+                $channel_id = $channels[$role_channel];
+                $query = "INSERT INTO channel_members(channel_id, user_id) ".
+                         "VALUES('$channel_id', '$user_id')";
+                $result = mysqli_query($dbh, $query);
             }
         }
         $channel_name = "game_" . $game_id;
