@@ -44,7 +44,7 @@
         echo "</form>\n";
     }
 
-    function render_header($title="Thieves Tavern") {
+    function render_header($title="Thieves Tavern", $on_load='') {
         //Render <head> junk
         echo "<html>\n";
 
@@ -55,7 +55,7 @@
         echo "</head>\n";
 
         //Render the top of the body
-        echo "<body>\n";
+        echo "<body onload='$on_load'>\n";
         echo "<div id='content'>\n";
 
         echo "<div id='header'>\n";

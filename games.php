@@ -2,7 +2,7 @@
 
     include('./includes/functions.php');
 
-    render_header("Thieves Tavern Games");
+    render_header("Thieves Tavern Games", "init();");
 
     if(!isset($_GET['game_id'])) {
         if(is_logged_in()) {
@@ -195,12 +195,13 @@
             //Game chat
             echo "<div id='game_chat'>\n";
             echo "<h3 class='game_h3'>Chat</h3>\n";
-            echo "<textarea name='chat_text' id='chat_text' style='width: 100%; height: 40em;' readonly='readonly'>";
-            echo "</textarea>\n";
+            echo "<div name='chat_text' id='chat_text' >";
+            echo "</div>\n";
             if(is_logged_in()) {
                 echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";
                 echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
                 echo "<input type='hidden' id='user_hash' value='$_SESSION[user_hash]' />\n";
+                echo "<input type='hidden' id='game_id' value='$game_id' />\n";
             }
             echo "</div>\n"; //Close game_chat
 

@@ -40,6 +40,21 @@ img a {
     height: 1.5em;
 }
 
+#chat_text {
+    background-color: #ffffff;
+    height: 30em;
+    width: 100%;
+}
+
+#chat_text p {
+    padding: .25em;
+    font-size: 10pt;
+}
+
+#chat_text .chat_date_user {
+    font-weight: bold;
+}
+
 #create_game_form {
     text-align: center;
 }

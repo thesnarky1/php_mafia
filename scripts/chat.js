@@ -1,10 +1,11 @@
 /*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
   and Bucica, an excellent resource, and a book I highly recommend!*/
-var chatURL = 'chat.php';
+var chatURL = './chat.php';
 var xmlHttpGetMessages = createXmlHttpRequestObject();
 var updateInterval = 1000;
 var cache = new Array();
 var lastMessageID = -1;
+var debugMode = true;
 
 function createXmlHttpRequestObject() {
     var xmlHttp;
@@ -30,13 +31,10 @@ function createXmlHttpRequestObject() {
 }
 
 function init() {
-    var textBox = document.getElementById("text_box");
     requestNewMessages();
 }
 
 function requestNewMessages() {
-    var currentUser = document.getElementById("user_id").value;
-    var currentUserHash = document.getElementById("user_hash").value;
     if(xmlHttpGetMessages) {
         try {
             if(xmlHttpGetMessages.readyState == 4 || 
@@ -45,14 +43,20 @@ function requestNewMessages() {
                 if(cache.length > 0) {
                     params = cache.shift();
                 } else {
+                    var user = document.getElementById("user_id").value;
+                    var user_hash = document.getElementById("user_hash").value;
+                    var game_id = document.getElementById("game_id").value;
                     params = "mode=RetrieveNew" + 
-                             "&id=" + lastMessageIDi;
+                             "&game_id=" + game_id + 
+                             "&user_hash=" + user_hash + 
+                             "&user_id=" + user + 
+                             "&id=" + lastMessageID;
                 }
-                xmlHttpGetMessages.open("POST", chatURL, true);
+                xmlHttpGetMessages.open("GET", chatURL+"?"+params, true);
                 xmlHttpGetMessages.setRequestHeader("Content-Type",
                                                     "application/x-www-form-urlencoded");
                 xmlHttpGetMessages.onreadystatechange = handleReceivingMessages;
-                xmlHttpGetMessages.send(params);
+                xmlHttpGetMessages.send(); //params goes here
             } else {
                 setTimeout("requestNewMessages();", updateInterval);
             }
@@ -77,7 +81,7 @@ function handleReceivingMessages() {
 }
 
 function readMessages() {
-    var response = xmlHttpGetMessages.reasponseText;
+    var response = xmlHttpGetMessages.responseText;
     if(response.indexOf("ERRNO") >= 0 || response.indexOf("error:") >= 0 ||
        response.length == 0) {
         throw(response.length == 0? "Void server response." : response);
@@ -99,8 +103,8 @@ function displayMessages(idArray, userArray, dateArray, textArray) {
         var user = userArray.item(i).firstChild.data.toString();
         var date = dateArray.item(i).firstChild.data.toString();
         var text = textArray.item(i).firstChild.data.toString();
-        var htmlMessage = "<p style='chat_message'>\n";
-        htmlMessage += "<span style='chat_date_user'>" + user + " (" + date + "): </span>";
+        var htmlMessage = "<p class='chat_message'>\n";
+        htmlMessage += "<span class='chat_date_user'>" + user + " (" + date + "): </span>";
         htmlMessage += text; //toString()?
         htmlMessage += "</p>\n";
         displayMessage(htmlMessage);

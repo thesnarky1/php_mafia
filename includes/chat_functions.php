@@ -27,7 +27,8 @@
        }
        if(count($channels) > 0) {
            $query = "SELECT users.user_name, channel_messages.message_id, ".
-                    "channel_messages.message_text, channel_messages.message_date ".
+                    "channel_messages.message_text, ".
+                    "DATE_FORMAT(channel_messages.message_date, '%m/%e %H:%m:%i') as message_date ".
                     "FROM channel_messages, users ".
                     "WHERE users.user_id=channel_messages.user_id AND channel_messages.message_id > '$id' ";
            $channel_query = " AND (";
@@ -58,7 +59,7 @@
                    }
                }
                $xml .= "</messages>\n";
-               echo "$xml";
+               return "$xml";
            }
        }
    }
