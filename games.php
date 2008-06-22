@@ -197,9 +197,11 @@
             echo "<h3 class='game_h3'>Chat</h3>\n";
             echo "<textarea name='chat_text' id='chat_text' style='width: 100%; height: 40em;' readonly='readonly'>";
             echo "</textarea>\n";
-            echo "<input type='text' name='text_box' id='text_box' style='width: 100%' />\n";
-            echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
-            echo "<input type='hidden' id='user_hash' value='$_SESSION[user_hash]' />\n";
+            if(is_logged_in()) {
+                echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";
+                echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
+                echo "<input type='hidden' id='user_hash' value='$_SESSION[user_hash]' />\n";
+            }
             echo "</div>\n"; //Close game_chat
 
             //Game information

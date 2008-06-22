@@ -26,7 +26,7 @@
            echo "$query";
        }
        if(count($channels) > 0) {
-           $query = "SELECT users.user_name, ".
+           $query = "SELECT users.user_name, channel_messages.message_id, ".
                     "channel_messages.message_text, channel_messages.message_date ".
                     "FROM channel_messages, users ".
                     "WHERE users.user_id=channel_messages.user_id AND channel_messages.message_id > '$id' ";
@@ -47,8 +47,10 @@
                    while($row = mysqli_fetch_array($result)) {
                        $message_text = $row['message_text'];
                        $message_date = $row['message_date'];
+                       $message_id = $row['message_id'];
                        $user_name = $row['user_name'];
                        $xml .= "<message>\n";
+                       $xml .= "<id>$message_id</id>\n";
                        $xml .= "<user>$user_name</user>\n";
                        $xml .= "<date>$message_date</date>\n";
                        $xml .= "<text>$message_text</text>\n";
