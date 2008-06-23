@@ -49,6 +49,7 @@ img a {
 #chat_text p {
     padding: .25em;
     font-size: 10pt;
+    margin: 0em;
 }
 
 #chat_text .chat_date_user {

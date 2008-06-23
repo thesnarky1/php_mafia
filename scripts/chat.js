@@ -2,7 +2,7 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
 var xmlHttpGetMessages = createXmlHttpRequestObject();
-var updateInterval = 1000;
+var updateInterval = 2000;
 var cache = new Array();
 var lastMessageID = -1;
 var debugMode = true;
@@ -52,6 +52,7 @@ function requestNewMessages() {
                              "&user_id=" + user + 
                              "&id=" + lastMessageID;
                 }
+                //xmlHttpGetMessages.open("POST", chatURL, true);
                 xmlHttpGetMessages.open("GET", chatURL+"?"+params, true);
                 xmlHttpGetMessages.setRequestHeader("Content-Type",
                                                     "application/x-www-form-urlencoded");
@@ -142,11 +143,13 @@ function sendMessage() {
     var currentMessage = document.getElementById("text_box");
     var currentUser = document.getElementById("user_id").value;
     var currentUserHash = document.getElementById("user_hash").value;
+    var game = document.getElementById("game_id").value;
     if(trim(currentMessage.value) != '' && trim(currentUser) != '') {
         params = "mode=SendAndRetrieveNew" + 
                  "&id=" + encodeURIComponent(lastMessageID) + 
-                 "&user=" + encodeURIComponent(currentUser) +
-                 "&hash=" + encodeURIComponent(currentUserHash) + 
+                 "&user_id=" + encodeURIComponent(currentUser) +
+                 "&user_hash=" + encodeURIComponent(currentUserHash) + 
+                 "&game_id=" + encodeURIComponent(game) + 
                  "&message=" + encodeURIComponent(currentMessage.value);
         cache.push(params);
         currentMessage.value = "";
