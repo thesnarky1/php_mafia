@@ -52,8 +52,12 @@ img a {
     margin: 0em;
 }
 
-#chat_text .chat_date_user {
+#chat_text .chat_message_user, .chat_message_date, .chat_message_channel {
     font-weight: bold;
+}
+
+#chat_text .chat_message_date {
+    font-size: 8pt;
 }
 
 #create_game_form {

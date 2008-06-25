@@ -92,20 +92,24 @@ function readMessages() {
     userArray = response.getElementsByTagName("user");
     dateArray = response.getElementsByTagName("date");
     textArray = response.getElementsByTagName("text");
-    displayMessages(idArray, userArray, dateArray, textArray);
+    channelArray = response.getElementsByTagName("channel");
+    displayMessages(idArray, userArray, dateArray, textArray, channelArray);
     if(idArray.length > 0) {
         lastMessageID = idArray.item(idArray.length - 1).firstChild.data;
     }
     setTimeout("requestNewMessages();", updateInterval);
 }
 
-function displayMessages(idArray, userArray, dateArray, textArray) {
+function displayMessages(idArray, userArray, dateArray, textArray, channelArray) {
     for(var i = 0; i < idArray.length; i++) {
         var user = userArray.item(i).firstChild.data.toString();
         var date = dateArray.item(i).firstChild.data.toString();
         var text = textArray.item(i).firstChild.data.toString();
+        var channel = channelArray.item(i).firstChild.data.toString();
         var htmlMessage = "<p class='chat_message'>\n";
-        htmlMessage += "<span class='chat_date_user'>" + user + " (" + date + "): </span>";
+        htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> " + 
+                       "<span class='chat_message_user'>" + user + "</span> " + 
+                       "<span class='chat_message_date'>(" + date + "): </span>";
         htmlMessage += text; //toString()?
         htmlMessage += "</p>\n";
         displayMessage(htmlMessage);
