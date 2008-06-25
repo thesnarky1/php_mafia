@@ -2,7 +2,7 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
 var xmlHttpGetMessages = createXmlHttpRequestObject();
-var updateInterval = 2000;
+var updateInterval = 1000;
 var cache = new Array();
 var lastMessageID = -1;
 var debugMode = true;
@@ -118,7 +118,9 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
 
 function displayMessage(message) {
     var chatText = document.getElementById("chat_text");
+    var scrollDown = (chatText.scrollHeight - chatText.scrollTop <= chatText.offsetHeight);
     chatText.innerHTML += message;
+    chatText.scrollTop = scrollDown ? chatText.scrollHeight : chatText.scrollTop;
 }
 
 function displayError(message) {

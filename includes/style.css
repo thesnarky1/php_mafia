@@ -44,6 +44,7 @@ img a {
     background-color: #ffffff;
     height: 30em;
     width: 100%;
+    overflow: auto;
 }
 
 #chat_text p {

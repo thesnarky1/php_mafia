@@ -88,11 +88,12 @@
                echo "$query";
            }
            if(count($channels) > 0) {
-               $query = "SELECT users.user_name, channel_messages.message_id, ".
+               $query = "SELECT users.user_name, channel_messages.message_id, channels.channel_name, ".
                         "channel_messages.message_text, ".
                         "DATE_FORMAT(channel_messages.message_date, '%H:%m:%i') as message_date ".
-                        "FROM channel_messages, users ".
-                        "WHERE users.user_id=channel_messages.user_id AND channel_messages.message_id > '$id' ";
+                        "FROM channels, channel_messages, users ".
+                        "WHERE users.user_id=channel_messages.user_id AND channel_messages.message_id > '$id' AND ".
+                        "channels.channel_id=channel_messages.channel_id";
                $channel_query = " AND (";
                foreach($channels as $channel) {
                    if($channel_query != " AND (") {
@@ -108,6 +109,10 @@
                    $xml .= "<messages>\n";
                    if(mysqli_num_rows($result) > 0) {
                        while($row = mysqli_fetch_array($result)) {
+                           $channel_name = $row['channel_name'];
+                           $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
+                                           substr($channel_name, 1, strpos($channel_name, "_") - 1);
+                           $channel_name = $channel_images[$channel_name];
                            $message_text = $row['message_text'];
                            $message_date = $row['message_date'];
                            $message_id = $row['message_id'];
@@ -117,6 +122,7 @@
                            $xml .= "<user>$user_name</user>\n";
                            $xml .= "<date>$message_date</date>\n";
                            $xml .= "<text>$message_text</text>\n";
+                           $xml .= "<channel>$channel_name</channel>\n";
                            $xml .= "</message>\n";
                        }
                    }
