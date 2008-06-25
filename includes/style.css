@@ -66,11 +66,11 @@ img a {
 }
 
 #game_chat {
-    float: left;
-    width: 20em;
     padding: .25em;
     border: 1px solid black;
     background-color: #B3A285;
+    margin-left: 25%;
+    margin-right: 22%;
 }
 
 #game_information {
@@ -200,6 +200,8 @@ img a {
 }
 
 #player_box_table {
+    float: left;
+    width: 25%;
 }
 
 #player_info {

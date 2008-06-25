@@ -192,19 +192,6 @@
                 }
             }
 
-            //Game chat
-            echo "<div id='game_chat'>\n";
-            echo "<h3 class='game_h3'>Chat</h3>\n";
-            echo "<div name='chat_text' id='chat_text' >";
-            echo "</div>\n";
-            if(is_logged_in()) {
-                echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";
-            }
-            echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
-            echo "<input type='hidden' id='user_hash' value='$_SESSION[user_hash]' />\n";
-            echo "<input type='hidden' id='game_id' value='$game_id' />\n";
-            echo "</div>\n"; //Close game_chat
-
             //Game information
             $alive = array();
             $dead = array();
@@ -253,6 +240,7 @@
             }
             echo "</ul>\n";
             echo "</div>\n"; //Close game_information
+
             //Make person table
             $query = "SELECT users.user_name, users.user_avatar, ".
                      "game_players.player_alive, users.user_id, ".
@@ -267,6 +255,7 @@
                 echo "<div id='player_box_table'>\n";
                 echo "<table align='center'>\n";
                 $x = 1;
+                $box_per_row = 2;
                 while($row = mysqli_fetch_array($result)) {
                     $player_id = $row['user_id'];
                     $user_name = $row['user_name'];
@@ -274,7 +263,7 @@
                     $player_alive = $row['player_alive'];
                     $role_name = $row['role_name'];
                     $role_faction = $row['role_faction'];
-                    if($x % 4 == 1) {
+                    if($x % $box_per_row == 1) {
                         echo "<tr>\n";
                     }
                     echo "<td ";
@@ -296,12 +285,12 @@
                     }
                     echo "</div>\n";
                     echo "</td>\n";
-                    if($x % 4 == 0) {
+                    if($x % $box_per_row == 0) {
                         echo "</tr>\n";
                     }
                     $x++;
                 }
-                if(($x - 1) % 4 != 0) {
+                if(($x - 1) % $box_per_row != 0) {
                     echo "</tr>\n";
                 }
                 echo "</table>\n";
@@ -309,6 +298,19 @@
             } else {
                 echo "$query";
             }
+
+            //Game chat
+            echo "<div id='game_chat'>\n";
+            echo "<h3 class='game_h3'>Chat</h3>\n";
+            echo "<div name='chat_text' id='chat_text' >";
+            echo "</div>\n";
+            if(is_logged_in()) {
+                echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";
+            }
+            echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
+            echo "<input type='hidden' id='user_hash' value='$_SESSION[user_hash]' />\n";
+            echo "<input type='hidden' id='game_id' value='$game_id' />\n";
+            echo "</div>\n"; //Close game_chat
         } else {
             //Game doesn't exist
             echo "<p class='error'>Sorry, that game doesn't exist.</p>\n";
