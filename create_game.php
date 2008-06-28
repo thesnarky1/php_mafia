@@ -23,9 +23,9 @@
                         if($game_pass != "") {
                             $game_pass = "MD5('$game_pass')";
                         }
-                        if(strlen($game_name) > 32) {
-                            $error = "Sorry, game name may not exceed 32 characters.";
-                            $game_name = substr($game_name, 0, 32);
+                        if(strlen($game_name) > $game_name_limit) {
+                            $error = "Sorry, game name may not exceed $game_name_limit characters.";
+                            $game_name = substr($game_name, 0, $game_name_limit);
                         } else {
                             $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
                                      "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";

@@ -6,6 +6,7 @@
                             'Silent_killer'=>'silent_killer.gif',
                             'Cop'=>'cop.png',
                             'Mafia'=>'mafia.gif');
+    $game_name_limit = 40;
     include('./includes/mysql_config.php');
     include('./includes/game_functions.php');
     include('./includes/site_functions.php');
