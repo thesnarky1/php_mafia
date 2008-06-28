@@ -10,6 +10,20 @@
        }
    }
 
+    function show_chat_error($error) {
+        $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
+        $xml .= "<messages>\n";
+        $xml .= "<message>\n";
+        $xml .= "<id>-1</id>\n";
+        $xml .= "<user>Error</user>\n";
+        $xml .= "<date></date>\n";
+        $xml .= "<text>$error</text>\n";
+        $xml .= "<channel>system.png</channel>\n";
+        $xml .= "</message>\n";
+        $xml .= "</messages>\n";
+        return "$xml";
+    }
+
    function retrieve_new_messages($user_id, $game_id, $id = 0) {
        global $dbh;
        global $channel_images;

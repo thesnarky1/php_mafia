@@ -2,9 +2,10 @@
     session_start();
     $phases = array('Setup', 'Night', 'Day', 'Finished');
     $channel_images = array('Doctor'=>'doctor.gif',
-                            'Game'=>'doctor.gif',
+                            'Game'=>'game.png',
                             'Silent_killer'=>'silent_killer.gif',
                             'Cop'=>'cop.png',
+                            'System'=>'system.png',
                             'Mafia'=>'mafia.gif');
     $game_name_limit = 40;
     include('./includes/mysql_config.php');

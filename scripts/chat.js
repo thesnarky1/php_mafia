@@ -94,7 +94,7 @@ function readMessages() {
     textArray = response.getElementsByTagName("text");
     channelArray = response.getElementsByTagName("channel");
     displayMessages(idArray, userArray, dateArray, textArray, channelArray);
-    if(idArray.length > 0) {
+    if(idArray.length > 0 && idArray.item(idArray.length - 1).firstChild.data > 0) {
         lastMessageID = idArray.item(idArray.length - 1).firstChild.data;
     }
     setTimeout("requestNewMessages();", updateInterval);
@@ -103,13 +103,22 @@ function readMessages() {
 function displayMessages(idArray, userArray, dateArray, textArray, channelArray) {
     for(var i = 0; i < idArray.length; i++) {
         var user = userArray.item(i).firstChild.data.toString();
-        var date = dateArray.item(i).firstChild.data.toString();
+        var date = dateArray.item(i).firstChild;
+        if(date) {
+            date = date.data.toString();
+        } else {
+            date = false;
+        }
         var text = textArray.item(i).firstChild.data.toString();
         var channel = channelArray.item(i).firstChild.data.toString();
         var htmlMessage = "<p class='chat_message'>\n";
         htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> " + 
-                       "<span class='chat_message_user'>" + user + "</span> " + 
-                       "<span class='chat_message_date'>(" + date + "): </span>";
+                       "<span class='chat_message_user'>" + user + "</span>";
+        if(date) {
+            htmlMessage += "<span class='chat_message_date'>(" + date + "): </span>";
+        } else {
+            htmlMessage += ": ";
+        }
         htmlMessage += text; //toString()?
         htmlMessage += "</p>\n";
         displayMessage(htmlMessage);
