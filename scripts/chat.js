@@ -112,13 +112,13 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
         var text = textArray.item(i).firstChild.data.toString();
         var channel = channelArray.item(i).firstChild.data.toString();
         var htmlMessage = "<p class='chat_message'>\n";
-        htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> " + 
-                       "<span class='chat_message_user'>" + user + "</span>";
+        htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> ";
         if(date) {
-            htmlMessage += "<span class='chat_message_date'>(" + date + "): </span>";
+            htmlMessage += "<span class='chat_message_date'>(" + date + ") </span>";
         } else {
             htmlMessage += ": ";
         }
+        htmlMessage += "<span class='chat_message_user'>" + user + "</span>: ";
         htmlMessage += text; //toString()?
         htmlMessage += "</p>\n";
         displayMessage(htmlMessage);
