@@ -23,23 +23,28 @@
                         if($game_pass != "") {
                             $game_pass = "MD5('$game_pass')";
                         }
-                        $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
-                                 "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
-                        $result = mysqli_query($dbh, $query);
-                        if($result && mysqli_affected_rows($dbh) == 1) {
-                            //Successful
-                            $game_id = mysqli_insert_id($dbh);
-                            $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
-                                     "VALUES('$game_id', '$user_id', 5)";
+                        if(strlen($game_name) > 32) {
+                            $error = "Sorry, game name may not exceed 32 characters.";
+                            $game_name = substr($game_name, 0, 32);
+                        } else {
+                            $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
+                                     "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
                             $result = mysqli_query($dbh, $query);
                             if($result && mysqli_affected_rows($dbh) == 1) {
                                 //Successful
-                                header("Location: games.php");
+                                $game_id = mysqli_insert_id($dbh);
+                                $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
+                                         "VALUES('$game_id', '$user_id', 5)";
+                                $result = mysqli_query($dbh, $query);
+                                if($result && mysqli_affected_rows($dbh) == 1) {
+                                    //Successful
+                                    header("Location: games.php");
+                                } else {
+                                    $error = "Game created, but unable to add player. Contact an admin.";
+                                }
                             } else {
-                                $error = "Game created, but unable to add player. Contact an admin.";
+                                $error = "Error occured during creation, please try again.";
                             }
-                        } else {
-                            $error = "Error occured during creation, please try again.";
                         }
                     }
                 }
@@ -62,8 +67,13 @@
         echo "<h3>Create Game</h3>\n";
         echo "<label>Game name: </label>\n";
         echo "<input type='text' name='game_name' size='60' ";
-        if(isset($_POST['game_name'])) {
-            echo "value='$_POST[game_name]' ";
+        if(isset($game_name) || isset($_POST['game_name'])) {
+            if(isset($game_name)) {
+                $game_name = stripslashes($game_name);
+            } else {
+                $game_name = stripslashes($_POST['game_name']);
+            }
+            echo "value='". htmlentities($game_name, ENT_QUOTES) ."' ";
         }
         echo "/>\n";
         echo "<br />\n";
