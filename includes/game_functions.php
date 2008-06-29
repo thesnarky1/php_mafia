@@ -77,8 +77,8 @@
             }
         }
         $channel_name = "game_" . $game_id;
-        $query = "INSERT INTO channels(channel_name, game_id) ".
-                 "VALUES('$channel_name', '$game_id')";
+        $query = "INSERT INTO channels(channel_name, game_id, global) ".
+                 "VALUES('$channel_name', '$game_id', 'Y')";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
             $channel_id = mysqli_insert_id($dbh);
@@ -91,8 +91,8 @@
             }
         }
         $channel_name = "system_" . $game_id;
-        $query = "INSERT INTO channels(channel_name, game_id) ".
-                 "VALUES('$channel_name', '$game_id')";
+        $query = "INSERT INTO channels(channel_name, game_id, global) ".
+                 "VALUES('$channel_name', '$game_id', 'Y')";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
             $channel_id = mysqli_insert_id($dbh);

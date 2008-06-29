@@ -89,10 +89,16 @@
                }
            }
        } else {
-           $query = "SELECT channel_members.channel_id ".
-                    "FROM channel_members, channels ".
-                    "WHERE channel_members.user_id='$user_id' AND channels.game_id='$game_id' AND ".
-                    "channel_members.channel_id=channels.channel_id";
+           if($_GET['user_id'] != "") {
+               $query = "SELECT channel_members.channel_id ".
+                        "FROM channel_members, channels ".
+                        "WHERE channel_members.user_id='$user_id' AND channels.game_id='$game_id' AND ".
+                        "channel_members.channel_id=channels.channel_id";
+           } else {
+               $query = "SELECT channels.channel_id ".
+                        "FROM channels ".
+                        "WHERE channels.game_id='$game_id' AND channels.global='Y'";
+           }
            $result = mysqli_query($dbh, $query);
            if($result && mysqli_num_rows($result) > 0) {
                while($row = mysqli_fetch_array($result)) {
