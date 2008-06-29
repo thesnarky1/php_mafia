@@ -17,46 +17,39 @@
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
             if($game_turn != $old_game_turn || $phases[$game_phase] != $old_game_phase) {
-                $alive = array();
-                $dead = array();
-                $query = "SELECT game_players.player_alive, users.user_name, users.user_id, ".
-                         "roles.role_name ".
-                         "FROM game_players, users, roles ".
-                         "WHERE game_players.game_id='$game_id' ".
-                         "AND users.user_id=game_players.user_id AND roles.role_id=game_players.role_id ".
-                         "ORDER BY users.user_name";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_num_rows($result) > 0) {
-                    $alive = array();
-                    $dead = array();
-                    while($row = mysqli_fetch_array($result)) {
-                        $tmp_user_name = $row['user_name'];
-                        $tmp_user_id = $row['user_id'];
-                        $player_alive = $row['player_alive'];
-                        $role_name = $row['role_name'];
-                        if($player_alive == 'Y') {
-                            $alive[] = "<player><name>$tmp_user_name</name><id>$tmp_user_id</id></player>\n";
-                        } else {
-                            $dead[] = "<player><name>$tmp_user_name</name><id>$tmp_user_id</id><role>$role_name</role></player>\n";
-                        }
-                    }
-                }
-                $votes_to_lynch = ceil(count($alive) / 2);
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
-                //if($game_phase == 2) {
-                    $to_return .= "<votes>$votes_to_lynch</votes>\n";
-                //}
-                $to_return .= "<alive>\n";
-                foreach($alive as $user) {
-                    $to_return .= "$user\n";
+                $to_return .= "<player_list>\n";
+                $query = "SELECT users.user_name, users.user_avatar, ".
+                         "game_players.player_alive, users.user_id, ".
+                         "roles.role_name, roles.role_faction ".
+                         "FROM users, game_players, roles ".
+                         "WHERE game_players.game_id='$game_id' AND ".
+                         "roles.role_id=game_players.role_id AND ".
+                         "users.user_id=game_players.user_id ".
+                         "ORDER BY game_players.player_alive DESC ";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) > 0) {
+                    while($row = mysqli_fetch_array($result)) {
+                        $player_id = $row['user_id'];
+                        $user_name = $row['user_name'];
+                        $user_avatar = $row['user_avatar'];
+                        $player_alive = $row['player_alive'];
+                        $role_name = $row['role_name'];
+                        $role_faction = $row['role_faction'];
+                        $to_return .= "<player>\n";
+                        $to_return .= "<id>$player_id</id>\n";
+                        $to_return .= "<name>$user_name</name>\n";
+                        $to_return .= "<avatar>$user_avatar</avatar>\n";
+                        $to_return .= "<alive>$player_alive</alive>\n";
+                        if($player_alive == 'N') {
+                            $to_return .= "<role_name>$role_name</role_name>\n";
+                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
+                        }
+                        $to_return .= "</player>\n";
+                    }
                 }
-                $to_return .= "</alive>\n";
-                $to_return .= "<dead>\n";
-                foreach($dead as $user) {
-                    $to_return .= "$user\n";
-                }
-                $to_return .= "</dead>\n";
+                $to_return .= "</player_list>\n";
             }
         }
         $to_return .= "</game_data>\n";

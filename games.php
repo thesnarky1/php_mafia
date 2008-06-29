@@ -198,6 +198,7 @@
             echo "<p>\n";
             echo "Turn: <span id='game_turn'></span><br />\n";
             echo "Phase: <span id='game_phase'></span><br />\n";
+            echo "Votes to Lynch: <span id='game_vote_to_lynch'></span><br />\n";
             echo "</p>\n";
             echo "Alive: <span id='game_alive'></span>\n";
             echo "<ul class='game_player_list' id='game_alive_list'>\n";

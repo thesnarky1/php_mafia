@@ -89,41 +89,49 @@ function readInformation() {
         var tmpGamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
         var tmpGameTurn = response.getElementsByTagName("turn")[0].firstChild.data.toString();
         if(tmpGamePhase != gamePhase || tmpGameTurn != gameTurn) {
-            var votes = response.getElementsByTagName("votes")[0].firstChild.data.toString();
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
             gamePhaseHTML.innerHTML = tmpGamePhase;
             gameTurnHTML.innerHTML = tmpGameTurn;
             gamePhase = tmpGamePhase;
             gameTurn = tmpGameTurn;
-            aliveArray = response.getElementsByTagName("alive")[0].getElementsByTagName("player");
-            deadArray = response.getElementsByTagName("dead")[0].getElementsByTagName("player");
-            displayPlayers(aliveArray, deadArray);
+            playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
+            displayPlayers(playerArray);
+
         }
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
 
-function displayPlayers(aliveArray, deadArray) {
+function displayPlayers(playerArray) {
+    var gameLynchHTML = document.getElementById("game_vote_to_lynch");
+    gameLynchHTML.innerHTML = "";
     var aliveListHTML = document.getElementById("game_alive_list");
     aliveListHTML.innerHTML = "";
     var deadListHTML = document.getElementById("game_dead_list");
     deadListHTML.innerHTML = "";
-    for(var i = 0; i < aliveArray.length; i++) {
-        var player_name = aliveArray.item(i).getElementsByTagName("name")[0].firstChild.data.toString();
-        var player_id = aliveArray.item(i).getElementsByTagName("id")[0].firstChild.data.toString();
-        aliveListHTML.innerHTML += "<li class='game_player_list_alive'>" + 
-                                   "<a href='./profile.php?user_id='" + player_id + "'>" + 
-                                   player_name + "</a></li>\n";
+    var alivePlayers = 0;
+    var deadPlayers = 0;
+    for(var i = 0; i < playerArray.length; i++) {
+        var player = playerArray.item(i);
+        var playerName = player.getElementsByTagName("name")[0].firstChild.data.toString();
+        var playerId = player.getElementsByTagName("id")[0].firstChild.data.toString();
+        var playerAlive = player.getElementsByTagName("alive")[0].firstChild.data.toString();
+        if(playerAlive == 'Y') {
+            aliveListHTML.innerHTML += "<li class='game_player_list_alive'>" + 
+                                       "<a href='./profile.php?user_id='" + playerId + "'>" + 
+                                       playerName + "</a></li>\n";
+            alivePlayers++;
+        } else {
+            var playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
+            deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
+                                       "<a href='./profile.php?user_id='" + playerId + "'>" + 
+                                       playerName + "</a> (" + playerRole + ")</li>\n";
+            deadPlayers++;
+        }
     }
-    for(var i = 0; i < deadArray.length; i++) {
-        var player_name = deadArray.item(i).getElementsByTagName("name")[0].firstChild.data.toString();
-        var player_id = deadArray.item(i).getElementsByTagName("id")[0].firstChild.data.toString();
-        var player_role = deadArray.item(i).getElementsByTagName("role")[0].firstChild.data.toString();
-        deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
-                                   "<a href='./profile.php?user_id='" + player_id + "'>" + 
-                                   player_name + "</a> (" + player_role + ")</li>\n";
-    }
+    document.getElementById("game_alive").innerHTML = alivePlayers;
+    document.getElementById("game_dead").innerHTML = deadPlayers;
 }
 
 function trim(s) {
