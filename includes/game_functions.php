@@ -7,20 +7,54 @@
     }
 
     function kill_player($user_id, $game_id) {
-        $dbh;
-        $query = "UPDATE channel_members ".
-                 "SET channel_post_rights='0' ".
-                 "WHERE user_id='$user_id' AND game_id='$game_id'";
+        global $dbh;
+        $query = "SELECT user_name FROM users WHERE user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) > 0) {
-            //Success
-        }
-        $query = "UPDATE game_players ".
-                 "SET player_alive='N' ".
-                 "WHERE user_id='$user_id' AND game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) > 0) {
-            //Success
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $user_name = $row['user_name'];
+            $query = "UPDATE channel_members, channels ".
+                     "SET channel_members.channel_post_rights='0' ".
+                     "WHERE channel_members.user_id='$user_id' AND ".
+                     "channels.channel_id=channel_members.channel_id AND ".
+                     "channels.game_id='$game_id'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_affected_rows($dbh) > 0) {
+                //Success
+                $query = "UPDATE game_players ".
+                         "SET player_alive='N' ".
+                         "WHERE user_id='$user_id' AND game_id='$game_id'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_affected_rows($dbh) > 0) {
+                    //Success
+                    $query = "SELECT channel_id FROM channels ".
+                             "WHERE game_id='$game_id' AND channel_name LIKE 'system_%'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) == 1) {
+                        $row = mysqli_fetch_array($result);
+                        $channel_id = $row['channel_id'];
+                        $query = "SELECT user_id FROM users WHERE user_name='System'";
+                        $result = mysqli_query($dbh, $query);
+                        if($result && mysqli_num_rows($result) == 1) {
+                            $row = mysqli_fetch_array($result);
+                            $system_id = $row['user_id'];
+                            $message_text = "$user_name was killed.";
+                            $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
+                                     "VALUES('$channel_id', '$system_id', '$message_text', NOW())";
+                            $result = mysqli_query($dbh, $query);
+                            if($result && mysqli_affected_rows($dbh) == 1) {
+                                //Success in killing
+                            }
+                        }
+                    } else {
+                        echo "Error getting system channel id. " . $query;
+                    }
+                } else {
+                    echo "Error setting player to dead. " . $query;
+                }
+            } else {
+                echo "Error setting post rights to null. " . $query;
+            }
         }
     }
 
