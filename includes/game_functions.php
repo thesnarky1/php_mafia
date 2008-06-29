@@ -6,6 +6,63 @@
         return $str;
     }
 
+    function get_game_information($game_id, $old_game_turn, $old_game_phase) {
+        global $dbh, $phases;
+        $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
+        $to_return .= "<game_data>\n";
+        $query = "SELECT * FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_phase = $row['game_phase'];
+            $game_turn = $row['game_turn'];
+            if($game_turn != $old_game_turn || $phases[$game_phase] != $old_game_phase) {
+                $alive = array();
+                $dead = array();
+                $query = "SELECT game_players.player_alive, users.user_name, users.user_id, ".
+                         "roles.role_name ".
+                         "FROM game_players, users, roles ".
+                         "WHERE game_players.game_id='$game_id' ".
+                         "AND users.user_id=game_players.user_id AND roles.role_id=game_players.role_id ".
+                         "ORDER BY users.user_name";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) > 0) {
+                    $alive = array();
+                    $dead = array();
+                    while($row = mysqli_fetch_array($result)) {
+                        $tmp_user_name = $row['user_name'];
+                        $tmp_user_id = $row['user_id'];
+                        $player_alive = $row['player_alive'];
+                        $role_name = $row['role_name'];
+                        if($player_alive == 'Y') {
+                            $alive[] = "<player><name>$tmp_user_name</name><id>$tmp_user_id</id></player>\n";
+                        } else {
+                            $dead[] = "<player><name>$tmp_user_name</name><id>$tmp_user_id</id><role>$role_name</role></player>\n";
+                        }
+                    }
+                }
+                $votes_to_lynch = ceil(count($alive) / 2);
+                $to_return .= "<turn>$game_turn</turn>\n";
+                $to_return .= "<phase>$phases[$game_phase]</phase>\n";
+                //if($game_phase == 2) {
+                    $to_return .= "<votes>$votes_to_lynch</votes>\n";
+                //}
+                $to_return .= "<alive>\n";
+                foreach($alive as $user) {
+                    $to_return .= "$user\n";
+                }
+                $to_return .= "</alive>\n";
+                $to_return .= "<dead>\n";
+                foreach($dead as $user) {
+                    $to_return .= "$user\n";
+                }
+                $to_return .= "</dead>\n";
+            }
+        }
+        $to_return .= "</game_data>\n";
+        return $to_return;
+    }
+
     function kill_player($user_id, $game_id) {
         global $dbh;
         $query = "SELECT user_name FROM users WHERE user_id='$user_id'";

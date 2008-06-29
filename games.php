@@ -2,7 +2,7 @@
 
     include('./includes/functions.php');
 
-    render_header("Thieves Tavern Games", "init();");
+    render_header("Thieves Tavern Games", "init_chat();init_info();");
 
     if(!isset($_GET['game_id'])) {
         if(is_logged_in()) {
@@ -193,53 +193,19 @@
             }
 
             //Game information
-            $alive = array();
-            $dead = array();
-            $query = "SELECT game_players.player_alive, users.user_name, users.user_id, ".
-                     "roles.role_name ".
-                     "FROM game_players, users, roles ".
-                     "WHERE game_players.game_id='$game_id' ".
-                     "AND users.user_id=game_players.user_id AND roles.role_id=game_players.role_id ".
-                     "ORDER BY users.user_name";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) > 0) {
-                $alive = array();
-                $dead = array();
-                while($row = mysqli_fetch_array($result)) {
-                    $tmp_user_name = $row['user_name'];
-                    $tmp_user_id = $row['user_id'];
-                    $player_alive = $row['player_alive'];
-                    $role_name = $row['role_name'];
-                    if($player_alive == 'Y') {
-                        $alive[] = "<li class='game_player_list_alive'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a></li>\n";
-                    } else {
-                        $dead[] = "<li class='game_player_list_dead'><a href='./profile.php?user_id=$tmp_user_id'>$tmp_user_name</a> ($role_name)</li>\n";
-                    }
-                }
-            }
-            $votes_to_lynch = ceil(count($alive) / 2);
             echo "<div id='game_information'>\n";
             echo "<h3 class='game_h3'>Game Information</h3>\n";
             echo "<p>\n";
-            echo "Turn: $game_turn<br />\n";
-            echo "Phase: $phases[$game_phase]<br />\n";
-            if($game_phase == 2) {
-                echo "Votes to lynch: $votes_to_lynch<br />\n";
-            }
+            echo "Turn: <span id='game_turn'></span><br />\n";
+            echo "Phase: <span id='game_phase'></span><br />\n";
             echo "</p>\n";
-            echo "Alive: " . count($alive);
-            echo "<ul class='game_player_list'>\n";
-            foreach($alive as $user) {
-                echo $user . "<br />\n";
-            }
+            echo "Alive: <span id='game_alive'></span>\n";
+            echo "<ul class='game_player_list' id='game_alive_list'>\n";
             echo "</ul>\n";
-            echo "Dead: " . count($dead) . "<br />\n";
-            echo "<ul class='game_player_list'>\n";
-            foreach($dead as $user) {
-                echo $user . "<br />\n";
-            }
+            echo "Dead: <span id='game_dead'></span>\n";
+            echo "<ul class='game_player_list' id='game_dead_list'>\n";
             echo "</ul>\n";
-            echo "</div>\n"; //Close game_information
+            echo "</div>\n";
 
             //Make person table
             $query = "SELECT users.user_name, users.user_avatar, ".

@@ -271,7 +271,7 @@ img a {
 
 .game_player_list li {
     padding-left: .25em;
-    margin: -5px;
+    margin: 5px;
     margin-left: -30px;
     text-decoration: none;
     list-style: none;

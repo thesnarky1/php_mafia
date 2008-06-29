@@ -52,6 +52,7 @@
         echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
         echo "<title>$title</title>\n";
         echo "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
+        echo "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
         echo "</head>\n";
 
         //Render the top of the body

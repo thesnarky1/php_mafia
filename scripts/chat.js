@@ -30,7 +30,7 @@ function createXmlHttpRequestObject() {
     }
 }
 
-function init() {
+function init_chat() {
     requestNewMessages();
 }
 

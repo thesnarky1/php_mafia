@@ -16,7 +16,7 @@
         $xml .= "<message>\n";
         $xml .= "<id>-1</id>\n";
         $xml .= "<user>Error</user>\n";
-        $xml .= "<date></date>\n";
+        $xml .= "<date>Now</date>\n";
         $xml .= "<text>$error</text>\n";
         $xml .= "<channel>system.png</channel>\n";
         $xml .= "</message>\n";
