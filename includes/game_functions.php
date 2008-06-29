@@ -6,7 +6,7 @@
         return $str;
     }
 
-    function get_game_information($game_id, $old_game_turn, $old_game_phase) {
+    function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";

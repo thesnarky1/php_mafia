@@ -44,10 +44,14 @@ function requestGameInformation() {
                 if(cache.length > 0) {
                     params = cache.shift();
                 } else {
-                    var game_id = document.getElementById("game_id").value;
-                    params = "game_id=" + game_id + 
+                    var user = document.getElementById("user_id").value;
+                    var userHash = document.getElementById("user_hash").value;
+                    var gameId = document.getElementById("game_id").value;
+                    params = "game_id=" + gameId + 
                              "&game_turn=" + gameTurn + 
-                             "&game_phase=" + gamePhase;
+                             "&game_phase=" + gamePhase +
+                             "&user_id=" + user + 
+                             "&user_hash=" + userHash;
                 }
                 //xmlHttpGetInformation.open("POST", gameInfoURL, true);
                 xmlHttpGetInformation.open("GET", gameInfoURL+"?"+params, true);
