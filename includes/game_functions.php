@@ -42,7 +42,7 @@
                         $to_return .= "<name>$user_name</name>\n";
                         $to_return .= "<avatar>$user_avatar</avatar>\n";
                         $to_return .= "<alive>$player_alive</alive>\n";
-                        if($player_alive == 'N') {
+                        if($player_alive == 'N' || $player_id == $user_id) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
                         }
