@@ -6,6 +6,29 @@
         return $str;
     }
 
+    function next_phase($game_id) {
+        $query = "SELECT * FROM games WHERE game_id='$game_id'";
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_turn = $row['game_turn'];
+            $game_phase = $row['game_phase'];
+            if($game_phase == 1) {
+                //Just update game_phase
+                $game_phase++;
+                $query = "UPDATE games ".
+                         "SET game_phase='$game_phase' ".
+                         "WHERE game_id='$game_id'";
+            } else {
+                //Increment turn as well.
+                $game_phase++;
+                $game_turn++;
+                $query = "UPDATE games ".
+                         "SET game_phase='$game_phase', game_turn='$game_turn' ".
+                         "WHERE game_id='$game_id'";
+            }
+        }
+    }
+
     function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
