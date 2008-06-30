@@ -21,6 +21,8 @@
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
             echo get_game_information($game_id, $game_turn, $game_phase, $user_id);
+        } else {
+            echo get_game_information($game_id, $game_turn, $game_phase);
         }
     } else {
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

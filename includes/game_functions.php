@@ -29,7 +29,7 @@
         }
     }
 
-    function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id) {
+    function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id=0) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
@@ -53,6 +53,7 @@
                          "ORDER BY game_players.player_alive DESC ";
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_num_rows($result) > 0) {
+                    $real_channel = false;
                     while($row = mysqli_fetch_array($result)) {
                         $channel = $row['role_channel'];
                         $player_id = $row['user_id'];
@@ -76,17 +77,20 @@
                                     if(false !== strpos($channel, "_")) {
                                         $channel = substr($channel, 0, strpos($channel, "_"));
                                     }
-                                    $channel = capitalize($channel);
+                                    $real_channel = capitalize($channel);
                                 } else {
-                                    $channel = "No";
+                                    $real_channel = "No";
                                 }
-                                $to_return .= "<channel>$channel</channel>\n";
                             } else {
-                                $to_return .= "<channel>Town</channel>\n";
+                                $real_channel = "Town";
                             }
                         }
                         $to_return .= "</player>\n";
                     }
+                    if(!$real_channel) {
+                        $real_channel = "No";
+                    }
+                    $to_return .= "<channel>$real_channel</channel>\n";
                 }
                 $to_return .= "</player_list>\n";
             }
