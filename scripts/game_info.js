@@ -7,6 +7,8 @@ var cache = new Array();
 var gamePhase = 0;
 var gameTurn = 0;
 var debugMode = true;
+var boxesPerRow = 2;
+var playerCount = 1;
 
 function createXmlHttpRequestObject() {
     var xmlHttp;
@@ -114,26 +116,66 @@ function displayPlayers(playerArray) {
     aliveListHTML.innerHTML = "";
     var deadListHTML = document.getElementById("game_dead_list");
     deadListHTML.innerHTML = "";
+    var playerBoxTable = document.getElementById("player_box_table");
+    playerTable = "<table align='center'>";
     var alivePlayers = 0;
     var deadPlayers = 0;
+    playerCount = 1;
     for(var i = 0; i < playerArray.length; i++) {
+        var playerHTML = "";
+        var playerRole = false;
+        var playerFaction = false;
         var player = playerArray.item(i);
         var playerName = player.getElementsByTagName("name")[0].firstChild.data.toString();
         var playerId = player.getElementsByTagName("id")[0].firstChild.data.toString();
         var playerAlive = player.getElementsByTagName("alive")[0].firstChild.data.toString();
+        var playerAvatar = player.getElementsByTagName("avatar")[0].firstChild.data.toString();
         if(playerAlive == 'Y') {
             aliveListHTML.innerHTML += "<li class='game_player_list_alive'>" + 
                                        "<a href='./profile.php?user_id='" + playerId + "'>" + 
                                        playerName + "</a></li>\n";
             alivePlayers++;
         } else {
-            var playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
+            playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
+            playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
             deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
                                        "<a href='./profile.php?user_id='" + playerId + "'>" + 
                                        playerName + "</a> (" + playerRole + ")</li>\n";
             deadPlayers++;
         }
+        if(playerCount % boxesPerRow == 1) {
+            playerTable += "<tr>\n";
+        }
+        playerHTML = "<td ";
+        if(playerFaction) {
+            playerHTML += "class='game_player_" + playerFaction + "'";
+        } else {
+            playerHTML += "class='game_player_Unknown'";
+        }
+        playerHTML += ">";
+        playerHTML += "<div id='player_box'>";
+        if(playerAlive == 'Y') {
+            playerHTML += "<a href='#'>";
+            playerHTML += "<img src='./images/" + playerAvatar + "'>";
+            playerHTML += "<p class='player_name'>" + playerName + "</p>";
+            playerHTML += "</a>";
+        } else {
+            playerHTML += "<img src='./images/dead.png'>";
+            playerHTML += "<p class='player_name'><span class='strikeout'>" + playerName + "</span></p>";
+        }
+        playerHTML += "</div>";
+        playerHTML += "</td>";
+        playerTable += playerHTML;
+        if(playerCount % boxesPerRow == 0) {
+            playerTable += "</tr>\n";
+        }
+        playerCount++;
     }
+    if((playerCount - 1) % boxesPerRow != 0) {
+        playerTable += "</tr>\n";
+    }
+    playerTable += "</table>\n";
+    playerBoxTable.innerHTML = playerTable;
     document.getElementById("game_alive").innerHTML = alivePlayers;
     document.getElementById("game_dead").innerHTML = deadPlayers;
 }
