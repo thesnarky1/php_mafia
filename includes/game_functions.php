@@ -22,7 +22,7 @@
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
                          "game_players.player_alive, users.user_id, ".
-                         "roles.role_name, roles.role_faction ".
+                         "roles.role_name, roles.role_channel, roles.role_faction ".
                          "FROM users, game_players, roles ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
@@ -31,6 +31,7 @@
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_num_rows($result) > 0) {
                     while($row = mysqli_fetch_array($result)) {
+                        $channel = $row['role_channel'];
                         $player_id = $row['user_id'];
                         $user_name = $row['user_name'];
                         $user_avatar = $row['user_avatar'];
@@ -45,6 +46,21 @@
                         if($player_alive == 'N' || $player_id == $user_id) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
+                        }
+                        if($player_id == $user_id) {
+                            if($game_phase == 1) {
+                                if($channel && $channel != "") {
+                                    if(false !== strpos($channel, "_")) {
+                                        $channel = substr($channel, 0, strpos($channel, "_"));
+                                    }
+                                    $channel = capitalize($channel);
+                                } else {
+                                    $channel = "No";
+                                }
+                                $to_return .= "<channel>$channel</channel>\n";
+                            } else {
+                                $to_return .= "<channel>Town</channel>\n";
+                            }
                         }
                         $to_return .= "</player>\n";
                     }

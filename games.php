@@ -209,56 +209,13 @@
             echo "</div>\n";
 
             //Make person table
-                echo "<div id='player_box_table'>\n";
-//                echo "<table align='center'>\n";
-//                $x = 1;
-//                $box_per_row = 2;
-//                while($row = mysqli_fetch_array($result)) {
-//                    $player_id = $row['user_id'];
-//                    $user_name = $row['user_name'];
-//                    $user_avatar = $row['user_avatar'];
-//                    $player_alive = $row['player_alive'];
-//                    $role_name = $row['role_name'];
-//                    $role_faction = $row['role_faction'];
-//                    if($x % $box_per_row == 1) {
-//                        echo "<tr>\n";
-//                    }
-//                    echo "<td ";
-//                    if($player_alive == 'N' || ($player_id == $user_id && is_logged_in())) {
-//                        echo "class='game_player_" . $role_faction . "'";
-//                    } else {
-//                        echo "class='game_player_Unknown'";
-//                    }
-//                    echo ">";
-//                    echo "<div id='player_box'>\n";
-//                    if($player_alive == 'Y') {
-//                        echo "<a href='#'>";
-//                        echo "<img src='./images/$user_avatar'>";
-//                        echo "<p class='player_name'>$user_name</p>\n";
-//                        echo "</a>\n";
-//                    } else {
-//                        echo "<img src='./images/dead.png'>";
-//                        echo "<p class='player_name'><span class='strikeout'>$user_name</span></p>\n";
-//                    }
-//                    echo "</div>\n";
-//                    echo "</td>\n";
-//                    if($x % $box_per_row == 0) {
-//                        echo "</tr>\n";
-//                    }
-//                    $x++;
-//                }
-//                if(($x - 1) % $box_per_row != 0) {
-//                    echo "</tr>\n";
-//                }
-//                echo "</table>\n";
-                echo "</div>\n"; //Close player_box_table
-//            } else {
-//                echo "$query";
-//            }
+            echo "<div id='player_box_table'>\n";
+            echo "</div>\n"; //Close player_box_table
 
             //Game chat
             echo "<div id='game_chat'>\n";
-            echo "<h3 class='game_h3'>Chat</h3>\n";
+            echo "<h3 class='game_h3'>Chat (<span class='chat_channel_name' id='chat_channel'></span>)</h3>\n";
+            //echo "<p class='chat_channel_name' id='chat_channel'></p>\n";
             echo "<div name='chat_text' id='chat_text' >";
             echo "</div>\n";
             if(is_logged_in()) {

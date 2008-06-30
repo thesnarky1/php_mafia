@@ -95,6 +95,9 @@ function readInformation() {
         var tmpGamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
         var tmpGameTurn = response.getElementsByTagName("turn")[0].firstChild.data.toString();
         if(tmpGamePhase != gamePhase || tmpGameTurn != gameTurn) {
+            var gameChatHTML = document.getElementById("chat_channel");
+            gameChatHTML.innerHTML = "";
+            gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
             gamePhaseHTML.innerHTML = tmpGamePhase;
@@ -103,7 +106,6 @@ function readInformation() {
             gameTurn = tmpGameTurn;
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
             displayPlayers(playerArray);
-
         }
     }
     setTimeout("requestGameInformation();", updateInterval);

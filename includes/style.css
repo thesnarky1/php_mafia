@@ -242,6 +242,12 @@ img a {
     text-align: center;
 }
 
+.chat_channel_name {
+    text-align: center;
+    font-style: italic;
+    font-weight: normal;
+}
+
 .error {
     color: red;
     font-weight: bold;
