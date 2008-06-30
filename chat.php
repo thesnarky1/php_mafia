@@ -19,6 +19,8 @@
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) == 1) {
                 echo retrieve_new_messages($user_id, $game_id, $id);
+            } else {
+                echo retrieve_new_messages('', $game_id, $id);
             }
         }
     }

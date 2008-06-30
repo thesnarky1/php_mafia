@@ -89,7 +89,7 @@
                }
            }
        } else {
-           if($_GET['user_id'] != "") {
+           if($user_id != "") {
                $query = "SELECT channel_members.channel_id ".
                         "FROM channel_members, channels ".
                         "WHERE channel_members.user_id='$user_id' AND channels.game_id='$game_id' AND ".
