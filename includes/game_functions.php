@@ -40,12 +40,14 @@
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
             if($game_turn != $old_game_turn || $phases[$game_phase] != $old_game_phase) {
+                $banner_night = false;
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
                          "game_players.player_alive, users.user_id, ".
-                         "roles.role_name, roles.role_channel, roles.role_faction ".
+                         "roles.role_name, roles.role_channel, ".
+                         "roles.banner_night, roles.role_faction ".
                          "FROM users, game_players, roles ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
@@ -62,6 +64,7 @@
                         $player_alive = $row['player_alive'];
                         $role_name = $row['role_name'];
                         $role_faction = $row['role_faction'];
+                        $role_banner = $row['banner_night'];
                         $to_return .= "<player>\n";
                         $to_return .= "<id>$player_id</id>\n";
                         $to_return .= "<name>$user_name</name>\n";
@@ -84,6 +87,7 @@
                             } else {
                                 $real_channel = "Town";
                             }
+                            $banner_night = $role_banner;
                         }
                         $to_return .= "</player>\n";
                     }
@@ -93,6 +97,9 @@
                     $to_return .= "<channel>$real_channel</channel>\n";
                 }
                 $to_return .= "</player_list>\n";
+            }
+            if($banner_night) {
+                $to_return .= "<banner>$banner_night</banner>\n";
             }
         }
         $to_return .= "</game_data>\n";
