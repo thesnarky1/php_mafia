@@ -6,6 +6,7 @@ a {
 
 body {
     background-color: #E0DBC8;
+    width: 1245px;
 }
 
 img {
@@ -70,7 +71,7 @@ img a {
     padding: .25em;
     border: 1px solid black;
     background-color: #B3A285;
-    margin-left: 25%;
+    margin-left: 26%;
     margin-right: 22%;
 }
 

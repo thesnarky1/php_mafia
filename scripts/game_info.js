@@ -104,14 +104,15 @@ function readInformation() {
             gameTurnHTML.innerHTML = tmpGameTurn;
             gamePhase = tmpGamePhase;
             gameTurn = tmpGameTurn;
+            var bannerMessage = "Fail";
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            displayPlayers(playerArray);
+            displayPlayers(playerArray, gamePhase, bannerMessage);
         }
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
 
-function displayPlayers(playerArray) {
+function displayPlayers(playerArray, gamePhase, bannerMessage) {
     var gameLynchHTML = document.getElementById("game_vote_to_lynch");
     gameLynchHTML.innerHTML = "";
     var aliveListHTML = document.getElementById("game_alive_list");
@@ -119,7 +120,8 @@ function displayPlayers(playerArray) {
     var deadListHTML = document.getElementById("game_dead_list");
     deadListHTML.innerHTML = "";
     var playerBoxTable = document.getElementById("player_box_table");
-    playerTable = "<table align='center'>";
+    playerTable = "<div class='banner'>" + bannerMessage + "</div>\n";
+    playerTable += "<table align='center'>";
     var alivePlayers = 0;
     var deadPlayers = 0;
     playerCount = 1;
