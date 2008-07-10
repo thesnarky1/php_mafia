@@ -87,7 +87,9 @@
                             } else {
                                 $real_channel = "Town";
                             }
-                            $banner_night = $role_banner;
+                            if($player_alive == "Y") {
+                                $banner_night = $role_banner;
+                            }
                         }
                         $to_return .= "</player>\n";
                     }
