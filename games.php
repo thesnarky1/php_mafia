@@ -2,9 +2,9 @@
 
     include('./includes/functions.php');
 
-    render_header("Thieves Tavern Games", "init_chat();init_info();");
 
     if(!isset($_GET['game_id'])) {
+        render_header("Thieves Tavern Games", "");
         if(is_logged_in()) {
             echo "<p class='banner'><a href='./create_game.php'>Create a game</a>?</p>\n";
         }
@@ -85,6 +85,7 @@
         }
         echo "</div>\n";
     } else { //Have a game to view
+        render_header("Thieves Tavern Games", "init_chat();init_info();");
         $error = "";
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
