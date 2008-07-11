@@ -1,5 +1,15 @@
 <?php
 
+    function add_message($channel_id, $user_id, $message) {
+        global $dbh;
+        $message = mysqli_real_escape_string($dbh, $message);
+        if($message != "") {
+            $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
+                     "VALUES('$channel_id', '$user_id', '$message', NOW())";
+            $result = mysqli_query($dbh, $query);
+        }
+    }
+
     function show_chat_error($error) {
         $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $xml .= "<messages>\n";

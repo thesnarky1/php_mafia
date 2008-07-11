@@ -32,16 +32,6 @@
         }
     }
 
-    function add_message($channel_id, $user_id, $message) {
-        global $dbh;
-        $message = mysqli_real_escape_string($dbh, $message);
-        if($message != "") {
-            $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
-                     "VALUES('$channel_id', '$user_id', '$message', NOW())";
-            $result = mysqli_query($dbh, $query);
-        }
-    }
-
     function next_phase($game_id) {
         global $dbh;
         $system_id = get_system_id();
@@ -100,23 +90,27 @@
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
-                         "game_players.player_alive, users.user_id, ".
+                         "game_players.player_alive, game_players.player_ready, ".
+                         "users.user_id, games.game_creator, ".
                          "roles.role_name, roles.role_channel, ".
                          "roles.banner_night, roles.role_faction ".
-                         "FROM users, game_players, roles ".
+                         "FROM users, game_players, roles, games ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
-                         "users.user_id=game_players.user_id ".
+                         "users.user_id=game_players.user_id AND ".
+                         "games.game_id='$game_id' ".
                          "ORDER BY game_players.player_alive DESC ";
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_num_rows($result) > 0) {
                     $real_channel = false;
                     while($row = mysqli_fetch_array($result)) {
+                        $game_creator = $row['game_creator'];
                         $channel = $row['role_channel'];
                         $player_id = $row['user_id'];
                         $user_name = $row['user_name'];
                         $user_avatar = $row['user_avatar'];
                         $player_alive = $row['player_alive'];
+                        $player_ready = $row['player_ready'];
                         $role_name = $row['role_name'];
                         $role_faction = $row['role_faction'];
                         $role_banner = $row['banner_night'];
@@ -143,7 +137,11 @@
                                 $real_channel = "Town";
                             }
                             if($player_alive == "Y") {
-                                $banner_night = $role_banner;
+                                if($game_phase == 0 && $game_creator == $user_id && $player_ready == "Y") {
+                                    $banner_night = "Start game";
+                                } else {
+                                    $banner_night = $role_banner;
+                                }
                             }
                         }
                         $to_return .= "</player>\n";
