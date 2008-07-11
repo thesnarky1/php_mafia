@@ -6,8 +6,48 @@
         return $str;
     }
 
+    function get_system_channel($game_id) {
+        global $dbh;
+        $system_name = "system_$game_id";
+        $query = "SELECT channel_id FROM channels WHERE channel_name='$system_name'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['channel_id'];
+        } else {
+            return false;
+        }
+    }
+
+    function get_system_id() {
+        global $dbh;
+        $system_name = "System";
+        $query = "SELECT user_id FROM users WHERE user_name='$system_name'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['user_id'];
+        } else {
+            return false;
+        }
+    }
+
+    function add_message($channel_id, $user_id, $message) {
+        global $dbh;
+        $message = mysqli_real_escape_string($dbh, $message);
+        if($message != "") {
+            $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
+                     "VALUES('$channel_id', '$user_id', '$message', NOW())";
+            $result = mysqli_query($dbh, $query);
+        }
+    }
+
     function next_phase($game_id) {
-        $query = "SELECT * FROM games WHERE game_id='$game_id'";
+        global $dbh;
+        $system_id = get_system_id();
+        $chan_id = get_system_channel($game_id);
+        $query = "SELECT game_turn, game_phase FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
             $row = mysqli_fetch_array($result);
             $game_turn = $row['game_turn'];
@@ -18,14 +58,29 @@
                 $query = "UPDATE games ".
                          "SET game_phase='$game_phase' ".
                          "WHERE game_id='$game_id'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_affected_rows($dbh) == 1) {
+                    if($chan_id) {
+                        add_message($chan_id, $system_id, "Another day breaks over the town.");
+                    }
+                }
             } else {
                 //Increment turn as well.
-                $game_phase++;
+                $game_phase--;
                 $game_turn++;
                 $query = "UPDATE games ".
                          "SET game_phase='$game_phase', game_turn='$game_turn' ".
                          "WHERE game_id='$game_id'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_affected_rows($dbh) == 1) {
+                    if($chan_id) {
+                        add_message($chan_id, $system_id, "Night creeps silently over the town as turn $game_turn begins.");
+                    } else {
+                        echo "Can't find system channel";
+                    }
+                }
             }
+        } else {
         }
     }
 
