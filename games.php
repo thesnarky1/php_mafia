@@ -160,6 +160,7 @@
             $game_name = $row['game_name'];
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
+            $player_alive = $row['player_alive'];
             if($user_id) {
                 $role_id = $row['role_id'];
             }
@@ -185,7 +186,13 @@
                         } else {
                             $do_what = $role_day;
                         }
-                        echo "<p class='banner'>You are a $role_name. $do_what</p>\n";
+                        echo "<p class='banner'>You are a $role_name. ";
+                        if($player_alive == 'Y') {
+                            echo "$do_what";
+                        } else {
+                            echo "Too bad you are also dead.";
+                        }
+                        echo "</p>\n";
                     }
                 } else {
                     echo "<p class='banner'>You aren't in this game.</p>\n";
