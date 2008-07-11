@@ -46,7 +46,7 @@
                 //Just update game_phase
                 $game_phase++;
                 $query = "UPDATE games ".
-                         "SET game_phase='$game_phase' ".
+                         "SET game_phase='$game_phase', game_recent_date=NOW() ".
                          "WHERE game_id='$game_id'";
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_affected_rows($dbh) == 1) {
@@ -59,7 +59,7 @@
                 $game_phase--;
                 $game_turn++;
                 $query = "UPDATE games ".
-                         "SET game_phase='$game_phase', game_turn='$game_turn' ".
+                         "SET game_phase='$game_phase', game_turn='$game_turn', game_recent_date=NOW() ".
                          "WHERE game_id='$game_id'";
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_affected_rows($dbh) == 1) {
