@@ -14,6 +14,20 @@
         return $str;
     }
 
+    function pass_check($str) {
+        preg_match("/[^\d\w]/", $str, $matches);
+        if(count($matches) > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function pass_replace($str) {
+        $str = preg_replace("/[^\d\w]/", "", $str);
+        return $str;
+    }
+
     function safetify_input($str) {
         global $dbh;
         $str = stripslashes($str);
