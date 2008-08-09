@@ -21,13 +21,13 @@
                         $user_id = $_SESSION['user_id'];
                         //Update password
                         $query = "UPDATE users ".
-                                 "SET user_pass=MD5('$pass')".
-                                 "WHERE user_id='$user_id'";
+                                 "SET user_pass=MD5('$pass') ".
+                                 "WHERE user_id='$user_id' ";
                         $result = mysqli_query($dbh, $query);
                         if(mysqli_affected_rows($dbh) == 1) {
                             //Success
                         } else {
-                            $error = "Unknown error, please try again. $query";
+                            $error = "Unknown error, please try again.";
                         }
                     } else {
                         $error = "Currently passwords can only contain alphanumeric characters.";
