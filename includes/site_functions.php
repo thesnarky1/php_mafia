@@ -93,6 +93,11 @@
         return $str;
     }
 
+    function int_replace($str) {
+        $str = preg_replace("/\D/", "", $str);
+        return $str;
+    }
+
     function pass_check($str) {
         preg_match("/[^\d\w]/", $str, $matches);
         if(count($matches) > 0) {
@@ -169,9 +174,10 @@
 
         if(is_logged_in()) {
             $user_name = $_SESSION['user_name'];
+            $user_id = $_SESSION['user_id'];
             echo "<p class='player_name'>$user_name <span class='small_text'><a href='./logout.php'>(logout)</a></span></p>";
             echo "<span class='player_info_button'><a href='./account.php'>Account</a></span>\n";
-            echo "<span class='player_info_button'><a href='./profile.php'>Profile</a></span>\n";
+            echo "<span class='player_info_button'><a href='./profile.php?id=$user_id'>Profile</a></span>\n";
             echo "<span class='player_info_button'><a href='./games.php'>Games</a></span>\n";
         } else {
             echo "<form name='small_login_form' method='POST' action='./login.php' ".

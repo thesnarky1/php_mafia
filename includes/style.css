@@ -264,6 +264,27 @@ img a {
     margin-top: .25em;
 }
 
+#profile_header {
+    margin-top: 1em;
+    height: 120px;
+    width: 100%;
+    background-color: #191400;
+    color: #FF4C10;
+    border: 1px solid #FF4C10;
+}
+
+#profile_header_img {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+}
+
+#profile_header_name {
+    margin-top: 32px;
+    margin-left: 117px;
+    width: 50%;
+}
+
 #upper_header {
     height: 60%;
     padding: .5em;
