@@ -1,5 +1,38 @@
 <?php
 
+    function is_game_over($game_id) {
+        global $dbh;
+        $roles = array();
+        $query = "SELECT roles.role_faction, game_players.player_alive ".
+                 "FROM game_players, roles ".
+                 "WHERE game_players.game_id='$game_id' AND roles.role_id=game_players.role_id";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+                $role_faction = $row['role_faction'];
+                $player_alive = $row['player_alive'];
+                if($player_alive == 'Y') {
+                    if(!isset($roles[$role_faction])) {
+                        $roles[$role_faction] = 0;
+                    }
+                    $roles[$role_faction]++;
+                }
+            }
+            if(isset($roles['Unknown'])) {
+                $over = false;
+            } else if(count($roles) == 1) {
+                $over = true;
+            }
+
+            if($over) {
+                echo "Game over!<br />";
+            } else {
+                echo "Not over!<br />";
+            }
+            return $over;
+        }
+    }
+
     function capitalize($str) {
         $str = strtoupper(substr($str, 0, 1)) . 
                substr($str, 1);

@@ -215,6 +215,13 @@ img a {
     color: #FF4C10;
 }
 
+#player_info .fixed_label {
+    float: left;
+    text-align: right;
+    width: 7em;
+    margin-top: .25em;
+}
+
 #upper_header {
     height: 60%;
     padding: .5em;

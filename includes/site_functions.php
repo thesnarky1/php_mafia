@@ -91,10 +91,10 @@
         } else {
             echo "<form name='small_login_form' method='POST' action='./login.php' ".
                  "style='padding: .25em; text-align: center;'>\n";
-            echo "<label>Username: </label>\n";
-            echo "<input type='text' name='user_name' />\n";
+            echo "<label class='fixed_label'>Username: </label>\n";
+            echo "<input type='text' name='user_name'  style='margin-top: .25em;'/>\n";
             echo "<br />\n";
-            echo "<label>Password: </label>\n";
+            echo "<label class='fixed_label'>Password: </label>\n";
             echo "<input type='password' name='user_pass' style='margin-top: .25em;' />\n";
             echo "<br />\n";
             echo "<input type='submit' value='Login' style='margin-top: .25em'/>\n";
