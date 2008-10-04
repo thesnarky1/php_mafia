@@ -169,11 +169,11 @@ function displayPlayers(playerArray, gamePhase, bannerMessage) {
         playerHTML += "<div id='player_box'>";
         if(playerAlive == 'Y') {
             playerHTML += "<a href='#'>";
-            playerHTML += "<img src='./images/" + playerAvatar + "'>";
+            playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
             playerHTML += "<p class='player_name'>" + playerName + "</p>";
             playerHTML += "</a>";
         } else {
-            playerHTML += "<img src='./images/dead.png'>";
+            playerHTML += "<img src='./images/avatars/dead.png'>";
             playerHTML += "<p class='player_name'><span class='strikeout'>" + playerName + "</span></p>";
         }
         playerHTML += "</div>";
