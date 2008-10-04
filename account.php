@@ -46,20 +46,31 @@
     if($error != "") {
         echo "<p class='error'>$error</p>\n";
     }
+    echo "</div>\n";
+    echo "<div id='account_settings_div'>\n";
+    echo "<h3>Password</h3>\n";
     echo "<form id='account_password' action='./account.php' method='POST'>\n";
     echo "Password: ";
-    echo "<input type='text' name='password1' />\n";
+    echo "<input type='password' name='password1' />\n";
     echo "<br />\n";
     echo "Re-typed: ";
-    echo "<input type='text' name='password2' />\n";
+    echo "<input type='password' name='password2' />\n";
     echo "<br />\n";
     echo "<input type='hidden' name='type' value='password' />\n";
     echo "<input type='submit' name='submit' value='Update Password' />\n";
     echo "</form>\n";
+    echo "</div>\n";
+
+    echo "<div id='account_settings_div'>\n";
+    echo "<h3>Avatar</h3>\n";
+    echo "<img src='images/avatars/" . get_player_avatar($_SESSION['user_id']) . "' />\n";
     echo "<form id='account_details' action='./account.php' method='POST'>\n";
-    echo "<input type='hidden' name='type' value='details' />\n";
-    echo "<input type='submit' name='submit' value='Update Details' />\n";
+    echo "<input type='hidden' name='type' value='avatar' />\n";
+    echo "<input type='submit' name='submit' value='Update Avatar' />\n";
     echo "</form>\n";
+    echo "</div>\n";
+
+
     echo "</div>\n";
     render_footer();
 

@@ -9,6 +9,18 @@
         }
     }
 
+    function get_player_avatar($user_id) {
+        global $dbh;
+        $query = "SELECT user_avatar FROM users WHERE user_id='user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_array($result);
+            return $row['user_avatar'];
+        } else {
+            return 'face.png';
+        }
+    }
+
     function harsh_replace($str) {
         $str = preg_replace("/[^\d\w]/", "", $str);
         return $str;

@@ -17,6 +17,21 @@ img a {
     border: none;
 }
 
+#account_settings_div {
+    margin-top: 1em;
+    width: 30em;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    border: 1px solid #191400;
+}
+
+#account_settings_div h3 {
+    margin-top: 0px;
+    background-color: #191400;
+    color: #FF4C10;
+}
+
 #big_login_form_div {
     margin-top: 1em;
     border: 1px solid white;
