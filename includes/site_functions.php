@@ -31,7 +31,11 @@
         if(count($matches) > 0) {
             return false;
         } else {
-            return true;
+            if(trim($str) == "") {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 
