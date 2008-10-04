@@ -9,6 +9,48 @@
         }
     }
 
+    function resize_and_copy($img, $new_img) {
+        $max_size = 100;
+        $ext = get_ext($new_img);
+        list($width, $height) = getimagesize($img);
+        if($width > $max_size || $height > $max_size) { //If both are 150 or under we do nothing
+            if($ext == "jpg" || $ext == "jpeg") {
+                $src_img = imagecreatefromjpeg($img);
+            } else if($ext == "png") {
+                $src_img = imagecreatefrompng($img);
+            } else if($ext == "gif") {
+                $src_img = imagecreatefromgif($img);
+            }
+            if(!$src_img) {
+                die("No source img - $ext");
+            }
+            if($width > $height) { //resize width to 150, keep aspect ratio
+                $new_width = $max_size;
+                $new_height = ($height/$width) * $max_size;
+            } else if($height > $width) { //resize height, keep aspect ratio
+                $new_height = $max_size;
+                $new_width = ($width/$height) * $max_size;
+            } else { //resize both to 150
+                $new_height = $max_size;
+                $new_width = $max_size;
+            }
+            $tmp_img = imagecreatetruecolor($new_width, $new_height);
+            imagecopyresampled($tmp_img, $src_img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            if($ext == "jpg" || $ext == "jpeg") {
+                imagejpeg($tmp_img, $new_img);
+            } else if($ext == "png") {
+                imagepng($tmp_img, $new_img);
+            } else if($ext == "gif") {
+                imagegif($tmp_img, $new_img);
+            } else {
+                echo "Uh-oh...";
+                die();
+            }
+        } else {
+            copy($img, $new_img);
+        }
+    }
+
     function set_user_avatar($user_id, $filename) {
         global $dbh;
         if(file_exists("./images/avatars/$filename")) {
@@ -20,7 +62,6 @@
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
         } else {
-            die("Big error, please contact admin. <br /> $query");
         }
     }
 

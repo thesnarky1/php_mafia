@@ -2,8 +2,8 @@
 
     include('./includes/functions.php');
 
-    $allowed_exts = array("jpg", "jpeg", "png", "gif", "bmp");
-    $max_size = "10000";
+    $allowed_exts = array("jpg", "jpeg", "png", "gif");
+    $max_size = "1000000";
 
     if(!is_logged_in()) {
         render_header("Thieves Tavern Account");
@@ -46,16 +46,15 @@
             if(isset($_FILES['user_pic'])) {
                 if($_FILES['user_pic']['error'] == 0) {
                     if(isset($_FILES['user_pic']['tmp_name'])) {
-                        print_r($_FILES);
                         $filename = $_FILES['user_pic']['name'];
                         $ext = get_ext($filename);
                         if(in_array(strtolower($ext), $allowed_exts)) {
                             $new_file = $user_id . "." . $ext;
-                            $new_path = "./images/avatars/$new_file";
+                            $new_path = "images/avatars/$new_file";
                             if(file_exists($new_path)) {
                                 unlink($new_path);
                             }
-                            copy($_FILES['user_pic']['tmp_name'], $new_path);
+                            resize_and_copy($_FILES['user_pic']['tmp_name'], $new_path);
                             set_user_avatar($user_id, $new_file);
                         } else {
                             $error = "Illegal file type uploaded.";
