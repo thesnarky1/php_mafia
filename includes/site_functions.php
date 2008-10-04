@@ -9,9 +9,35 @@
         }
     }
 
+    function set_user_avatar($user_id, $filename) {
+        global $dbh;
+        if(file_exists("./images/avatars/$filename")) {
+            //Make sure there's something there
+        } else {
+            $filename = "face.png";
+        }
+        $query = "UPDATE users SET user_avatar='$filename' WHERE user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+        } else {
+            die("Big error, please contact admin. <br /> $query");
+        }
+    }
+
+    function get_ext($file) {
+        if(strpos($file, '.') >= 0) {
+            $period = strpos($file, '.');
+            $ext_len = strlen($file) - $period;
+            $ext = substr($file, $period + 1, $ext_len);
+            return $ext;
+        } else {
+            return "";
+        }
+    }
+
     function get_player_avatar($user_id) {
         global $dbh;
-        $query = "SELECT user_avatar FROM users WHERE user_id='user_id'";
+        $query = "SELECT user_avatar FROM users WHERE user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_array($result);

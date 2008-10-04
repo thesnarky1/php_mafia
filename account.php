@@ -2,6 +2,9 @@
 
     include('./includes/functions.php');
 
+    $allowed_exts = array("jpg", "jpeg", "png", "gif", "bmp");
+    $max_size = "100000";
+
     if(!is_logged_in()) {
         render_header("Thieves Tavern Account");
         echo "<p class='error'>Please <a href='./login.php'>login</a> or <a href='./register.php'>register</a> to mess with your account.</p>\n";
@@ -38,6 +41,26 @@
             } else {
                 $error = "Please fill in both password fields.";
             }
+        } else if($type == "avatar") {
+            $user_id = $_SESSION['user_id'];
+            if(isset($_FILES['user_pic']['tmp_name'])) {
+                print_r($_FILES);
+                $filename = $_FILES['user_pic']['name'];
+                $ext = get_ext($filename);
+                if(in_array(strtolower($ext), $allowed_exts)) {
+                    $new_file = $user_id . "." . $ext;
+                    $new_path = "./images/avatars/$new_file";
+                    if(file_exists($new_path)) {
+                        unlink($new_path);
+                    }
+                    copy($_FILES['user_pic']['tmp_name'], $new_path);
+                    set_user_avatar($user_id, $new_file);
+                } else {
+                    $error = "Illegal file type uploaded.";
+                }
+            } else {
+                $error = "File did not upload.";
+            }
         }
     }
 
@@ -50,23 +73,28 @@
     echo "<div id='account_settings_div'>\n";
     echo "<h3>Password</h3>\n";
     echo "<form id='account_password' action='./account.php' method='POST'>\n";
-    echo "Password: ";
-    echo "<input type='password' name='password1' />\n";
+    echo "<label class='fixed_width'>Password: </label>";
+    echo "<input type='password' name='password1' style='width: 22em;'/>\n";
     echo "<br />\n";
-    echo "Re-typed: ";
-    echo "<input type='password' name='password2' />\n";
+    echo "<label class='fixed_width'>Re-typed: </label>";
+    echo "<input type='password' name='password2' style='width: 22em;' />\n";
     echo "<br />\n";
     echo "<input type='hidden' name='type' value='password' />\n";
-    echo "<input type='submit' name='submit' value='Update Password' />\n";
+    echo "<input type='submit' name='submit' value='Update Password' style='margin-top: .5em;'/>\n";
     echo "</form>\n";
     echo "</div>\n";
 
     echo "<div id='account_settings_div'>\n";
     echo "<h3>Avatar</h3>\n";
     echo "<img src='images/avatars/" . get_player_avatar($_SESSION['user_id']) . "' />\n";
-    echo "<form id='account_details' action='./account.php' method='POST'>\n";
+    echo "<form id='account_avatar' action='./account.php' method='POST' ".
+         "enctype='multipart/form-data' style='margin-top: .5em;'>\n";
     echo "<input type='hidden' name='type' value='avatar' />\n";
-    echo "<input type='submit' name='submit' value='Update Avatar' />\n";
+    echo "<input type='hidden' name='MAX_FILE_SIZE' value='$max_size'>\n";
+    echo "<p>Choose a file to upload. Max size is 1MB, and the picture will be scaled down to 150px wide.</p>\n";
+    echo "<input type='file' name='user_pic' />\n";
+    echo "<br />\n";
+    echo "<input type='submit' name='submit' value='Upload Avatar' style='margin-top: .25em;'/>\n";
     echo "</form>\n";
     echo "</div>\n";
 

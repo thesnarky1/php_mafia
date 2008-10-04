@@ -22,14 +22,21 @@ img a {
     width: 30em;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
     border: 1px solid #191400;
+    text-align: center;
 }
 
 #account_settings_div h3 {
     margin-top: 0px;
     background-color: #191400;
     color: #FF4C10;
+}
+
+#account_settings_div .fixed_width {
+    text-align: right;
+    float: left;
+    width: 10em;
+    margin-right: 1em;
 }
 
 #big_login_form_div {
