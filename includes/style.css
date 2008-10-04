@@ -17,6 +17,26 @@ img a {
     border: none;
 }
 
+#big_login_form_div {
+    margin-top: 1em;
+    border: 1px solid white;
+    width: 20em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#big_login_form_div .form {
+    text-align: center;
+    width: 19em;
+}
+
+#big_login_form_div .fixed_width {
+    width: 6em;
+    margin-top: .25em;
+    float: left;
+    text-align: right;
+}
+
 #big_news_bulletin {
     margin-top: 2em;
     text-align: center;

@@ -43,19 +43,21 @@
     }
 
     function render_big_login_form($error = "") {
-        echo "<form action='./login.php' method='POST' class='center'>\n";
+        echo "<div id='big_login_form_div'>";
+        echo "<form action='./login.php' method='POST' class='form'>\n";
         echo "<p>Login Form</p>\n";
         if($error != "") {
             echo "<span class='error'>$error</span><br />\n";
         }
-        echo "<label>Username: </label>\n";
+        echo "<label class='fixed_width'>Username: </label>\n";
         echo "<input name='user_name' type='text' />\n";
         echo "<br />\n";
-        echo "<label>Password: </label>\n";
+        echo "<label class='fixed_width'>Password: </label>\n";
         echo "<input name='user_pass' type='password' style='margin-top: .25em;' />\n";
         echo "<br />\n";
         echo "<input type='submit' value='Login' style='margin-top: .25em;'/>\n";
         echo "</form>\n";
+        echo "</div>\n";
     }
 
     function render_header($title="Thieves Tavern", $on_load='') {
