@@ -3,7 +3,7 @@
     include('./includes/functions.php');
 
     $allowed_exts = array("jpg", "jpeg", "png", "gif", "bmp");
-    $max_size = "100000";
+    $max_size = "10000";
 
     if(!is_logged_in()) {
         render_header("Thieves Tavern Account");
@@ -43,23 +43,43 @@
             }
         } else if($type == "avatar") {
             $user_id = $_SESSION['user_id'];
-            if(isset($_FILES['user_pic']['tmp_name'])) {
-                print_r($_FILES);
-                $filename = $_FILES['user_pic']['name'];
-                $ext = get_ext($filename);
-                if(in_array(strtolower($ext), $allowed_exts)) {
-                    $new_file = $user_id . "." . $ext;
-                    $new_path = "./images/avatars/$new_file";
-                    if(file_exists($new_path)) {
-                        unlink($new_path);
+            if(isset($_FILES['user_pic'])) {
+                if($_FILES['user_pic']['error'] == 0) {
+                    if(isset($_FILES['user_pic']['tmp_name'])) {
+                        print_r($_FILES);
+                        $filename = $_FILES['user_pic']['name'];
+                        $ext = get_ext($filename);
+                        if(in_array(strtolower($ext), $allowed_exts)) {
+                            $new_file = $user_id . "." . $ext;
+                            $new_path = "./images/avatars/$new_file";
+                            if(file_exists($new_path)) {
+                                unlink($new_path);
+                            }
+                            copy($_FILES['user_pic']['tmp_name'], $new_path);
+                            set_user_avatar($user_id, $new_file);
+                        } else {
+                            $error = "Illegal file type uploaded.";
+                        }
+                    } else {
+                        $error = "File did not upload.";
                     }
-                    copy($_FILES['user_pic']['tmp_name'], $new_path);
-                    set_user_avatar($user_id, $new_file);
                 } else {
-                    $error = "Illegal file type uploaded.";
+                    if($_FILES['user_pic']['error'] == 2 || $_FILES['user_pic']['error'] == 1) {
+                        $error = "File too big, max size is 1MB.";
+                    } else if($_FILES['user_pic']['error'] == 3) {
+                        $error = "Image not completely uploaded, please try again.";
+                    } else if($_FILES['user_pic']['error'] == 4) {
+                        $error = "File not uploaded, please try again.";
+                    } else if($_FILES['user_pic']['error'] == 6) {
+                        $error = "Missing an upload folder.";
+                    } else if($_FILES['user_pic']['error'] == 7) {
+                        $error = "Failed to write file to disk.";
+                    } else if($_FILES['user_pic']['error'] == 8) {
+                        $error = "File upload stopped by extension.";
+                    } else {
+                        $error = "Error number " . $_FILES['user_pic']['error'] . " thrown.";
+                    }
                 }
-            } else {
-                $error = "File did not upload.";
             }
         }
     }
