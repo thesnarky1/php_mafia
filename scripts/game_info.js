@@ -145,14 +145,14 @@ function displayPlayers(playerArray, gamePhase, bannerMessage) {
         var playerAvatar = player.getElementsByTagName("avatar")[0].firstChild.data.toString();
         if(playerAlive == 'Y') {
             aliveListHTML.innerHTML += "<li class='game_player_list_alive'>" + 
-                                       "<a href='./profile.php?user_id='" + playerId + "'>" + 
+                                       "<a href='./profile.php?id=" + playerId + ">" + 
                                        playerName + "</a></li>\n";
             alivePlayers++;
         } else {
             playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
             playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
             deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
-                                       "<a href='./profile.php?user_id='" + playerId + "'>" + 
+                                       "<a href='./profile.php?id=" + playerId + ">" + 
                                        playerName + "</a> (" + playerRole + ")</li>\n";
             deadPlayers++;
         }

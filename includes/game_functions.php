@@ -21,7 +21,13 @@
             if(isset($roles['Unknown'])) {
                 $over = false;
             } else if(count($roles) == 1) {
-                $over = true;
+                if(isset($roles['Town'])) {
+                    $over = true;
+                } else if(isset($roles['Antitown'])) {
+                    $over = true;
+                } else {
+                    $over = false;
+                }
             }
 
             if($over) {
