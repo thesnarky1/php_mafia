@@ -78,10 +78,10 @@
         echo "/>\n";
         echo "<br />\n";
         echo "<label>Minimum Players: </label>\n";
-        echo "<input type='password' size='2' name='minimum' class='submit' />\n";
+        echo "<input type='text' size='2' name='minimum' class='submit' />\n";
         echo "<br />\n";
         echo "<label>Maximum Players: </label>\n";
-        echo "<input type='password' size='2' name='maximum' class='submit' />\n";
+        echo "<input type='text' size='2' name='maximum' class='submit' />\n";
         echo "<br />\n";
         echo "<label>Game password: </label>\n";
         echo "<input type='password' name='game_pass' class='submit' />\n";
