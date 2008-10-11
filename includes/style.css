@@ -285,6 +285,28 @@ img a {
     width: 50%;
 }
 
+#registration_div {
+    margin-top: 1em;
+    width: 30em;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #191400;
+    text-align: center;
+}
+
+#registration_div h3 {
+    margin-top: 0px;
+    background-color: #191400;
+    color: #FF4C10;
+}
+
+#registration_div .fixed_width {
+    text-align: right;
+    float: left;
+    width: 10em;
+    margin-right: 1em;
+}
+
 #upper_header {
     height: 60%;
     padding: .5em;
