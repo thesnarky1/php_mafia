@@ -1,5 +1,10 @@
 <?php
 
+    function create_user_hash() {
+        $hash = md5(uniqid('', TRUE));
+        return $hash;
+    }
+
     function is_logged_in() {
         if(isset($_SESSION['user_id']) && isset($_SESSION['user_name']) &&
             $_SESSION['user_name'] != "" && $_SESSION['user_id'] != "") {
@@ -106,7 +111,28 @@
             if(trim($str) == "") {
                 return false;
             } else {
-                return true;
+                if(strlen($str) < 6) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+    }
+
+    function username_check($str) {
+        preg_match("/[^\d\w]/", $str, $matches);
+        if(count($matches) > 0) {
+            return false;
+        } else {
+            if(trim($str) == "") {
+                return false;
+            } else {
+                if(strlen($str) < 5) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
     }

@@ -4,20 +4,88 @@
 
     render_header("Thieves Tavern Register");
 
-    if(isset($_GET['email']) && isset($_GET['code'])) {
-        if(isset($_GET['register'])) {
-            //We're registering
+    if(isset($_REQUEST['email']) && isset($_REQUEST['code'])) {
+        $error = "";
+        $blocking_error = false;
+        $email = safetify_input($_REQUEST['email']);
+        $code = safetify_input($_REQUEST['code']);
+
+        if(isset($_REQUEST['register'])) {
+            //Check email/registration code again... TRUST NO ONE!
+            $query = "SELECT reg_id FROM registration_codes ".
+                     "WHERE user_email='$email' AND reg_code='$code'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                $reg_id = $row['reg_id'];
+                if(isset($_REQUEST['username'])) {
+                    $username = safetify_input($_REQUEST['username']);
+                    if(username_check($username)) {
+                        $query = "SELECT user_id FROM users WHERE user_name='$username'";
+                        $result = mysqli_query($dbh, $query);
+                        if($result && mysqli_num_rows($result) == 0) {
+                            if(isset($_REQUEST['pass']) && isset($_REQUEST['pass2'])) {
+                                $pass = safetify_input($_REQUEST['pass']);
+                                $pass2 = safetify_input($_REQUEST['pass2']);
+                                if($pass == $pass2) {
+                                    if(pass_check($pass)) {
+                                        $query = "SELECT user_id FROM users WHERE user_email='$email'";
+                                        $result = mysqli_query($dbh, $query);
+                                        if($result && mysqli_num_rows($result) == 0) {
+                                            //Good username / pass, lets register
+                                            $hash = create_user_hash();
+                                            $query = "INSERT INTO users(user_name, ".
+                                                     "user_email, user_pass, user_hash, user_joined)".
+                                                     "VALUES('$username', '$email', MD5('$pass'), '$hash', NOW())";
+                                            $result = mysqli_query($dbh, $query);
+                                            if($result && mysqli_affected_rows($dbh) == 1) {
+                                                //Remove registration code
+                                                $query = "DELETE FROM registration_codes WHERE reg_id='$reg_id'";
+                                                $result = mysqli_query($dbh, $query);
+                                                if($result && mysqli_affected_rows($dbh) == 1) {
+                                                    $error = "Registration complete, please <a href='login.php'>login</a>.";
+                                                    $blocking_error = true;
+                                                } else {
+                                                    $error = "Error deleting registration code, but registration complete. ".
+                                                             "Please <a href='login.php'>login</a>.</p>\n";
+                                                    $blocking_error = true;
+                                                }
+                                            } else {
+                                                $error = "Error inserting new user.";
+                                            }
+                                        } else {
+                                            $error = "That username is already taken, sorry.";
+                                        }
+                                    } else {
+                                        $error = "Sorry, password must be at least 6 alphanumeric characters.";
+                                    }
+                                } else {
+                                    $error = "Passwords must match.";
+                                }
+                            } else {
+                                $error = "Password must be typed in twice.";
+                            }
+                        } else {
+                            $error = "Username already in use.";
+                        }
+                    } else {
+                        $error = "Username needs to be at least 5 alphanumeric characters.";
+                    }
+                } else {
+                    $error = "Username must be specified";
+                }
+            } else {
+                $error = "Bad email/registration code combo.";
+                $blocking_error = true;
+            }
         } else {
-
-            $email = safetify_input($_GET['email']);
-            $code = safetify_input($_GET['code']);
-
             //Check if email is already registered
             $query = "SELECT user_id FROM users WHERE user_email='$email'";
             $result = mysqli_query($dbh, $query);
             if($result) {
                 if(mysqli_num_rows($result) == 1) {
                     $error = "Sorry, this email address is already registered.";
+                    $blocking_error = true;
                 }
             } else {
                 //Check if registration code is correct
@@ -34,27 +102,35 @@
                     $error = "Sorry, this email does not have a registration code.";
                 }
             }
-
-            if($error == "") {
-                //Show register form
-                echo "<div id='registration_div'>\n";
-                echo "<h3>Account Registration</h3>\n";
-                echo "<form id='registration_form'>\n";
-                echo "<label class='fixed_width'>Username: </label>";
-                echo "<input type='text' name='username'>\n";
-                echo "<br />\n";
-                echo "<label class='fixed_width'>Password: </label>";
-                echo "<input type='password' name='pass'>\n";
-                echo "<br />\n";
-                echo "<label class='fixed_width'>Password: </label>";
-                echo "<input type='password' name='pass2'>\n";
-                echo "<br />\n";
-                echo "<input type='submit' value='Register' style='margin-top: .25em;'>\n";
-                echo "</form>\n";
-                echo "</div>\n";
-            } else {
-                echo "<p class='error'>$error</p>\n";
+        }
+        if($error != "") {
+            echo "<p class='error'>$error</p>\n";
+        }
+        if(!$blocking_error) {
+            //Show register form
+            echo "<div id='registration_div'>\n";
+            echo "<h3>Account Registration</h3>\n";
+            echo "<form id='registration_form' method='POST' action='register.php'>\n";
+            echo "<label class='fixed_width'>Username: </label>";
+            echo "<input type='text' name='username' ";
+            if(isset($_REQUEST['username'])) {
+                $username = safetify_input($_REQUEST['username']);
+                echo "value='$username' ";
             }
+            echo ">\n";
+            echo "<br />\n";
+            echo "<label class='fixed_width'>Password: </label>";
+            echo "<input type='password' name='pass'>\n";
+            echo "<br />\n";
+            echo "<label class='fixed_width'>Password: </label>";
+            echo "<input type='password' name='pass2'>\n";
+            echo "<br />\n";
+            echo "<input type='hidden' name='register' value='true'>\n";
+            echo "<input type='hidden' name='email' value='$email'>\n";
+            echo "<input type='hidden' name='code' value='$code'>\n";
+            echo "<input type='submit' value='Register' style='margin-top: .25em;'>\n";
+            echo "</form>\n";
+            echo "</div>\n";
         }
     } else {
         echo "<p class='error'>Sorry, registration is currently limited to invite only. ".
