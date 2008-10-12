@@ -15,11 +15,12 @@
     $error = "";
     
     if(isset($_POST['type'])) {
-        $type = pass_replace($_POST['type']);
+        $type = safetify_input($_POST['type']);
         if($type == "password") {
             if(isset($_POST['password1']) && isset($_POST['password2'])) {
-                if($_POST['password1'] == $_POST['password2']) {
-                    $pass = pass_replace($_POST['password1']);
+                $pass = safetify_input($_POST['password1']);
+                $pass2 = safetify_input($_POST['password2']);
+                if($pass == $pass2) {
                     if(pass_check($pass)) {
                         $user_id = $_SESSION['user_id'];
                         //Update password

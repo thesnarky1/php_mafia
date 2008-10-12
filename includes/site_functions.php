@@ -147,13 +147,8 @@
         }
     }
 
-    function pass_replace($str) {
-        return $str;
-    }
-
     function safetify_input($str) {
         global $dbh;
-        //$str = stripslashes($str);
         $str = mysqli_real_escape_string($dbh, $str);
         return $str;
     }

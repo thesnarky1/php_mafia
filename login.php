@@ -4,10 +4,8 @@
 
     if(isset($_POST['user_name']) && isset($_POST['user_pass'])) {
         //Login
-        $user_name = $_POST['user_name'];
-        $user_pass = $_POST['user_pass'];
-        $user_name = harsh_replace($user_name);
-        $user_pass = harsh_replace($user_pass);
+        $user_name = safetify_input($_POST['user_name']);
+        $user_pass = safetify_input($_POST['user_pass']);
         $query = "SELECT * FROM users ".
                  "WHERE user_name LIKE '$user_name' AND user_pass=MD5('$user_pass') ".
                  "LIMIT 1";
