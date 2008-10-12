@@ -41,7 +41,7 @@ img a {
 
 #big_login_form_div {
     margin-top: 1em;
-    border: 1px solid white;
+    border: 1px solid #191400;
     width: 20em;
     margin-left: auto;
     margin-right: auto;
@@ -50,6 +50,13 @@ img a {
 #big_login_form_div .form {
     text-align: center;
     width: 19em;
+}
+
+#big_login_form_div h3 {
+    margin-top: 0px;
+    background-color: #191400;
+    color: #FF4C10;
+    text-align: center;
 }
 
 #big_login_form_div .fixed_width {

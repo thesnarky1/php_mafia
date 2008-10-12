@@ -173,8 +173,8 @@
 
     function render_big_login_form($error = "") {
         echo "<div id='big_login_form_div'>";
+        echo "<h3>Login</h3>\n";
         echo "<form action='./login.php' method='POST' class='form'>\n";
-        echo "<p>Login Form</p>\n";
         if($error != "") {
             echo "<span class='error'>$error</span><br />\n";
         }
