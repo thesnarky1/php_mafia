@@ -8,9 +8,9 @@
                 "Have a great day, and survive the night!\n".
                 "--Thieves Tavern Management\n";
         $name = "Thieves Tavern";
-        $email = "no-reply@thievestavern.com";
+        $from_email = "no-reply@thievestavern.com";
         $subject = "Thieves Tavern (Mafia) Invitation";
-        $headers = "From: " . $name . " <" . $email . ">\r\n";
+        $headers = "From: " . $name . " <" . $from_email . ">\r\n";
         return mail($email, $subject, $body, $headers);
 
     }
