@@ -29,6 +29,7 @@
                         $result = mysqli_query($dbh, $query);
                         if(mysqli_affected_rows($dbh) == 1) {
                             //Success
+                            $error = "Password updated successfully.";
                         } else {
                             $error = "Unknown error, please try again.";
                         }
