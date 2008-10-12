@@ -153,7 +153,7 @@
 
     function safetify_input($str) {
         global $dbh;
-        $str = stripslashes($str);
+        //$str = stripslashes($str);
         $str = mysqli_real_escape_string($dbh, $str);
         return $str;
     }
