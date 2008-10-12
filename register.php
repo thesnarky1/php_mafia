@@ -2,7 +2,6 @@
 
     include('./includes/functions.php');
 
-    render_header("Thieves Tavern Register");
 
     if(isset($_REQUEST['email']) && isset($_REQUEST['code'])) {
         $error = "";
@@ -39,15 +38,16 @@
                                                      "VALUES('$username', '$email', MD5('$pass'), '$hash', NOW())";
                                             $result = mysqli_query($dbh, $query);
                                             if($result && mysqli_affected_rows($dbh) == 1) {
+                                                $user_id = mysqli_insert_id($dbh);
+                                                login_user($username, $user_id, $hash);
                                                 //Remove registration code
                                                 $query = "DELETE FROM registration_codes WHERE reg_id='$reg_id'";
                                                 $result = mysqli_query($dbh, $query);
                                                 if($result && mysqli_affected_rows($dbh) == 1) {
-                                                    $error = "Registration complete, please <a href='login.php'>login</a>.";
+                                                    $error = "Registration complete, you are now logged in.";
                                                     $blocking_error = true;
                                                 } else {
-                                                    $error = "Error deleting registration code, but registration complete. ".
-                                                             "Please <a href='login.php'>login</a>.</p>\n";
+                                                    $error = "Error deleting registration code, but registration complete.";
                                                     $blocking_error = true;
                                                 }
                                             } else {
@@ -103,6 +103,9 @@
                 }
             }
         }
+
+        render_header("Thieves Tavern Register");
+
         if($error != "") {
             echo "<p class='error'>$error</p>\n";
         }
@@ -133,6 +136,7 @@
             echo "</div>\n";
         }
     } else {
+        render_header("Thieves Tavern Register");
         echo "<p class='error'>Sorry, registration is currently limited to invite only. ".
              "If you received an invitation, please use the link provided by email.</p>\n";
     }

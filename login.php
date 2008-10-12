@@ -18,9 +18,7 @@
             $user_name = $row['user_name'];
             $user_id = $row['user_id'];
             $user_hash = $row['user_hash'];
-            $_SESSION['user_name'] = $user_name;
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['user_hash'] = $user_hash;
+            login_user($user_name, $user_id, $user_hash);
         }
 
         render_header("Thieves Tavern Login");

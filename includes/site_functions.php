@@ -1,5 +1,11 @@
 <?php
 
+    function login_user($user_name, $user_id, $user_hash) {
+        $_SESSION['user_name'] = $user_name;
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['user_hash'] = $user_hash;
+    }
+
     function send_invite_email($email, $reg_code, $inviter) {
         $body = "Hey there!\n".
                 "Someone over at Thieves Tavern ($inviter) thought you'd have a blast if you joined. If you would like to, please use the invitation link below to create a user on our site.\n".
