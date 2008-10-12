@@ -33,7 +33,7 @@
                             $error = "Unknown error, please try again.";
                         }
                     } else {
-                        $error = "Currently passwords can only contain alphanumeric characters and not be all spaces.";
+                        $error = "Currently passwords must be at least 6 characters.";
                     }
                 } else {
                     $error = "Passwords don't match.";

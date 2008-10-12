@@ -119,18 +119,13 @@
     }
 
     function pass_check($str) {
-        preg_match("/[^\d\w]/", $str, $matches);
-        if(count($matches) > 0) {
+        if(trim($str) == "") {
             return false;
         } else {
-            if(trim($str) == "") {
+            if(strlen($str) < 6) {
                 return false;
             } else {
-                if(strlen($str) < 6) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return true;
             }
         }
     }
@@ -153,7 +148,6 @@
     }
 
     function pass_replace($str) {
-        $str = preg_replace("/[^\d\w]/", "", $str);
         return $str;
     }
 

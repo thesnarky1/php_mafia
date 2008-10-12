@@ -57,7 +57,7 @@
                                             $error = "That username is already taken, sorry.";
                                         }
                                     } else {
-                                        $error = "Sorry, password must be at least 6 alphanumeric characters.";
+                                        $error = "Sorry, password must be at least 6 characters with no funny business.";
                                     }
                                 } else {
                                     $error = "Passwords must match.";
