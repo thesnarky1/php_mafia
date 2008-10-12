@@ -132,6 +132,28 @@ img a {
     padding: .5em;
 }
 
+#invite_div {
+    margin-top: 1em;
+    width: 30em;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #191400;
+    text-align: center;
+}
+
+#invite_div h3 {
+    margin-top: 0px;
+    background-color: #191400;
+    color: #FF4C10;
+}
+
+#invite_div .fixed_width {
+    text-align: right;
+    float: left;
+    width: 10em;
+    margin-right: 1em;
+}
+
 #logo {
     width: 20%;
     float: left;
