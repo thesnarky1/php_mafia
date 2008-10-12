@@ -208,7 +208,7 @@
         echo "<div id='header'>\n";
 
         echo "<div id='logo'>\n";
-        echo "<a href='./index.php'><img src='./images/logo.gif' /></a>\n";
+        echo "<a href='./index.php'><img src='./images/mafia_logo.png' /></a>\n";
         echo "</div>\n"; //Close logo
 
         echo "<div id='player_info'>\n";
