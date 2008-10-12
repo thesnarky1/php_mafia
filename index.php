@@ -15,13 +15,14 @@
             $news_date = $row['news_date'];
             $news_title = $row['news_title'];
             $news_author = $row['news_author'];
+            $news_author_id = $row['news_author_id'];
             if(strlen($news_text) > 255) {
                 $news_text = substr($news_text, 0, 255) . "<a href='./news.php?news_id=$news_id'>...</a>";
             }
             echo "<div id='news_feed_item'>\n";
             echo "<p class='news_title'><a href='./news.php?news_id=$news_id'>$news_title</a></p>\n";
             echo "<p class='news_text'>$news_text</p>\n";
-            echo "<span class='news_date'>$news_author - $news_date</span>\n";
+            echo "<span class='news_date'><a href='./profile.php?id=$news_author_id'>$news_author</a> - $news_date</span>\n";
             echo "</div>\n"; //Close news_feed_item
         }
     }
