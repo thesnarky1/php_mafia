@@ -4,11 +4,11 @@ var gameInfoURL = './game_information.php';
 var xmlHttpGetInformation = createXmlHttpRequestObject();
 var updateInterval = 1000;
 var cache = new Array();
-var gamePhase = 0;
-var gameTurn = 0;
 var debugMode = true;
 var boxesPerRow = 2;
 var playerCount = 1;
+var gameTracker = -1;
+
 
 function createXmlHttpRequestObject() {
     var xmlHttp;
@@ -50,8 +50,7 @@ function requestGameInformation() {
                     var userHash = document.getElementById("user_hash").value;
                     var gameId = document.getElementById("game_id").value;
                     params = "game_id=" + gameId + 
-                             "&game_turn=" + gameTurn + 
-                             "&game_phase=" + gamePhase +
+                             "&game_tracker=" + gameTracker + 
                              "&user_id=" + user + 
                              "&user_hash=" + userHash;
                 }
@@ -92,19 +91,18 @@ function readInformation() {
     }
     response = xmlHttpGetInformation.responseXML.documentElement;
     if(response.getElementsByTagName("phase").length > 0) {
-        var tmpGamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
-        var tmpGameTurn = response.getElementsByTagName("turn")[0].firstChild.data.toString();
-        if(tmpGamePhase != gamePhase || tmpGameTurn != gameTurn) {
+        var tmpGameTracker = response.getElementsByTagName("tracker")[0].firstChild.data.toString();
+        if(tmpGameTracker > gameTracker) {
+            gameTracker = tmpGameTracker;
             var gameChatHTML = document.getElementById("chat_channel");
             gameChatHTML.innerHTML = "";
             gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
-            gamePhaseHTML.innerHTML = tmpGamePhase;
-            gameTurnHTML.innerHTML = tmpGameTurn;
-            gamePhase = tmpGamePhase;
-            gameTurn = tmpGameTurn;
-            var bannerMessage = "Fail";
+            /*gamePhaseHTML.innerHTML = tmpGamePhase;*/
+            gamePhaseHTML.innerHTML = response.getElementsByTagName("phase")[0].firstChild.data.toString();
+            /*gameTurnHTML.innerHTML = tmpGameTurn;*/
+            gameTurnHTML.innerHTML = response.getElementsByTagName("turn")[0].firstChild.data.toString();
             var bannerMessage = response.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();

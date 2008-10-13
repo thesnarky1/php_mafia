@@ -129,7 +129,7 @@
         $result = mysqli_query($dbh, $query);
     }
 
-    function get_game_information($game_id, $user_id=0) {
+    function get_game_information($game_id, $old_game_tracker, $user_id=0) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
@@ -139,10 +139,12 @@
             $row = mysqli_fetch_array($result);
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
-            if($game_turn != $old_game_turn || $phases[$game_phase] != $old_game_phase) {
+            $game_tracker = $row['game_tracker'];
+            if($game_tracker != $old_game_tracker) {
                 $banner_night = false;
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
+                $to_return .= "<tracker>$game_tracker</tracker>\n";
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
                          "game_players.player_alive, game_players.player_ready, ".
