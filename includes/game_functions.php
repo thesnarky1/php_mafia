@@ -109,6 +109,7 @@
                     }
                 }
             }
+            update_game_tracker($game_id);
         } else {
         }
     }
@@ -256,6 +257,7 @@
                             $result = mysqli_query($dbh, $query);
                             if($result && mysqli_affected_rows($dbh) == 1) {
                                 //Success in killing
+                                update_game_tracker($game_id);
                             }
                         }
                     } else {
