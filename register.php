@@ -109,6 +109,7 @@
         if($error != "") {
             echo "<p class='error'>$error</p>\n";
         }
+
         if(!$blocking_error) {
             //Show register form
             echo "<div id='registration_div'>\n";

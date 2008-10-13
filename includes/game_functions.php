@@ -113,6 +113,12 @@
         }
     }
 
+    function update_game_players($game_id) {
+        global $dbh;
+        $query = "UPDATE game_players SET player_needs_update='1' WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+    }
+
     function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id=0) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
@@ -132,7 +138,7 @@
                          "game_players.player_alive, game_players.player_ready, ".
                          "users.user_id, games.game_creator, ".
                          "roles.role_name, roles.role_channel, ".
-                         "roles.banner_night, roles.role_faction ".
+                         "roles.role_faction ".
                          "FROM users, game_players, roles, games ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
