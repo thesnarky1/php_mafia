@@ -177,7 +177,7 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         }
         playerHTML += ">";
         if(playerAlive == 'Y') {
-            playerHTML += "<div id='player_box_alive' onclick='performAction(" + playerId + "," + bannerAction + ")'>";
+            playerHTML += "<div id='player_box_alive' onclick='performAction(" + bannerAction + "," + playerId + ")'>";
             playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
             playerHTML += "<p class='player_name'>" + playerName + "</p>";
             playerHTML += "</div>";

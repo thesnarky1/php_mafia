@@ -1,5 +1,51 @@
 <?php
 
+    function get_user_actions($user_id, $game_id) {
+        global $dbh;
+        $to_return = array();
+        $query = "SELECT game_players.player_ready, game_players.role_id, ".
+                 "game_players.player_alive, games.game_phase ".
+                 "FROM game_players, games ".
+                 "WHERE games.game_id='$game_id' AND game_players.user_id='$user_id' ".
+                 "AND game_players.game_id=games.game_id";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $player_ready = $row['player_ready'];
+            $player_alive = $row['player_alive'];
+            $game_phase = $row['game_phase'];
+            $role_id = $row['role_id'];
+            if($player_alive == 'Y') {
+                if($game_phase == 2 || $game_phase == 0) { //day
+                    $query = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) == 1) {
+                        $row = mysqli_fetch_array($result);
+                        $to_return[] = $row['day_action_id'];
+                        $to_return[] = $row['day_alt_action_id'];
+                    }
+                } else {
+                    $query = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) == 1) {
+                        $row = mysqli_fetch_array($result);
+                        $to_return[] = $row['night_action_id'];
+                        $to_return[] = $row['night_alt_action_id'];
+                    }
+                }
+                if($player_ready == 'Y') {
+                    $query = "SELECT action_id FROM actions WHERE action_enum='UN_READY'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) == 1) {
+                        $row = mysqli_fetch_array($result);
+                        $to_return[] = $row['action_id'];
+                    }
+                }
+            }
+        }
+        return $to_return;
+    }
+
     function is_game_over($game_id) {
         global $dbh;
         $roles = array();
