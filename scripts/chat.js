@@ -3,7 +3,7 @@
 var chatURL = './chat.php';
 var xmlHttpGetMessages = createXmlHttpRequestObject();
 var updateInterval = 1000;
-var cache = new Array();
+var chatCache = new Array();
 var lastMessageID = -1;
 var debugMode = true;
 
@@ -40,8 +40,8 @@ function requestNewMessages() {
             if(xmlHttpGetMessages.readyState == 4 || 
                xmlHttpGetMessages.readyState == 0) {
                 var params = "";
-                if(cache.length > 0) {
-                    params = cache.shift();
+                if(chatCache.length > 0) {
+                    params = chatCache.shift();
                 } else {
                     var user = document.getElementById("user_id").value;
                     var user_hash = document.getElementById("user_hash").value;
@@ -166,7 +166,7 @@ function sendMessage() {
                  "&user_hash=" + encodeURIComponent(currentUserHash) + 
                  "&game_id=" + encodeURIComponent(game) + 
                  "&message=" + encodeURIComponent(currentMessage.value);
-        cache.push(params);
+        chatCache.push(params);
         currentMessage.value = "";
     }
 }

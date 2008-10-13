@@ -3,7 +3,7 @@
 var gameInfoURL = './game_information.php';
 var xmlHttpGetInformation = createXmlHttpRequestObject();
 var updateInterval = 1000;
-var cache = new Array();
+var gameInfoCache = new Array();
 var debugMode = true;
 var boxesPerRow = 2;
 var playerCount = 1;
@@ -43,8 +43,8 @@ function requestGameInformation() {
             if(xmlHttpGetInformation.readyState == 4 || 
                xmlHttpGetInformation.readyState == 0) {
                 var params = "";
-                if(cache.length > 0) {
-                    params = cache.shift();
+                if(gameInfoCache.length > 0) {
+                    params = gameInfoCache.shift();
                 } else {
                     var user = document.getElementById("user_id").value;
                     var userHash = document.getElementById("user_hash").value;
