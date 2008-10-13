@@ -1,6 +1,7 @@
 <?php
 
     function valid_user($user_id, $user_hash) {
+        global $dbh;
         $query = "SELECT user_id FROM users WHERE user_id='$user_id' AND user_hash='$user_hash'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {

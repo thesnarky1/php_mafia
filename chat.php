@@ -6,18 +6,16 @@
     if($mode == 'RetrieveNew') {
         if(isset($_GET['id']) && isset($_GET['user_id']) && 
             isset($_GET['user_hash']) && isset($_GET['game_id'])) {
-            $id = $_GET['id'];
-            $user_id = $_GET['user_id'];
-            $user_hash = $_GET['user_hash'];
-            $game_id = $_GET['game_id'];
+            $id = safetify_input($_GET['id']);
+            $user_id = safetify_input($_GET['user_id']);
+            $user_hash = safetify_input($_GET['user_hash']);
+            $game_id = safetify_input($_GET['game_id']);
             header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
             header('Last Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
             header('Cache-Control: no-cache, must-revalidate');
             header('Pragma: no-cache');
             header('Content-Type: text/xml');
-            $query = "SELECT user_id FROM users WHERE user_id='$user_id' AND user_hash='$user_hash'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
+            if(valid_user($user_id, $user_hash)) {
                 echo retrieve_new_messages($user_id, $game_id, $id);
             } else {
                 echo retrieve_new_messages('', $game_id, $id);
@@ -28,10 +26,10 @@
         if(isset($_GET['id']) && isset($_GET['user_id']) && 
             isset($_GET['user_hash']) && isset($_GET['game_id']) &&
             isset($_GET['message'])) {
-            $id = $_GET['id'];
-            $user_id = $_GET['user_id'];
-            $user_hash = $_GET['user_hash'];
-            $game_id = $_GET['game_id'];
+            $id = safetify_input($_GET['id']);
+            $user_id = safetify_input($_GET['user_id']);
+            $user_hash = safetify_input($_GET['user_hash']);
+            $game_id = safetify_input($_GET['game_id']);
             $message = safetify_input($_GET['message']);
             $query = "SELECT users.user_id, game_players.player_alive ".
                      "FROM users,game_players ".
