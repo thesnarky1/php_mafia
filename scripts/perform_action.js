@@ -2,9 +2,11 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var actionURL = './perform_action.php';
 var xmlHttpPerformAction = createXmlHttpRequestObject();
-var gamePhase = 0;
-var gameTurn = 0;
 var debugMode = true;
+var targetId = null;
+var actionId = null;
+var actionCache = new Array();
+
 
 function createXmlHttpRequestObject() {
     var xmlHttp;
@@ -35,30 +37,30 @@ function createXmlHttpRequestObject() {
  * game_id = game_id
  * action = type of action.
  */
-function performAction(user_id, user_hash, game_id, action, action_target) {
+function performAction(actionId, targetId) {
     if(xmlHttpPerformAction) {
         try {
             if(xmlHttpPerformAction.readyState == 4 || 
                xmlHttpPerformAction.readyState == 0) {
-                var params = "";
-                if(cache.length > 0) {
-                    params = cache.shift();
+                var actionParams = "";
+                if(actionCache.length > 0) {
+                    actionParams = actionCache.shift();
                 } else {
-                    var user = document.getElementById("user_id").value;
-                    var userHash = document.getElementById("user_hash").value;
-                    var gameId = document.getElementById("game_id").value;
-                    params = "game_id=" + gameId + 
-                             "&game_turn=" + gameTurn + 
-                             "&game_phase=" + gamePhase +
+                    user = document.getElementById("user_id").value;
+                    userHash = document.getElementById("user_hash").value;
+                    gameId = document.getElementById("game_id").value;
+                    actionParams = "game_id=" + gameId + 
                              "&user_id=" + user + 
+                             "&action_id=" + actionId + 
+                             "&target_id=" + targetId +
                              "&user_hash=" + userHash;
                 }
                 //xmlHttpPerformAction.open("POST", actionURL, true);
-                xmlHttpPerformAction.open("GET", actionURL+"?"+params, true);
+                xmlHttpPerformAction.open("GET", actionURL+"?"+actionParams, true);
                 xmlHttpPerformAction.setRequestHeader("Content-Type",
                                                        "application/x-www-form-urlencoded");
                 xmlHttpPerformAction.onreadystatechange = handleReceivingAction;
-                xmlHttpPerformAction.send(); //params goes here
+                xmlHttpPerformAction.send(); //actionParams goes here
             } else {
                 setTimeout("performAction();", updateInterval);
             }
@@ -68,50 +70,32 @@ function performAction(user_id, user_hash, game_id, action, action_target) {
     }
 }
 
+function sendAction(actionId, targetId) {
+    var currentMessage = document.getElementById("text_box");
+    var currentUser = document.getElementById("user_id").value;
+    var currentUserHash = document.getElementById("user_hash").value;
+    var game = document.getElementById("game_id").value;
+    if(trim(currentMessage.value) != '' && trim(currentUser) != '') {
+        actionParams = "game_id=" + gameId + 
+                 "&user_id=" + user +
+                 "&user_hash=" + userHash + 
+                 "&target_id=" + targetId + 
+                 "&actionId=" + actionId;
+        actionCache.push(actionParams);
+    }
+}
+
+
 function handleReceivingAction() {
     if(xmlHttpPerformAction.readyState == 4) {
         if(xmlHttpPerformAction.status == 200) {
             try {
-                //readInformation();
+                alert(xmlHttpPerformAction.responseText);
             } catch(e) {
-                displayError(e.toString()); //Status is 200...
+                displayError(e.toString());
             }
         } else {
             displayError(xmlHttpPerformAction.statusText);
         }
     }
 }
-
-//function readInformation() {
-//    var response = xmlHttpPerformAction.responseText;
-//    if(response.indexOf("ERRNO") >= 0 || response.indexOf("error:") >= 0 ||
-//       response.length == 0) {
-//        throw(response.length == 0? "Void server response." : response);
-//    }
-//    response = xmlHttpPerformAction.responseXML.documentElement;
-//    if(response.getElementsByTagName("phase").length > 0) {
-//        var tmpGamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
-//        var tmpGameTurn = response.getElementsByTagName("turn")[0].firstChild.data.toString();
-//        if(tmpGamePhase != gamePhase || tmpGameTurn != gameTurn) {
-//            var gameChatHTML = document.getElementById("chat_channel");
-//            gameChatHTML.innerHTML = "";
-//            gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
-//            var gamePhaseHTML = document.getElementById("game_phase");
-//            var gameTurnHTML = document.getElementById("game_turn");
-//            gamePhaseHTML.innerHTML = tmpGamePhase;
-//            gameTurnHTML.innerHTML = tmpGameTurn;
-//            gamePhase = tmpGamePhase;
-//            gameTurn = tmpGameTurn;
-//            var bannerMessage = "Fail";
-//            var bannerMessage = response.getElementsByTagName("banner");
-//            if(bannerMessage.length > 0) {
-//                bannerMessage = bannerMessage[0].firstChild.data.toString();
-//            } else {
-//                bannerMessage = "";
-//            }
-//            playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-//            displayPlayers(playerArray, gamePhase, bannerMessage);
-//        }
-//    }
-//    setTimeout("performAction();", updateInterval);
-//}
