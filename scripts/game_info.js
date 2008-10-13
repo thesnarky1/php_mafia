@@ -95,13 +95,11 @@ function readInformation() {
         if(tmpGameTracker > gameTracker) {
             gameTracker = tmpGameTracker;
             var gameChatHTML = document.getElementById("chat_channel");
-            gameChatHTML.innerHTML = "";
-            gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
-            /*gamePhaseHTML.innerHTML = tmpGamePhase;*/
+            gameChatHTML.innerHTML = "";
+            gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             gamePhaseHTML.innerHTML = response.getElementsByTagName("phase")[0].firstChild.data.toString();
-            /*gameTurnHTML.innerHTML = tmpGameTurn;*/
             gameTurnHTML.innerHTML = response.getElementsByTagName("turn")[0].firstChild.data.toString();
             var bannerMessage = response.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
@@ -109,24 +107,33 @@ function readInformation() {
             } else {
                 bannerMessage = "";
             }
+            var altBannerMessage = response.getElementsByTagName("alt_banner");
+            if(altBannerMessage.length > 0) {
+                altBannerMessage = altBannerMessage[0].firstChild.data.toString();
+            } else {
+                altBannerMessage = "";
+            }
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            displayPlayers(playerArray, gamePhase, bannerMessage);
+            displayPlayers(playerArray, gamePhase, bannerMessage, altBannerMessage);
         }
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
 
-function displayPlayers(playerArray, gamePhase, bannerMessage) {
+function displayPlayers(playerArray, gamePhase, bannerMessage, altBannerMessage) {
     var gameLynchHTML = document.getElementById("game_vote_to_lynch");
-    gameLynchHTML.innerHTML = "";
     var aliveListHTML = document.getElementById("game_alive_list");
-    aliveListHTML.innerHTML = "";
     var deadListHTML = document.getElementById("game_dead_list");
-    deadListHTML.innerHTML = "";
     var playerBoxTable = document.getElementById("player_box_table");
+    gameLynchHTML.innerHTML = "";
+    aliveListHTML.innerHTML = "";
+    deadListHTML.innerHTML = "";
     playerTable = "";
     if(bannerMessage != "") {
         playerTable += "<div class='banner'>" + bannerMessage + "</div>\n";
+    }
+    if(altBannerMessage != "") {
+        playerTable += "<div class='banner' style='margin-top: .25em;'>" + altBannerMessage + "</div>\n";
     }
     playerTable += "<table align='center'>";
     var alivePlayers = 0;
