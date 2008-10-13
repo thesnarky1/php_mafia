@@ -1,5 +1,15 @@
 <?php
 
+    function valid_user($user_id, $user_hash) {
+        $query = "SELECT user_id FROM users WHERE user_id='$user_id' AND user_hash='$user_hash'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function login_user($user_name, $user_id, $user_hash) {
         $_SESSION['user_name'] = $user_name;
         $_SESSION['user_id'] = $user_id;
