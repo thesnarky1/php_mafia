@@ -113,13 +113,23 @@
         }
     }
 
-    function update_game_players($game_id) {
+    function update_game_tracker($game_id) {
         global $dbh;
-        $query = "UPDATE game_players SET player_needs_update='1' WHERE game_id='$game_id'";
+        $query = "SELECT game_tracker FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $tracking_num = $row['game_tracker'];
+            $tracking_num += rand(1, 23);
+            $query = "UPDATE games ".
+                     "SET game_tracker='$tracking_num' ".
+                     "WHERE game_id='$game_id'";
+            $result = mysqli_query($dbh, $query);
+        }
         $result = mysqli_query($dbh, $query);
     }
 
-    function get_game_information($game_id, $old_game_turn, $old_game_phase, $user_id=0) {
+    function get_game_information($game_id, $user_id=0) {
         global $dbh, $phases;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
