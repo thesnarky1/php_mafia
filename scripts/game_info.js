@@ -8,6 +8,9 @@ var debugMode = true;
 var boxesPerRow = 2;
 var playerCount = 1;
 var gameTracker = -1;
+var user = null;
+var userHash = null;
+var gameId = null;
 
 
 function createXmlHttpRequestObject() {
@@ -46,9 +49,9 @@ function requestGameInformation() {
                 if(gameInfoCache.length > 0) {
                     params = gameInfoCache.shift();
                 } else {
-                    var user = document.getElementById("user_id").value;
-                    var userHash = document.getElementById("user_hash").value;
-                    var gameId = document.getElementById("game_id").value;
+                    user = document.getElementById("user_id").value;
+                    userHash = document.getElementById("user_hash").value;
+                    gameId = document.getElementById("game_id").value;
                     params = "game_id=" + gameId + 
                              "&game_tracker=" + gameTracker + 
                              "&user_id=" + user + 
@@ -130,10 +133,10 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, altBannerMessage)
     deadListHTML.innerHTML = "";
     playerTable = "";
     if(bannerMessage != "") {
-        playerTable += "<div class='banner'>" + bannerMessage + "</div>\n";
+        playerTable += "<div id='action_banner'>" + bannerMessage + "</div>\n";
     }
     if(altBannerMessage != "") {
-        playerTable += "<div class='banner' style='margin-top: .25em;'>" + altBannerMessage + "</div>\n";
+        playerTable += "<div id='action_banner'>" + altBannerMessage + "</div>\n";
     }
     playerTable += "<table align='center'>";
     var alivePlayers = 0;
@@ -171,17 +174,17 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, altBannerMessage)
             playerHTML += "class='game_player_Unknown'";
         }
         playerHTML += ">";
-        playerHTML += "<div id='player_box'>";
         if(playerAlive == 'Y') {
-            playerHTML += "<a href='#'>";
+            playerHTML += "<div id='player_box_alive'>";
             playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
             playerHTML += "<p class='player_name'>" + playerName + "</p>";
-            playerHTML += "</a>";
+            playerHTML += "</div>";
         } else {
+            playerHTML += "<div id='player_box_dead'>";
             playerHTML += "<img src='./images/avatars/dead.png'>";
             playerHTML += "<p class='player_name'><span class='strikeout'>" + playerName + "</span></p>";
+            playerHTML += "</div>\n";
         }
-        playerHTML += "</div>";
         playerHTML += "</td>";
         playerTable += playerHTML;
         if(playerCount % boxesPerRow == 0) {

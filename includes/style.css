@@ -247,28 +247,31 @@ img a {
     text-align: center;
 }
 
-#player_box {
+#player_box_alive, #player_box_dead {
     width: 150px;
+    height: 130px;
+    display: block;
     text-align: center;
 }
 
-#player_box a {
-    border-bottom: none;
-    display: block;
-    color: #191400;
+#player_box_alive:hover {
+    background-color: #191400;
+    color: #FF4C10;
 }
 
-#player_box a:hover {
-    background-color: #FF4C10;
-}
-
-#player_box .player_name {
+#player_box_alive .player_name {
     text-align: center;
     padding-bottom: 5px;
     margin-bottom: 0px;
 }
 
-#player_box img {
+#player_box_dead .player_name {
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+}
+
+#player_box_alive img, #player_box_dead img {
     margin-top: 5px;
 }
 
@@ -339,6 +342,24 @@ img a {
 #upper_header {
     height: 60%;
     padding: .5em;
+}
+
+#action_banner {
+    width: 100%;
+    font-size: 10pt;
+    border: 1px solid #191400;
+    text-align: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+    background-color: #B3A285;
+    margin-bottom: .25em;
+    display: block;
+}
+
+#action_banner:hover {
+    border: 1px solid #FF4C10;
+    background-color: #191400;
+    color: #FF4C10;
 }
 
 .banner {
