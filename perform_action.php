@@ -18,11 +18,22 @@
         if(valid_user($user_id, $user_hash)) {
             $valid_actions = get_user_actions($user_id, $game_id);
             if(in_array($action_id, $valid_actions)) {
-                echo "Valid action";
+                $action_enum = get_action_by_id($action_id);
+                if($action_enum) {
+                    //Big ol' switch, I'm thinking
+                    switch($action_enum) {
+                        case "READY":
+                            set_player_ready($game_id, $user_id, true);
+                            break;
+                        case "UN_READY":
+                            set_player_ready($game_id, $user_id, false);
+                            break;
+                    }
+                } else {
+                    echo "Faker!!!";
+                }
             } else {
                 echo "Faker!";
-                print_r($valid_actions);
-                print_r($_REQUEST);
             }
         } else {
         }

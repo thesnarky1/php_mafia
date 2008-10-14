@@ -1,5 +1,44 @@
 <?php
 
+    function set_player_ready($game_id, $user_id, $ready) {
+        global $dbh;
+        $query = "UPDATE game_players SET player_ready='";
+        if($ready) {
+            $query .= "Y";
+        } else {
+            $query .= "N";
+        }
+        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+            update_game_tracker($game_id);
+        }
+    }
+
+    function get_action_by_id($action_id) {
+        global $dbh;
+        $query = "SELECT action_enum FROM actions WHERE action_id='$action_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['action_enum'];
+        } else {
+            return false;
+        }
+    }
+
+    function get_action_by_enum($action_enum) {
+        global $dbh;
+        $query = "SELECT action_id FROM actions WHERE action_enum='$action_enum'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['action_id'];
+        } else {
+            return false;
+        }
+    }
+
     function get_user_actions($user_id, $game_id) {
         global $dbh;
         $to_return = array();
