@@ -39,6 +39,36 @@ img a {
     margin-right: 1em;
 }
 
+#action_banner {
+    width: 100%;
+    font-size: 10pt;
+    border: 1px solid #191400;
+    text-align: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+    background-color: #B3A285;
+    margin-bottom: .25em;
+    display: block;
+}
+
+#action_banner:hover {
+    border: 1px solid #FF4C10;
+    background-color: #191400;
+    color: #FF4C10;
+}
+
+#action_message {
+    width: 100%;
+    font-size: 10pt;
+    border: 1px solid #191400;
+    text-align: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+    background-color: #B3A285;
+    margin-bottom: .25em;
+    display: none;
+}
+
 #big_login_form_div {
     margin-top: 1em;
     border: 1px solid #191400;
@@ -344,23 +374,6 @@ img a {
     padding: .5em;
 }
 
-#action_banner {
-    width: 100%;
-    font-size: 10pt;
-    border: 1px solid #191400;
-    text-align: center;
-    padding-top: .25em;
-    padding-bottom: .25em;
-    background-color: #B3A285;
-    margin-bottom: .25em;
-    display: block;
-}
-
-#action_banner:hover {
-    border: 1px solid #FF4C10;
-    background-color: #191400;
-    color: #FF4C10;
-}
 
 .banner {
     width: 100%;

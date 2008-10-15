@@ -85,12 +85,23 @@ function sendAction(actionId, targetId) {
     }
 }
 
+function show_action_message(str) {
+    var action_message = document.getElementById("action_message");
+    action_message.innerHTML = str;
+    action_message.style.display = "block";
+}
+
+function hide_action_message() {
+    var action_message = document.getElementById("action_message");
+    action_message.style.display = "none";
+}
 
 function handleReceivingAction() {
     if(xmlHttpPerformAction.readyState == 4) {
         if(xmlHttpPerformAction.status == 200) {
             try {
-                alert(xmlHttpPerformAction.responseText);
+                show_action_message(xmlHttpPerformAction.responseText);
+                setTimeout("hide_action_message()", 3000);
             } catch(e) {
                 displayError(e.toString());
             }

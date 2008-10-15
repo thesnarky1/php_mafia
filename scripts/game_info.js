@@ -134,6 +134,7 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
     aliveListHTML.innerHTML = "";
     deadListHTML.innerHTML = "";
     playerTable = "";
+    playerTable += "<div id='action_message'>Test</div>\n";
     if(bannerMessage != "") {
         playerTable += "<div id='action_banner' onclick='performAction(" + bannerAction + ",0);'>" + bannerMessage + "</div>\n";
     }
