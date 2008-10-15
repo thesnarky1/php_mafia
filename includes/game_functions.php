@@ -215,10 +215,51 @@
         $result = mysqli_query($dbh, $query);
     }
 
+    function player_needs_update($user_id, $game_id, $type) {
+        global $dbh;
+        if($type == "ID") {
+            $query = "SELECT player_needs_update FROM game_players ".
+                     "WHERE game_id='$game_id' AND user_id='$user_id'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                if($row['player_needs_update'] == 1) {
+                    $to_return = true;
+                } else {
+                    $to_return = false;
+                }
+            } else {
+                $to_return = false;
+            }
+        } else if($type == "TRACKER") {
+            $query = "SELECT game_tracker FROM games WHERE game_id='$game_id'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                if($row['game_tracker'] < $user_id) {
+                    $to_return = false;
+                } else {
+                    $to_return = true;
+                }
+            }
+        }
+        return $to_return;
+    }
+
     function get_game_information($game_id, $old_game_tracker, $user_id=0) {
         global $dbh, $phases;
+        $needs_update = false;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
+        if($user_id == 0) {
+            //Track based on game_tracker
+            $needs_update = player_needs_update($old_game_tracker, $game_id, "TRACKER");
+        } else {
+            //Track based on player_needs_update
+            $needs_update = player_needs_update($user_id, $game_id, "ID");
+        }
+        if($needs_update) {
+        }
         $query = "SELECT * FROM games WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
@@ -227,143 +268,141 @@
             $game_creator = $row['game_creator'];
             $game_turn = $row['game_turn'];
             $game_tracker = $row['game_tracker'];
-            if($game_tracker != $old_game_tracker) {
-                $banner = false;
-                $alt_banner = false;
-                $to_return .= "<turn>$game_turn</turn>\n";
-                $to_return .= "<phase>$phases[$game_phase]</phase>\n";
-                $to_return .= "<tracker>$game_tracker</tracker>\n";
-                $to_return .= "<player_list>\n";
-                $query = "SELECT users.user_name, users.user_avatar, ".
-                         "game_players.player_alive, game_players.player_ready, ".
-                         "users.user_id, ".
-                         "roles.role_name, roles.role_channel, ".
-                         "roles.role_faction, roles.role_id ".
-                         "FROM users, game_players, roles ".
-                         "WHERE game_players.game_id='$game_id' AND ".
-                         "roles.role_id=game_players.role_id AND ".
-                         "users.user_id=game_players.user_id ".
-                         "ORDER BY game_players.player_alive DESC ";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_num_rows($result) > 0) {
-                    $real_channel = false;
-                    while($row = mysqli_fetch_array($result)) {
-                        $channel = $row['role_channel'];
-                        $player_id = $row['user_id'];
-                        $user_name = $row['user_name'];
-                        $user_avatar = $row['user_avatar'];
-                        $player_alive = $row['player_alive'];
-                        $player_ready = $row['player_ready'];
-                        $role_name = $row['role_name'];
-                        $role_faction = $row['role_faction'];
-                        $role_id = $row['role_id'];
-                        $to_return .= "<player>\n";
-                        $to_return .= "<id>$player_id</id>\n";
-                        $to_return .= "<name>$user_name</name>\n";
-                        $to_return .= "<avatar>$user_avatar</avatar>\n";
-                        $to_return .= "<alive>$player_alive</alive>\n";
-                        if($player_alive == 'N' || $player_id == $user_id) {
-                            $to_return .= "<role_name>$role_name</role_name>\n";
-                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
-                        }
+            $banner = false;
+            $alt_banner = false;
+            $to_return .= "<turn>$game_turn</turn>\n";
+            $to_return .= "<phase>$phases[$game_phase]</phase>\n";
+            $to_return .= "<tracker>$game_tracker</tracker>\n";
+            $to_return .= "<player_list>\n";
+            $query = "SELECT users.user_name, users.user_avatar, ".
+                     "game_players.player_alive, game_players.player_ready, ".
+                     "users.user_id, ".
+                     "roles.role_name, roles.role_channel, ".
+                     "roles.role_faction, roles.role_id ".
+                     "FROM users, game_players, roles ".
+                     "WHERE game_players.game_id='$game_id' AND ".
+                     "roles.role_id=game_players.role_id AND ".
+                     "users.user_id=game_players.user_id ".
+                     "ORDER BY game_players.player_alive DESC ";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) > 0) {
+                $real_channel = false;
+                while($row = mysqli_fetch_array($result)) {
+                    $channel = $row['role_channel'];
+                    $player_id = $row['user_id'];
+                    $user_name = $row['user_name'];
+                    $user_avatar = $row['user_avatar'];
+                    $player_alive = $row['player_alive'];
+                    $player_ready = $row['player_ready'];
+                    $role_name = $row['role_name'];
+                    $role_faction = $row['role_faction'];
+                    $role_id = $row['role_id'];
+                    $to_return .= "<player>\n";
+                    $to_return .= "<id>$player_id</id>\n";
+                    $to_return .= "<name>$user_name</name>\n";
+                    $to_return .= "<avatar>$user_avatar</avatar>\n";
+                    $to_return .= "<alive>$player_alive</alive>\n";
+                    if($player_alive == 'N' || $player_id == $user_id) {
+                        $to_return .= "<role_name>$role_name</role_name>\n";
+                        $to_return .= "<role_faction>$role_faction</role_faction>\n";
+                    }
 
-                        //Anything specific to the player viewing needs to go after this.
-                        if($player_id == $user_id) {
+                    //Anything specific to the player viewing needs to go after this.
+                    if($player_id == $user_id) {
 
-                            //Get channel name
-                            if($game_phase == 1) { //Daytime
-                                if($channel && $channel != "") {
-                                    if(false !== strpos($channel, "_")) {
-                                        $channel = substr($channel, 0, strpos($channel, "_"));
-                                    }
-                                    $real_channel = capitalize($channel);
-                                } else {
-                                    $real_channel = "No";
+                        //Get channel name
+                        if($game_phase == 1) { //Daytime
+                            if($channel && $channel != "") {
+                                if(false !== strpos($channel, "_")) {
+                                    $channel = substr($channel, 0, strpos($channel, "_"));
                                 }
+                                $real_channel = capitalize($channel);
                             } else {
-                                $real_channel = "Town";
+                                $real_channel = "No";
                             }
-                            
-                            //If alive, we want to put up the banner for actions not targetting people
-                            if($player_alive == "Y") {
+                        } else {
+                            $real_channel = "Town";
+                        }
+                        
+                        //If alive, we want to put up the banner for actions not targetting people
+                        if($player_alive == "Y") {
 
-                                if($game_phase == 2 || $game_phase == 0) { //If daytime
-                                    $query = "SELECT * FROM ".
-                                             "(SELECT actions.action_id as day_action_id, ".
-                                             "actions.action_banner as day_action_banner ".
-                                             "FROM actions, roles ".
-                                             "WHERE actions.action_id=roles.day_action_id AND ".
-                                             "roles.role_id='$role_id') as day_actions, ".
-                                             "(SELECT actions.action_id as day_alt_action_id, ".
-                                             "actions.action_banner as day_alt_action_banner ".
-                                             "FROM actions, roles ".
-                                             "WHERE actions.action_id=roles.day_alt_action_id AND ".
-                                             "roles.role_id='$role_id') as day_alt_actions";
+                            if($game_phase == 2 || $game_phase == 0) { //If daytime
+                                $query = "SELECT * FROM ".
+                                         "(SELECT actions.action_id as day_action_id, ".
+                                         "actions.action_banner as day_action_banner ".
+                                         "FROM actions, roles ".
+                                         "WHERE actions.action_id=roles.day_action_id AND ".
+                                         "roles.role_id='$role_id') as day_actions, ".
+                                         "(SELECT actions.action_id as day_alt_action_id, ".
+                                         "actions.action_banner as day_alt_action_banner ".
+                                         "FROM actions, roles ".
+                                         "WHERE actions.action_id=roles.day_alt_action_id AND ".
+                                         "roles.role_id='$role_id') as day_alt_actions";
+                                $result2 = mysqli_query($dbh, $query);
+                                if($result2 && mysqli_num_rows($result2) == 1) {
+                                    $row2 = mysqli_fetch_array($result2);
+                                    $action_id = $row2['day_action_id'];
+                                    $banner_action = $row2['day_alt_action_id'];
+                                    $banner = $row2['day_alt_action_banner'];
+                                }
+                            } else { //If nighttime
+                                $query = "SELECT * FROM ".
+                                         "(SELECT actions.action_id as night_action_id, ".
+                                         "actions.action_banner as night_action_banner ".
+                                         "FROM actions, roles ".
+                                         "WHERE actions.action_id=roles.night_action_id AND ".
+                                         "roles.role_id='$role_id') as night_actions, ".
+                                         "(SELECT actions.action_id as night_alt_action_id, ".
+                                         "actions.action_banner as night_alt_action_banner ".
+                                         "FROM actions, roles ".
+                                         "WHERE actions.action_id=roles.night_alt_action_id AND ".
+                                         "roles.role_id='$role_id') as night_alt_actions";
+                                $result2 = mysqli_query($dbh, $query);
+                                if($result2 && mysqli_num_rows($result2) == 1) {
+                                    $row2 = mysqli_fetch_array($result2);
+                                    $action_id = $row2['night_action_id'];
+                                    $banner_action = $row2['night_alt_action_id'];
+                                    $banner = $row2['night_alt_action_banner'];
+                                }
+                            }
+
+                            if($player_ready == "Y") {
+                                //player ready, we need banner, banner_action, and un_ready
+
+                                //In case we want to start the game
+                                if($game_phase == 0 && $game_creator == $user_id) {
+                                    $query = "SELECT * FROM actions WHERE action_enum='START'";
                                     $result2 = mysqli_query($dbh, $query);
                                     if($result2 && mysqli_num_rows($result2) == 1) {
                                         $row2 = mysqli_fetch_array($result2);
-                                        $action_id = $row2['day_action_id'];
-                                        $banner_action = $row2['day_alt_action_id'];
-                                        $banner = $row2['day_alt_action_banner'];
-                                    }
-                                } else { //If nighttime
-                                    $query = "SELECT * FROM ".
-                                             "(SELECT actions.action_id as night_action_id, ".
-                                             "actions.action_banner as night_action_banner ".
-                                             "FROM actions, roles ".
-                                             "WHERE actions.action_id=roles.night_action_id AND ".
-                                             "roles.role_id='$role_id') as night_actions, ".
-                                             "(SELECT actions.action_id as night_alt_action_id, ".
-                                             "actions.action_banner as night_alt_action_banner ".
-                                             "FROM actions, roles ".
-                                             "WHERE actions.action_id=roles.night_alt_action_id AND ".
-                                             "roles.role_id='$role_id') as night_alt_actions";
-                                    $result2 = mysqli_query($dbh, $query);
-                                    if($result2 && mysqli_num_rows($result2) == 1) {
-                                        $row2 = mysqli_fetch_array($result2);
-                                        $action_id = $row2['night_action_id'];
-                                        $banner_action = $row2['night_alt_action_id'];
-                                        $banner = $row2['night_alt_action_banner'];
+                                        $banner = $row2['action_banner'];
+                                        $banner_action = $row2['action_id'];
+                                        $action_id = 0;
+                                    } else {
+                                        $banner = "ERROR"; //Should never hit here. If we do... let me know
                                     }
                                 }
-
-                                if($player_ready == "Y") {
-                                    //player ready, we need banner, banner_action, and un_ready
-
-                                    //In case we want to start the game
-                                    if($game_phase == 0 && $game_creator == $user_id) {
-                                        $query = "SELECT * FROM actions WHERE action_enum='START'";
-                                        $result2 = mysqli_query($dbh, $query);
-                                        if($result2 && mysqli_num_rows($result2) == 1) {
-                                            $row2 = mysqli_fetch_array($result2);
-                                            $banner = $row2['action_banner'];
-                                            $banner_action = $row2['action_id'];
-                                            $action_id = 0;
-                                        } else {
-                                            $banner = "ERROR"; //Should never hit here. If we do... let me know
-                                        }
-                                    }
-                                    $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
-                                    $result2 = mysqli_query($dbh, $query);
-                                    if($result2 && mysqli_num_rows($result2) == 1) {
-                                        $row2 = mysqli_fetch_array($result2);
-                                        $alt_banner = $row2['action_banner'];
-                                        $alt_banner_action = $row2['action_id'];
-                                    }
+                                $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
+                                $result2 = mysqli_query($dbh, $query);
+                                if($result2 && mysqli_num_rows($result2) == 1) {
+                                    $row2 = mysqli_fetch_array($result2);
+                                    $alt_banner = $row2['action_banner'];
+                                    $alt_banner_action = $row2['action_id'];
                                 }
                             }
                         }
-                        //And before this
+                    }
+                    //And before this
 
-                        $to_return .= "</player>\n";
-                    }
-                    if(!$real_channel) {
-                        $real_channel = "No";
-                    }
-                    $to_return .= "<channel>$real_channel</channel>\n";
+                    $to_return .= "</player>\n";
                 }
-                $to_return .= "</player_list>\n";
+                if(!$real_channel) {
+                    $real_channel = "No";
+                }
+                $to_return .= "<channel>$real_channel</channel>\n";
             }
+            $to_return .= "</player_list>\n";
             if($banner) {
                 $to_return .= "<banner>$banner</banner>\n";
                 $to_return .= "<banner_action>$banner_action</banner_action>\n";
