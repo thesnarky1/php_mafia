@@ -199,6 +199,7 @@
                     echo "<p class='banner'>You aren't in this game.</p>\n";
                 }
             }
+            echo "<div id='action_message'></div>\n";
 
             //Game information
             echo "<div id='game_information'>\n";

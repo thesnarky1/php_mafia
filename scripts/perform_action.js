@@ -6,6 +6,7 @@ var debugMode = true;
 var targetId = null;
 var actionId = null;
 var actionCache = new Array();
+var myTimeout = null;
 
 
 function createXmlHttpRequestObject() {
@@ -94,14 +95,19 @@ function show_action_message(str) {
 function hide_action_message() {
     var action_message = document.getElementById("action_message");
     action_message.style.display = "none";
+    myTimeout = null;
 }
 
 function handleReceivingAction() {
     if(xmlHttpPerformAction.readyState == 4) {
         if(xmlHttpPerformAction.status == 200) {
             try {
+                if(myTimeout) {
+                    clearTimeout(myTimeout);
+                    myTimeout = null;
+                }
                 show_action_message(xmlHttpPerformAction.responseText);
-                setTimeout("hide_action_message()", 3000);
+                myTimeout = setTimeout("hide_action_message()", 5000);
             } catch(e) {
                 displayError(e.toString());
             }
