@@ -307,15 +307,21 @@
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_array($result)) {
-                update_player_needs_update($game_id, $row['user_id']); 
+                update_player_needs_update($game_id, $row['user_id'], true); 
             }
         }
     }
 
-    function update_player_needs_update($game_id, $user_id) {
+    function update_player_needs_update($game_id, $user_id, $needs) {
         global $dbh;
-        $query = "UPDATE game_players SET player_needs_update='Y' ".
-                 "WHERE game_id='$game_id' AND user_id='$user_id'";
+        $query = "UPDATE game_players SET player_needs_update='".
+        if($needs) {
+            $query .= "Y";
+        } else {
+            $query .= "N";
+        }
+        $query .= "' ".
+                  "WHERE game_id='$game_id' AND user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
     }
 
@@ -379,6 +385,9 @@
             $needs_update = player_needs_update($user_id, $game_id, "ID");
         }
         if($needs_update) {
+            if($user_id != 0) {
+                update_player_needs_update($game_id, $user_id, false);
+            }
             $query = "SELECT * FROM games WHERE game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) == 1) {
