@@ -22,6 +22,11 @@
                 if($action_enum) {
                     //Big ol' switch, I'm thinking
                     switch($action_enum) {
+                        case "START":
+                            if(can_start_game($game_id)) {
+                            } else {
+                            }
+                            break;
                         case "READY":
                             set_player_ready($game_id, $user_id, true);
                             player_needs_update($user_id, $game_id, true);

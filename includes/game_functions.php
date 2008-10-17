@@ -1,5 +1,27 @@
 <?php
 
+    function can_start_game($game_id) {
+        global $dbh;
+        $unready_players = false;
+        $query = "SELECT users.user_name FROM game_players, users ".
+                 "WHERE game_players.game_id='$game_id' ".
+                 "AND game_players.player_ready='N' ".
+                 "AND users.user_id=game_players.user_id";
+        $result = mysqli_query($dbh, $query);
+        if($result) {
+            if(mysqli_num_rows($result) > 0) {
+                $unready_players = array();
+                while($row = mysqli_fetch_array($result)) {
+                    $unready_players[] = $row['user_name'];
+                }
+                echo "Game cannot start because someone's not ready: " . implode(", ", $unready_players);
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     function set_player_ready($game_id, $user_id, $ready) {
         global $dbh;
         $query = "UPDATE game_players SET player_ready='";
@@ -43,7 +65,7 @@
         global $dbh;
         $to_return = array();
         $query = "SELECT game_players.player_ready, game_players.role_id, ".
-                 "game_players.player_alive, games.game_phase ".
+                 "game_players.player_alive, games.game_phase, games.game_creator ".
                  "FROM game_players, games ".
                  "WHERE games.game_id='$game_id' AND game_players.user_id='$user_id' ".
                  "AND game_players.game_id=games.game_id";
@@ -53,6 +75,7 @@
             $player_ready = $row['player_ready'];
             $player_alive = $row['player_alive'];
             $game_phase = $row['game_phase'];
+            $game_creator = $row['game_creator'];
             $role_id = $row['role_id'];
             if($player_alive == 'Y') {
                 if($game_phase == 2 || $game_phase == 0) { //day
@@ -73,11 +96,9 @@
                     }
                 }
                 if($player_ready == 'Y') {
-                    $query = "SELECT action_id FROM actions WHERE action_enum='UN_READY'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_num_rows($result) == 1) {
-                        $row = mysqli_fetch_array($result);
-                        $to_return[] = $row['action_id'];
+                    $to_return[] = get_action_by_enum("UN_READY");
+                    if($user_id == $game_creator) {
+                        $to_return[] = get_action_by_enum("START");
                     }
                 }
             }
