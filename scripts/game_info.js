@@ -97,11 +97,16 @@ function readInformation() {
             var gameChatHTML = document.getElementById("chat_channel");
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
+            var roleInstructionsHTML = document.getElementById("role_instructions");
             var gamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
             gameChatHTML.innerHTML = "";
             gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             gamePhaseHTML.innerHTML = response.getElementsByTagName("phase")[0].firstChild.data.toString();
             gameTurnHTML.innerHTML = response.getElementsByTagName("turn")[0].firstChild.data.toString();
+            var roleMessage = response.getElementsByTagName("role_instructions")[0].firstChild.data.toString();
+            if(roleMessage != roleInstructionsHTML.innerHTML) {
+                roleInstructionsHTML.innerHTML = roleMessage;
+            }
             var bannerMessage = response.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();

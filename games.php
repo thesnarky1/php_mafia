@@ -170,33 +170,14 @@
                 echo "<p class='banner'><span class='error'>$error</span></p>\n";
             }
             if($game_phase == 0){
-                echo "<p class='banner'>Game not yet started.</p>\n";
+                echo "<div class='banner' id='role_instructions'>Game not yet started.</div>\n";
             } else if($game_phase == 3) {
-                echo "<p class='banner'>Game has finished.</p>\n";
+                echo "<div class='banner' id='role_instructions'>Game has finished.</div>\n";
             } else {
                 if($user_id) {
-                    $query = "SELECT * FROM roles WHERE role_id='$role_id'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_num_rows($result) > 0) {
-                        $row = mysqli_fetch_array($result);
-                        $role_name = $row['role_name'];
-                        $role_day = $row['day_instructions'];
-                        $role_night = $row['night_instructions'];
-                        if($phase == 1) {
-                            $do_what = $role_night;
-                        } else {
-                            $do_what = $role_day;
-                        }
-                        echo "<p class='banner'>You are a $role_name. ";
-                        if($player_alive == 'Y') {
-                            echo "$do_what";
-                        } else {
-                            echo "Too bad you are also dead.";
-                        }
-                        echo "</p>\n";
-                    }
+                    echo "<div class='banner' id='role_instructions'></div>\n";
                 } else {
-                    echo "<p class='banner'>You aren't in this game.</p>\n";
+                    echo "<div class='banner' id='role_instructions'>You aren't in this game.</div>\n";
                 }
             }
             echo "<div id='action_message'></div>\n";
