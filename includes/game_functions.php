@@ -3,6 +3,7 @@
     function start_game($game_id) {
         global $dbh;
         dole_out_roles($game_id);
+        initialize_channels($game_id);
         next_phase($game_id);
         update_game_recent_date($game_id);
         update_game_tracker($game_id);
@@ -295,8 +296,27 @@
                 }
             }
             update_game_tracker($game_id);
+            update_game_players($game_id);
         } else {
         }
+    }
+
+    function update_game_players($game_id) {
+        global $dbh;
+        $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+                update_player_needs_update($game_id, $row['user_id']); 
+            }
+        }
+    }
+
+    function update_player_needs_update($game_id, $user_id) {
+        global $dbh;
+        $query = "UPDATE game_players SET player_needs_update='Y' ".
+                 "WHERE game_id='$game_id' AND user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
     }
 
     function update_game_tracker($game_id) {
@@ -563,6 +583,7 @@
                             if($result && mysqli_affected_rows($dbh) == 1) {
                                 //Success in killing
                                 update_game_tracker($game_id);
+                                update_game_players($game_id);
                             }
                         }
                     } else {
