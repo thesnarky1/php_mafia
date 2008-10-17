@@ -1,5 +1,52 @@
 <?php
 
+    function start_game($game_id) {
+        global $dbh;
+        dole_out_roles($game_id);
+    }
+
+    function dole_out_roles($game_id) {
+        global $dbh;
+        $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            $num_players = mysqli_num_rows($result);
+            $players = array();
+            $rand_players = array();
+            $finished_players = array();
+            while($row = mysqli_fetch_array($result)) {
+                $players[] = $row['user_id'];
+            }
+            $query = "SELECT roleset_roles FROM rolesets ORDER BY RAND() LIMIT 1";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                $roleset = explode(",", $row['roleset_roles']);
+                $roleset_length = count($roleset);
+                $rand_indices = array_rand($players, $num_players);
+                foreach($rand_indices as $rand_index) {
+                    $rand_players[] = $players[$rand_index];
+                }
+                foreach($rand_players as $rand_player) {
+                    if($role = array_pop($roleset)) { //If we have special roles, fill them first
+                        $finished_players[$rand_player] = $role;
+                    } else {
+                        $finished_players[$rand_player] = 1; //Make them a townie
+                    }
+                }
+                //Now update game_players to reflect these roles
+                foreach($finished_players as $finished_player=>$finished_role) {
+                    $query = "UPDATE game_players SET role_id='$finished_role', ".
+                             "player_ready='N', player_needs_update='1' ".
+                             "WHERE game_id='$game_id' AND user_id='$finished_player";
+                    $result = mysqli_query($dbh, $query);
+                }
+            } else { //Pulling random row failed
+            }
+        } else { //Getting user_ids failed
+        }
+    }
+
     function can_start_game($game_id) {
         global $dbh;
         $unready_players = false;
@@ -24,10 +71,9 @@
                     $query = "SELECT roleset_roles FROM rolesets WHERE roleset_num_players='$num_players'";
                     $result = mysqli_query($dbh, $query);
                     if($result && mysqli_num_rows($result) > 0) {
-                        echo "Game may start";
                         return true;
                     } else {
-                        echo "Game cannot start with that number of players, sorry... we just don't know of any fair rolesets.";
+                        echo "Game cannot start with that number of players($num_players), sorry... we just don't know of any fair rolesets.";
                         return false;
                     }
                 } else {

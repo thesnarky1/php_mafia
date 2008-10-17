@@ -24,6 +24,7 @@
                     switch($action_enum) {
                         case "START":
                             if(can_start_game($game_id)) {
+                                start_game($game_id);
                             } else {
                             }
                             break;
