@@ -17,7 +17,23 @@
                 echo "Game cannot start because someone's not ready: " . implode(", ", $unready_players);
                 return false;
             } else {
-                return true;
+                $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) > 0) {
+                    $num_players = mysqli_num_rows($result);
+                    $query = "SELECT roleset_roles FROM rolesets WHERE roleset_num_players='$num_players'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) > 0) {
+                        echo "Game may start";
+                        return true;
+                    } else {
+                        echo "Game cannot start with that number of players, sorry... we just don't know of any fair rolesets.";
+                        return false;
+                    }
+                } else {
+                    echo "DB error - $query";
+                    return false;
+                }
             }
         }
     }
