@@ -5,8 +5,6 @@
         dole_out_roles($game_id);
         initialize_channels($game_id);
         next_phase($game_id);
-        update_game_recent_date($game_id);
-        update_game_tracker($game_id);
     }
 
     function update_game_recent_date($game_id) {
@@ -50,7 +48,7 @@
                              "player_ready='N', player_needs_update='1' ".
                              "WHERE game_id='$game_id' AND user_id='$finished_player'";
                     $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_affected_rows($result) == 1) {
+                    if($result && mysqli_affected_rows($dbh) == 1) {
                     } else {
                         echo "DB error - $query";
                     }
@@ -314,7 +312,7 @@
 
     function update_player_needs_update($game_id, $user_id, $needs) {
         global $dbh;
-        $query = "UPDATE game_players SET player_needs_update='".
+        $query = "UPDATE game_players SET player_needs_update='";
         if($needs) {
             $query .= "Y";
         } else {
