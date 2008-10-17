@@ -3,6 +3,15 @@
     function start_game($game_id) {
         global $dbh;
         dole_out_roles($game_id);
+        next_phase($game_id);
+        update_game_recent_date($game_id);
+        update_game_tracker($game_id);
+    }
+
+    function update_game_recent_date($game_id) {
+        global $dbh;
+        $query = "UPDATE games SET game_recent_date=NOW() WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
     }
 
     function dole_out_roles($game_id) {
@@ -38,8 +47,12 @@
                 foreach($finished_players as $finished_player=>$finished_role) {
                     $query = "UPDATE game_players SET role_id='$finished_role', ".
                              "player_ready='N', player_needs_update='1' ".
-                             "WHERE game_id='$game_id' AND user_id='$finished_player";
+                             "WHERE game_id='$game_id' AND user_id='$finished_player'";
                     $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_affected_rows($result) == 1) {
+                    } else {
+                        echo "DB error - $query";
+                    }
                 }
             } else { //Pulling random row failed
             }
@@ -263,7 +276,11 @@
                 }
             } else {
                 //Increment turn as well.
-                $game_phase--;
+                if($game_phase != 0) {
+                    $game_phase--;
+                } else {
+                    $game_phase++;
+                }
                 $game_turn++;
                 $query = "UPDATE games ".
                          "SET game_phase='$game_phase', game_turn='$game_turn', game_recent_date=NOW() ".
