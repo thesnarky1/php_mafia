@@ -45,6 +45,9 @@
                             echo "You publically declare that " . get_user_name($target_id) . " should be brought to trial.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        get_user_name($user_id) . " wants to lynch " . get_user_name($target_id) . ".");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             break;
                         case "NO_ACTION":
@@ -60,6 +63,9 @@
                             echo "You have a change of heart and decide no one should be lynched.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        get_user_name($user_id) . " wants to lynch no one.");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             break;
                         case "NO_KILL":

@@ -466,32 +466,6 @@
         return $str;
     }
 
-    function get_system_channel($game_id) {
-        global $dbh;
-        $system_name = "system_$game_id";
-        $query = "SELECT channel_id FROM channels WHERE channel_name='$system_name'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
-            return $row['channel_id'];
-        } else {
-            return false;
-        }
-    }
-
-    function get_system_id() {
-        global $dbh;
-        $system_name = "System";
-        $query = "SELECT user_id FROM users WHERE user_name='$system_name'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
-            return $row['user_id'];
-        } else {
-            return false;
-        }
-    }
-
     function next_phase($game_id) {
         global $dbh;
         $system_id = get_system_id();
