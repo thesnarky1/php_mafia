@@ -1,5 +1,20 @@
 <?php
 
+    function can_phase_change($game_id) {
+        global $dbh;
+        $to_return = false; //Don't want to change unless I say so!
+        $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_phase = $row['game_phase'];
+            if($game_phase == 1) { //Night
+            } else if($game_phase == 2) { //Day
+            }
+        }
+        return $to_return;
+    }
+
     function clear_player_action($game_id, $player_id) {
         global $dbh;
         $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id";
