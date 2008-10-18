@@ -180,11 +180,11 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
                                        playerName + "</a></li>\n";
             alivePlayers++;
         } else {
-            playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
+            //playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
             playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
             deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
                                        "<a href='./profile.php?id=" + playerId + ">" + 
-                                       playerName + "</a> (" + playerRole + ")</li>\n";
+                                       playerName + "</a> (" + playerFaction + ")</li>\n";
             deadPlayers++;
         }
         if(playerCount % boxesPerRow == 1) {

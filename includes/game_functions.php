@@ -57,7 +57,7 @@
                             break;
                     }
                 }
-                if($game_phase == 2) { //Day actions
+                if($game_phase == 2) { //Day actions (lynch only, so far)
                     $vote_to_lynch = get_votes_needed($game_id);
                     foreach($to_lynch as $lynchee=>$vote) {
                         if($vote >= $vote_to_lynch) {
@@ -680,10 +680,10 @@
                         $to_return .= "<avatar>$user_avatar</avatar>\n";
                         $to_return .= "<alive>$player_alive</alive>\n";
                         if($player_alive == 'N' || $player_id == $user_id) {
-                            $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
                         }
                         if($player_id == $user_id) {
+                            $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_instructions>";
                             $to_return .= "Your role is: $role_name. ";
                             if($player_alive == 'Y') {
