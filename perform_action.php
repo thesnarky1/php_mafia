@@ -44,27 +44,27 @@
                             echo "You cannot do anything at this juncture.";
                             break;
                         case "NO_INVESTIGATE":
-                            echo "Going off a hunch, you decide not to look into the suspect's life.";
-                            clear_player_action($game_id, $user_id);
-                            set_player_ready($game_id, $user_id, false);
+                            echo "Going off a hunch, you decide not to look into anyone's life.";
+                            add_player_action($game_id, $user_id, $action_id, $target_id);
+                            set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
                             break;
                         case "NO_LYNCH":
-                            echo "You have a change of heart, and remove your plea for the death sentence.";
-                            clear_player_action($game_id, $user_id);
-                            set_player_ready($game_id, $user_id, false);
+                            echo "You have a change of heart and decide no one should be lynched.";
+                            add_player_action($game_id, $user_id, $action_id, $target_id);
+                            set_player_ready($game_id, $user_id, true);
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             break;
                         case "NO_KILL":
-                            echo "At the last second you decide that your prey should live.";
-                            clear_player_action($game_id, $user_id);
-                            set_player_ready($game_id, $user_id, false);
+                            echo "At the last second you decide that killing is wrong, and elect to let everyone live.";
+                            add_player_action($game_id, $user_id, $action_id, $target_id);
+                            set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
                             break;
                         case "NO_SAVE":
-                            echo "Remembering that they didn't pay their bills last time, you cancel your appointment.";
-                            clear_player_action($game_id, $user_id);
-                            set_player_ready($game_id, $user_id, false);
+                            echo "Remembering that this town skips out on the bill, you elect to help no one.";
+                            add_player_action($game_id, $user_id, $action_id, $target_id);
+                            set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
                             break;
                         case "READY":
@@ -91,6 +91,11 @@
                             update_player_needs_update($game_id, $user_id, true);
                             echo "You remove all choices and sit, unprepared.";
                             break;
+                    }
+                    if(can_phase_change($game_id)) {
+                        echo " Turn can now end";
+                    } else {
+                        echo " Can't change yet.";
                     }
                 } else {
                     echo "Faker!!!";
