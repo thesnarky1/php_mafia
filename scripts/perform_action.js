@@ -71,21 +71,6 @@ function performAction(actionId, targetId) {
     }
 }
 
-function sendAction(actionId, targetId) {
-    var currentMessage = document.getElementById("text_box");
-    var currentUser = document.getElementById("user_id").value;
-    var currentUserHash = document.getElementById("user_hash").value;
-    var game = document.getElementById("game_id").value;
-    if(trim(currentMessage.value) != '' && trim(currentUser) != '') {
-        actionParams = "game_id=" + gameId + 
-                 "&user_id=" + user +
-                 "&user_hash=" + userHash + 
-                 "&target_id=" + targetId + 
-                 "&actionId=" + actionId;
-        actionCache.push(actionParams);
-    }
-}
-
 function show_action_message(str) {
     var action_message = document.getElementById("action_message");
     action_message.innerHTML = str;

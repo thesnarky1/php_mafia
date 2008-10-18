@@ -1,5 +1,65 @@
 <?php
 
+    function clear_player_action($game_id, $player_id) {
+        global $dbh;
+        $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_turn = $row['game_turn'];
+            $game_phase = $row['game_phase'];
+            $query = "DELETE FROM game_actions WHERE game_id='$game_id' AND user_id='$user_id' ".
+                     "AND game_turn='$game_turn' AND game_phase='$game_phase'";
+            $result = mysqli_query($dbh, $query);
+        }
+    }
+
+    function get_user_name($user_id) {
+        global $dbh;
+        $query = "SELECT user_name FROM users WHERE user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['user_name'];
+        } else {
+            return "Error fetching name.";
+        }
+    }
+
+    function add_player_action($game_id, $user_id, $action_id, $target_id) {
+        global $dbh;
+        $query = "SELECT game_turn, game_phase FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_turn = $row['game_turn'];
+            $game_phase = $row['game_phase'];
+            $query = "SELECT game_action_id FROM game_actions ".
+                     "WHERE game_id='$game_id' AND user_id='$user_id' AND ".
+                     "game_phase='$game_phase' AND game_turn='$game_turn'";
+            $result = mysqli_query($dbh, $query);
+            if($result) {
+                if(mysqli_num_rows($result) == 1) {
+                    //Update existing
+                    $row = mysqli_fetch_array($result);
+                    $game_action_id = $row['game_action_id'];
+                    $query = "UPDATE game_actions SET action_id='$action_id', ".
+                             "target_id='$target_id' WHERE game_action_id='$game_action_id'";
+                } else {
+                    //Insert new action
+                    $query = "INSERT INTO game_actions(game_id, user_id, action_id, game_turn, game_phase, target_id) ".
+                             "VALUES('$game_id', '$user_id', '$action_id', '$game_turn', '$game_phase', '$target_id')";
+                }
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_affected_rows($dbh) > 0) {
+                } else {
+                }
+            } 
+        }
+
+
+    }
+
     function start_game($game_id) {
         global $dbh;
         dole_out_roles($game_id);
@@ -161,7 +221,7 @@
                         $to_return[] = $row['day_alt_action_id'];
                     }
                 } else {
-                    $query = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
+                    $query = "SELECT night_action_id, night_alt_action_id FROM roles WHERE role_id='$role_id'";
                     $result = mysqli_query($dbh, $query);
                     if($result && mysqli_num_rows($result) == 1) {
                         $row = mysqli_fetch_array($result);
