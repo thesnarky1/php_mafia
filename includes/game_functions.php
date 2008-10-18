@@ -689,7 +689,16 @@
                         if($player_alive == 'N' || $player_id == $user_id) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
-                            $to_return .= "<role_instructions>Your role is: $role_name. $role_instructions</role_instructions>\n";
+                        }
+                        if($player_id == $user_id) {
+                            $to_return .= "<role_instructions>";
+                            $to_return .= "Your role is: $role_name. ";
+                            if($player_alive == 'Y') {
+                                $to_return .= $role_instructions;
+                            } else {
+                                $to_return .= "Too bad you are also dead.";
+                            }
+                            $to_return .= "</role_instructions>\n";
                         }
     
                         //Anything specific to the player viewing needs to go after this.
@@ -790,7 +799,9 @@
                     $to_return .= "<channel>$real_channel</channel>\n";
                 }
                 $to_return .= "</player_list>\n";
-                $to_return .= "<action>$action_id</action>\n";
+                if($action_id) {
+                    $to_return .= "<action>$action_id</action>\n";
+                }
                 if($banner) {
                     $to_return .= "<banner>$banner</banner>\n";
                     $to_return .= "<banner_action>$banner_action</banner_action>\n";
