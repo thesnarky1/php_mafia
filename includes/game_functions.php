@@ -411,8 +411,15 @@
             }
             update_game_tracker($game_id);
             update_game_players($game_id);
+            update_players_ready($game_id);
         } else {
         }
+    }
+
+    function update_players_ready($game_id) {
+        global $dbh;
+        $query = "UPDATE game_players SET player_ready='N' WHERE game_id='$game_id'";
+        $result = mysqli_query($query);
     }
 
     function update_game_players($game_id) {

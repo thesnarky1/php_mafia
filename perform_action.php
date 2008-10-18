@@ -94,6 +94,7 @@
                     }
                     if(can_phase_change($game_id)) {
                         echo " Turn can now end";
+                        next_phase($game_id);
                     } else {
                         echo " Can't change yet.";
                     }
