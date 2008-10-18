@@ -72,7 +72,7 @@
                             update_player_needs_update($game_id, $user_id, true);
                             echo "You declare that you're ready.";
                             break;
-                        case "SAVE:
+                        case "SAVE":
                             echo "You run off to help " . get_user_name($target_id) . " in their illness.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
