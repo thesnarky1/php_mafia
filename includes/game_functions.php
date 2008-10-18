@@ -1,5 +1,65 @@
 <?php
 
+    function carry_out_actions($game_id) {
+        global $dbh;
+        $to_return = array(); //(user_id=>message)
+        $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $game_turn = $row['game_turn'];
+            $game_phase = $row['game_phase'];
+            $query = "SELECT user_id, target_id, action_id FROM game_actions ".
+                     "WHERE game_id='$game_id' AND game_turn='$game_turn' AND ".
+                     "game_phase='$game_phase'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) > 0) {
+                $to_kill = array(); //(user_id=>(target_id, true))
+                $to_save = array(); //(target_id)
+                $to_investigate = array(); //(user_id=>target_id)
+                $to_lynch = array(); //target_id=>votes);
+                while($row = mysqli_fetch_array($result)) {
+                    $user_id = $row['user_id'];
+                    $target_id = $row['target_id'];
+                    $action_id = $row['action_id'];
+                    $action_enum = get_action_by_id($action_id);
+                    switch ($action_enum) {
+                        case "KILL":
+                            $to_kill[$user_id] = $target_id;
+                            break;
+                        case "SAVE":
+                            $to_save[] = $target_id;
+                            break;
+                        case "INVESTIGATE":
+                            $to_investigate[$user_id] = $target_id;
+                            break;
+                        case "LYNCH":
+                            if(!isset($to_lynch[$target_id])) {
+                                $to_lynch[$target_id] = 0;
+                            }
+                            $to_lynch[$target_id]++;
+                            break;
+                    }
+                }
+                if($game_phase == 2) { //Day actions
+                    $vote_to_lynch = get_votes_needed($game_id);
+                    foreach($to_lynch as $lynchee=>$vote) {
+                        if($vote > $vote_to_lynch) {
+                            //Kill player
+                            kill_player($lynchee, $game_id);
+                        }
+                    }
+                } else {
+                    foreach($to_kill as $killer_id=>$killee_id) {
+                        if(in_array($killee_id, $to_save)) {
+                            $to_kill[$killer_id][1] = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     function lock_game($game_id, $lock) {
         global $dbh;
         $query = "UPDATE games SET game_locked='";
@@ -430,7 +490,6 @@
     }
 
     function next_phase($game_id) {
-        lock_game($game_id, true);
         global $dbh;
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
@@ -475,7 +534,6 @@
             update_game_tracker($game_id);
             update_game_players($game_id);
             update_players_ready($game_id);
-            lock_game($game_id, false);
         } else {
         }
     }

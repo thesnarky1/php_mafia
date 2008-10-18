@@ -100,10 +100,10 @@
                             break;
                     }
                     if(can_phase_change($game_id)) {
-                        echo " Turn can now end";
+                        lock_game($game_id, true);
                         next_phase($game_id);
+                        lock_game($game_id, false);
                     } else {
-                        echo " Can't change yet.";
                     }
                 } else {
                     echo "Faker!!!";
