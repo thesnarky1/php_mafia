@@ -51,7 +51,27 @@
                     }
                 }
             } else if($game_phase == 2) { //Day
-
+                $votes_required = get_votes_needed($game_id);
+                $lynch_action = get_action_by_enum("LYNCH");
+                $query = "SELECT target_id FROM game_actions ".
+                         "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
+                         "game_turn='$game_turn' AND action_id='$lynch_action'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) >= $votes_required) {
+                    $lynchees = array();
+                    while($row = mysqli_fetch_array($result)) {
+                        $target_id = $row['target_id'];
+                        if(!isset($lynchees[$target_id])) {
+                            $lynchees[$target_id] = 0;
+                        }
+                        $lynchees[$target_id]++;
+                    }
+                    foreach($lynchees as $lynchee=>$votes) {
+                        if($votes >= $votes_required) {
+                            $to_return = true;
+                        }
+                    }
+                }
             }
         }
         return $to_return;
@@ -301,7 +321,7 @@
                         $to_return[] = $row['night_alt_action_id'];
                     }
                 }
-                if($player_ready == 'Y') {
+                if($player_ready == 'Y' && !in_array(get_action_by_enum("NO_ACTION"), $to_return)) {
                     $to_return[] = get_action_by_enum("UN_READY");
                     if($user_id == $game_creator) {
                         $to_return[] = get_action_by_enum("START");
@@ -435,7 +455,7 @@
     function update_players_ready($game_id) {
         global $dbh;
         $query = "UPDATE game_players SET player_ready='N' WHERE game_id='$game_id'";
-        $result = mysqli_query($query);
+        $result = mysqli_query($dbh, $query);
     }
 
     function update_game_players($game_id) {
@@ -659,12 +679,14 @@
                                             $banner = "ERROR"; //Should never hit here. If we do... let me know
                                         }
                                     }
-                                    $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
-                                    $result2 = mysqli_query($dbh, $query);
-                                    if($result2 && mysqli_num_rows($result2) == 1) {
-                                        $row2 = mysqli_fetch_array($result2);
-                                        $alt_banner = $row2['action_banner'];
-                                        $alt_banner_action = $row2['action_id'];
+                                    if($action_id != get_action_by_enum("NO_ACTION")) {
+                                        $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
+                                        $result2 = mysqli_query($dbh, $query);
+                                        if($result2 && mysqli_num_rows($result2) == 1) {
+                                            $row2 = mysqli_fetch_array($result2);
+                                            $alt_banner = $row2['action_banner'];
+                                            $alt_banner_action = $row2['action_id'];
+                                        }
                                     }
                                 }
                             }
