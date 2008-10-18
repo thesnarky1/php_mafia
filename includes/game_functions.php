@@ -69,10 +69,33 @@
                                         "$victim is lynched.");
                         }
                     }
-                } else {
+                } else { //Night actions (Kill, save, investigate)
                     foreach($to_kill as $killer_id=>$killee_id) {
                         if(in_array($killee_id, $to_save)) {
                             $to_kill[$killer_id][1] = false;
+                        }
+                    }
+                    foreach($to_investigate as $user_id=>$target_id) {
+                        $chan_name = "cop_$user_id_$game_id";
+                        $query = "SELECT roles.role_id, roles.role_name ".
+                                 "FROM roles, game_players ".
+                                 "WHERE game_players.game_id='$game_id' AND ".
+                                 "game_players.user_id='$target_id' AND ".
+                                 "roles.role_id=game_players.role_id";
+                        $result = mysqli_query($dbh, $query);
+                        if($result && mysqli_num_rows($result) == 1) {
+                            $row = mysqli_fetch_array($result);
+                            $target_role_name = $row['role_name'];
+                            $target_role_id = $row['role_id'];
+                            $query = "INSERT into game_investigations(game_id, user_id, target_id, role_id) ".
+                                     "VALUES('$game_id, '$user_id', '$target_id', '$target_role_id')";
+                            $result = mysqli_query($dbh, $query);
+                            if($result && mysqli_affected_rows($dbh) == 1) {
+                                add_message(get_channel_by_name($chan_name),
+                                            get_system_id(),
+                                            "You investigate " . get_user_name($target_id) . 
+                                            " and discover their role is: $target_role_name.");
+                            }
                         }
                     }
                 }

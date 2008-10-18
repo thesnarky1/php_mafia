@@ -1,16 +1,20 @@
 <?php
 
-    function get_system_channel($game_id) {
+    function get_channel_by_name($channel_name, $game_id) {
         global $dbh;
-        $system_name = "system_$game_id";
-        $query = "SELECT channel_id FROM channels WHERE channel_name='$system_name'";
+        $query = "SELECT channel_id FROM channels ".
+                 "WHERE channel_name='$channel_name' AND game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
+        if($result && mysqli_num_rows($result) == 1) { //moer or less and we don't want it!
             $row = mysqli_fetch_array($result);
             return $row['channel_id'];
         } else {
             return false;
         }
+    }
+
+    function get_system_channel($game_id) {
+        return get_channel_by_name("system_$game_id", $game_id);
     }
 
     function get_system_id() {
@@ -263,6 +267,5 @@
            }
        }
    }
-
 
 ?>
