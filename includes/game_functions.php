@@ -1,5 +1,18 @@
 <?php
 
+    function auto_ready_game($game_id) {
+        global $dbh;
+        $nothing = get_action_by_enum("NO_ACTION");
+        $query = "SELECT user_id, player_alive FROM game_players ".
+                 "WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+
+            }
+        }
+    }
+
     function carry_out_actions($game_id) {
         global $dbh;
         $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id'";
