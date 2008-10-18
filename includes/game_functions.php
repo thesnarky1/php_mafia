@@ -3,12 +3,53 @@
     function can_phase_change($game_id) {
         global $dbh;
         $to_return = false; //Don't want to change unless I say so!
-        $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
-        $result = mysqli_query($query);
+        $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
             $row = mysqli_fetch_array($result);
             $game_phase = $row['game_phase'];
+            $game_turn = $row['game_turn'];
             if($game_phase == 1) { //Night
+                $query = "SELECT DISTINCT player_ready FROM game_players WHERE game_id='$game_id' AND player_alive='Y'";
+                $result = mysqli_query($dbh, $query);
+                if($result && mysqli_num_rows($result) == 1) {
+                    $row = mysqli_fetch_array($result);
+                    if($row['player_ready'] == 'Y') {
+                        //All players ready
+                        $query = "SELECT DISTINCT roles.role_target_group ".
+                                 "FROM roles, game_players ".
+                                 "WHERE game_players.game_id='$game_id' AND ".
+                                 "roles.role_id=game_players.role_id AND ".
+                                 "roles.role_target_group IS NOT NULL";
+                        $result = mysqli_query($dbh, $query);
+                        if($result) {
+                            $to_return = true;
+                            if(mysqli_num_rows($result) == 0) {
+                                //Good to go!
+                            } else {
+                                while($row = mysqli_fetch_array($result)) {
+                                    $role_target_group = $row['role_target_group'];
+                                    $target_query = "SELECT DISTINCT game_actions.target_id ".
+                                             "FROM game_players, roles, game_actions ".
+                                             "WHERE game_players.game_id='$game_id' AND ".
+                                             "roles.role_target_group='$role_target_group' AND ".
+                                             "roles.role_id=game_players.role_id AND ".
+                                             "game_actions.user_id=game_players.user_id AND ".
+                                             "game_actions.game_turn='$game_turn' AND ".
+                                             "game_actions.game_phase='$game_phase'";
+                                    $target_result = mysqli_query($dbh, $target_query);
+                                    if($target_result && mysqli_num_rows($target_result) == 1) {
+                                        //echo "All $role_target_group want to target the same.\n";
+                                        //Have an agreed upon target
+                                    } else {
+                                        //echo "The $role_target_group can't decide.\n";
+                                        $to_return = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             } else if($game_phase == 2) { //Day
             }
         }
