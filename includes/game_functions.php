@@ -12,6 +12,20 @@
         $result = mysqli_query($dbh, $query);
     }
 
+    function is_game_locked($game_id) {
+        global $dbh;
+        $to_return = true;
+        $query = "SELECT game_locked FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            if($row['game_locked'] == 0) {
+                $to_return = false;
+            }
+        }
+        return $to_return;
+    }
+
     function can_phase_change($game_id) {
         global $dbh;
         $to_return = false; //Don't want to change unless I say so!

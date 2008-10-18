@@ -10,12 +10,19 @@
         header('Cache-Control: no-cache, must-revalidate');
         header('Pragma: no-cache');
         header('Content-Type: text/xml');
+        echo "<?xml version='1.0' encoding='UTF-8'?>\n";
         $game_id = safetify_input($_REQUEST['game_id']);
         $user_id = safetify_input($_REQUEST['user_id']);
         $user_hash = safetify_input($_REQUEST['user_hash']);
         $action_id = safetify_input($_REQUEST['action_id']);
         $target_id = safetify_input($_REQUEST['target_id']);
         if(valid_user($user_id, $user_hash)) {
+            if(is_game_locked($game_id)) {
+                echo "<action_data>";
+                echo "<error>Game is currently locked. Either changing turns or has ended.</error>\n";
+                echo "</action_data>\n";
+                die();
+            }
             $valid_actions = get_user_actions($user_id, $game_id);
             if(in_array($action_id, $valid_actions)) {
                 $action_enum = get_action_by_id($action_id);
