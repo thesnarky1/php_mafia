@@ -639,6 +639,7 @@
                 $game_tracker = $row['game_tracker'];
                 $banner = false;
                 $alt_banner = false;
+                $role_instructions = "";
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<tracker>$game_tracker</tracker>\n";
@@ -802,6 +803,9 @@
                     $to_return .= "<alt_banner>$alt_banner</alt_banner>\n";
                     $to_return .= "<alt_banner_action>$alt_banner_action</alt_banner_action>\n";
                 }
+            }
+            if($user_id == 0) {
+                $to_return .= "<role_instructions>You aren't in this game.</role_instructions>\n";
             }
         }
         $to_return .= "</game_data>\n";

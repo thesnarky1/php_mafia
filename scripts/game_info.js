@@ -107,7 +107,12 @@ function readInformation() {
             gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
             gamePhaseHTML.innerHTML = response.getElementsByTagName("phase")[0].firstChild.data.toString();
             gameTurnHTML.innerHTML = response.getElementsByTagName("turn")[0].firstChild.data.toString();
-            var roleMessage = response.getElementsByTagName("role_instructions")[0].firstChild.data.toString();
+            var roleMessage = response.getElementsByTagName("role_instructions");
+            if(roleMessage.length > 0) {
+                roleMessage = roleMessage[0].firstChild.data.toString();
+            } else {
+                roleMessage = "";
+            }
             if(roleMessage != roleInstructionsHTML.innerHTML) {
                 roleInstructionsHTML.innerHTML = roleMessage;
             }
