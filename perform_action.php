@@ -25,6 +25,7 @@
                         case "START":
                             if(can_start_game($game_id)) {
                                 start_game($game_id);
+                                echo "You start the game.";
                             } else {
                             }
                             break;
