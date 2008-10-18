@@ -51,9 +51,25 @@
                     }
                 }
             } else if($game_phase == 2) { //Day
+
             }
         }
         return $to_return;
+    }
+
+    function get_votes_needed($game_id) {
+        global $dbh;
+        $query = "SELECT COUNT(user_id) as cnt FROM game_players ".
+                 "WHERE game_id='$game_id' AND player_alive='Y'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $total_alive = $row['cnt'];
+            $votes_needed = ceil($total_alive / 2);
+            echo "Total alive: $total_alive <br />";
+            echo "Votes needed: $votes_needed";
+        } else {
+        }
     }
 
     function clear_player_action($game_id, $player_id) {
