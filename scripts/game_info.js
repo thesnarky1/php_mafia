@@ -128,19 +128,20 @@ function readInformation() {
                 altBannerMessage = "";
                 altBannerAction = "";
             }
+            var votesToLynch = response.getElementsByTagName("votes_required")[0].firstChild.data.toString();
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action);
+            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action, votesToLynch);
         }
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
 
-function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action) {
+function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action, votesToLynch) {
     var gameLynchHTML = document.getElementById("game_vote_to_lynch");
     var aliveListHTML = document.getElementById("game_alive_list");
     var deadListHTML = document.getElementById("game_dead_list");
     var playerBoxTable = document.getElementById("player_box_table");
-    gameLynchHTML.innerHTML = "";
+    gameLynchHTML.innerHTML = votesToLynch;
     aliveListHTML.innerHTML = "";
     deadListHTML.innerHTML = "";
     playerTable = "";

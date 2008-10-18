@@ -59,6 +59,7 @@
 
     function get_votes_needed($game_id) {
         global $dbh;
+        $votes_needed = false;
         $query = "SELECT COUNT(user_id) as cnt FROM game_players ".
                  "WHERE game_id='$game_id' AND player_alive='Y'";
         $result = mysqli_query($dbh, $query);
@@ -66,10 +67,9 @@
             $row = mysqli_fetch_array($result);
             $total_alive = $row['cnt'];
             $votes_needed = ceil($total_alive / 2);
-            echo "Total alive: $total_alive <br />";
-            echo "Votes needed: $votes_needed";
         } else {
         }
+        return $votes_needed;
     }
 
     function clear_player_action($game_id, $player_id) {
@@ -541,6 +541,7 @@
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<tracker>$game_tracker</tracker>\n";
+                $to_return .= "<votes_required>" . get_votes_needed($game_id) . "</votes_required>\n";
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
                          "game_players.player_alive, game_players.player_ready, ".
