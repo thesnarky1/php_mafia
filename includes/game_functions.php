@@ -314,9 +314,9 @@
         global $dbh;
         $query = "UPDATE game_players SET player_needs_update='";
         if($needs) {
-            $query .= "Y";
+            $query .= "1";
         } else {
-            $query .= "N";
+            $query .= "0";
         }
         $query .= "' ".
                   "WHERE game_id='$game_id' AND user_id='$user_id'";
@@ -382,13 +382,13 @@
             //Track based on player_needs_update
             $needs_update = player_needs_update($user_id, $game_id, "ID");
         }
-        if($force) {
+        if($force) { //ignore anything else, we HAVE to update
             $needs_update = true;
         }
         if($needs_update) {
-            if($user_id != 0) {
-                update_player_needs_update($game_id, $user_id, false);
-            }
+            //if($user_id != 0) {
+            //    update_player_needs_update($game_id, $user_id, false); //Turn off needing an update... we just gave it
+            //}
             $query = "SELECT * FROM games WHERE game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) == 1) {
@@ -440,7 +440,7 @@
                         if($player_alive == 'N' || $player_id == $user_id) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
-                            $to_return .= "<role_instructions>You are a $role_name. $role_instructions</role_instructions>\n";
+                            $to_return .= "<role_instructions>Your role is: $role_name. $role_instructions</role_instructions>\n";
                         }
     
                         //Anything specific to the player viewing needs to go after this.

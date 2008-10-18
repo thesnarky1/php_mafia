@@ -54,7 +54,7 @@ function requestGameInformation() {
                              "&user_id=" + user + 
                              "&user_hash=" + userHash;
                     if(forceUpdate) {
-                        gameInforParams += "&force";
+                        gameInforParams += "&force=true";
                         forceUpdate = false;
                     }
                 }

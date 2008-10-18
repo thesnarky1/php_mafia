@@ -30,12 +30,12 @@
                             break;
                         case "READY":
                             set_player_ready($game_id, $user_id, true);
-                            player_needs_update($user_id, $game_id, true);
+                            update_player_needs_update($game_id, $user_id, true);
                             echo "You declare that you're ready.";
                             break;
                         case "UN_READY":
                             set_player_ready($game_id, $user_id, false);
-                            player_needs_update($user_id, $game_id, true);
+                            update_player_needs_update($game_id, $user_id, true);
                             echo "You remove all choices and sit, unprepared.";
                             break;
                     }
