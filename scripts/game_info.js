@@ -111,6 +111,7 @@ function readInformation() {
             if(roleMessage != roleInstructionsHTML.innerHTML) {
                 roleInstructionsHTML.innerHTML = roleMessage;
             }
+            var action = response.getElementsByTagName("action")[0].firstChild.data.toString();
             var bannerMessage = response.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();
@@ -128,13 +129,13 @@ function readInformation() {
                 altBannerAction = "";
             }
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction);
+            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action);
         }
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
 
-function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction) {
+function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action) {
     var gameLynchHTML = document.getElementById("game_vote_to_lynch");
     var aliveListHTML = document.getElementById("game_alive_list");
     var deadListHTML = document.getElementById("game_dead_list");
@@ -186,7 +187,7 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         }
         playerHTML += ">";
         if(playerAlive == 'Y') {
-            playerHTML += "<div id='player_box_alive' onclick='performAction(" + bannerAction + "," + playerId + ")'>";
+            playerHTML += "<div id='player_box_alive' onclick='performAction(" + action + "," + playerId + ")'>";
             playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
             playerHTML += "<p class='player_name'>" + playerName + "</p>";
             playerHTML += "</div>";

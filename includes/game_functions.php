@@ -386,9 +386,9 @@
             $needs_update = true;
         }
         if($needs_update) {
-            //if($user_id != 0) {
-            //    update_player_needs_update($game_id, $user_id, false); //Turn off needing an update... we just gave it
-            //}
+            if($user_id != 0) {
+                update_player_needs_update($game_id, $user_id, false); //Turn off needing an update... we just gave it
+            }
             $query = "SELECT * FROM games WHERE game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) == 1) {
@@ -539,10 +539,10 @@
                     $to_return .= "<channel>$real_channel</channel>\n";
                 }
                 $to_return .= "</player_list>\n";
+                $to_return .= "<action>$action_id</action>\n";
                 if($banner) {
                     $to_return .= "<banner>$banner</banner>\n";
                     $to_return .= "<banner_action>$banner_action</banner_action>\n";
-                    $to_return .= "<action>$action_id</action>\n";
                 }
                 if($alt_banner) {
                     $to_return .= "<alt_banner>$alt_banner</alt_banner>\n";
