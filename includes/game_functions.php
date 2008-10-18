@@ -3,12 +3,16 @@
     function auto_ready_game($game_id) {
         global $dbh;
         $nothing = get_action_by_enum("NO_ACTION");
-        $query = "SELECT user_id, player_alive FROM game_players ".
-                 "WHERE game_id='$game_id'";
+        $query = "SELECT user_id ".
+                 "FROM game_players ".
+                 "WHERE game_id='$game_id' AND player_alive='Y'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_array($result)) {
-
+                $user_id = $row['user_id'];
+                if(in_array($nothing, get_user_actions($game_id, $user_id))) {
+                    set_player_ready($game_id, $user_id, true);
+                }
             }
         }
     }
@@ -524,6 +528,7 @@
             update_game_tracker($game_id);
             update_game_players($game_id);
             update_players_ready($game_id);
+            auto_ready_game($game_id);
         } else {
         }
     }
