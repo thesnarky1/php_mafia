@@ -111,7 +111,12 @@ function readInformation() {
             if(roleMessage != roleInstructionsHTML.innerHTML) {
                 roleInstructionsHTML.innerHTML = roleMessage;
             }
-            var action = response.getElementsByTagName("action")[0].firstChild.data.toString();
+            var actionMessage = response.getElementsByTagName("action");
+            if(actionMessage.length > 0) {
+                actionMessage = actionMessage[0].firstChild.data.toString();
+            } else {
+                actionMessage = "";
+            }
             var bannerMessage = response.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();
@@ -130,7 +135,7 @@ function readInformation() {
             }
             var votesToLynch = response.getElementsByTagName("votes_required")[0].firstChild.data.toString();
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, action, votesToLynch);
+            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, actionMessage, votesToLynch);
         }
     }
     setTimeout("requestGameInformation();", updateInterval);

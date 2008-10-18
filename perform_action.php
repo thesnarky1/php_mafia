@@ -101,6 +101,7 @@
                     }
                     if(can_phase_change($game_id)) {
                         lock_game($game_id, true);
+                        carry_out_actions($game_id);
                         next_phase($game_id);
                         lock_game($game_id, false);
                     } else {
