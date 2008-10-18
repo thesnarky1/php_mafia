@@ -8,7 +8,7 @@ var debugMode = true;
 var boxesPerRow = 2;
 var playerCount = 1;
 var gameTracker = -1;
-
+var forceUpdate = true;
 
 function createXmlHttpRequestObject() {
     var xmlHttp;
@@ -53,6 +53,10 @@ function requestGameInformation() {
                              "&game_tracker=" + gameTracker + 
                              "&user_id=" + user + 
                              "&user_hash=" + userHash;
+                    if(forceUpdate) {
+                        gameInforParams += "&force";
+                        forceUpdate = false;
+                    }
                 }
                 //xmlHttpGetInformation.open("POST", gameInfoURL, true);
                 xmlHttpGetInformation.open("GET", gameInfoURL+"?"+gameInforParams, true);

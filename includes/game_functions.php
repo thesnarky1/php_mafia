@@ -370,7 +370,7 @@
         return $to_return;
     }
 
-    function get_game_information($game_id, $old_game_tracker, $user_id=0) {
+    function get_game_information($game_id, $old_game_tracker, $force, $user_id=0) {
         global $dbh, $phases;
         $needs_update = false;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
@@ -381,6 +381,9 @@
         } else {
             //Track based on player_needs_update
             $needs_update = player_needs_update($user_id, $game_id, "ID");
+        }
+        if($force) {
+            $needs_update = true;
         }
         if($needs_update) {
             if($user_id != 0) {
