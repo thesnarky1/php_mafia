@@ -1,5 +1,17 @@
 <?php
 
+    function lock_game($game_id, $lock) {
+        global $dbh;
+        $query = "UPDATE games SET game_locked='";
+        if($lock) {
+            $query .= "1";
+        } else {
+            $query .= "0";
+        }
+        $query .= "' WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+    }
+
     function can_phase_change($game_id) {
         global $dbh;
         $to_return = false; //Don't want to change unless I say so!
@@ -404,6 +416,7 @@
     }
 
     function next_phase($game_id) {
+        lock_game($game_id, true);
         global $dbh;
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
@@ -448,6 +461,7 @@
             update_game_tracker($game_id);
             update_game_players($game_id);
             update_players_ready($game_id);
+            lock_game($game_id, false);
         } else {
         }
     }
