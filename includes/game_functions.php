@@ -341,11 +341,12 @@
             while($row = mysqli_fetch_array($result)) {
                 $players[] = $row['user_id'];
             }
-            $query = "SELECT roleset_roles FROM rolesets ORDER BY RAND() LIMIT 1";
+            $query = "SELECT roleset_roles, roleset_id FROM rolesets ORDER BY RAND() LIMIT 1";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) == 1) {
                 $row = mysqli_fetch_array($result);
                 $roleset = explode(",", $row['roleset_roles']);
+                $roleset_id = $row['roleset_id'];
                 $roleset_length = count($roleset);
                 $rand_indices = array_rand($players, $num_players);
                 foreach($rand_indices as $rand_index) {
@@ -365,6 +366,8 @@
                              "WHERE game_id='$game_id' AND user_id='$finished_player'";
                     $result = mysqli_query($dbh, $query);
                     if($result && mysqli_affected_rows($dbh) == 1) {
+                        $query = "UPDATE games SET game_roleset_id='$roleset_id' WHERE game_id='$game_id'";
+                        $result = mysqli_query($dbh, $query);
                     } else {
                         echo "DB error - $query";
                     }
