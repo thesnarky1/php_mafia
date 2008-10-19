@@ -1,7 +1,5 @@
 <?php
 
-    
-
     function get_action_priority($game_id, $user_id) {
         global $dbh;
         $query = "SELECT roles.role_action_priority ".
@@ -543,6 +541,7 @@
                 $result2 = mysqli_query($dbh, $query2);
             }
         }
+        update_game_players($game_id);
     }
 
     function get_result_by_enum($enum) {
@@ -592,15 +591,13 @@
             } 
 
             if($over) {
-                echo "Game over!<br />";
             } else {
-                echo "Not over!<br />";
             }
             return $over;
         }
     }
 
-    function get_roles_for_faction($faction) {
+    function get_roles_by_faction($faction) {
         global $dbh;
         $role_ids = array();
         $query = "SELECT role_id FROM roles WHERE role_faction='$faction'";
