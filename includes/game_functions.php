@@ -8,7 +8,7 @@
                  "roles.role_id=game_players.role_id";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
-            $row = mysli_fetch_array($result);
+            $row = mysqli_fetch_array($result);
             return $row['role_action_priority'];
         }
     }
@@ -61,11 +61,23 @@
                         case "SAVE":
                             if($target_id != 0) {
                                 $to_save[] = $target_id;
+                                add_message(get_channel_by_name("doctor_$user_id_$game_id"),
+                                            get_system_id(),
+                                            "Being the selfish doctor you are, you elect to let everyone die tonight.");
+                            } else {
+                                add_message(get_channel_by_name("doctor_$user_id_$game_id"),
+                                            get_system_id(),
+                                            "You bring " . get_user_name($target_id) . 
+                                            " into the OR, praying its not too late to save them.");
                             }
                             break;
                         case "INVESTIGATE":
                             if($target_id != 0) {
                                 $to_investigate[$user_id] = $target_id;
+                            } else {
+                                add_message(get_channel_by_name("cop_$user_id_$game_id"),
+                                            get_system_id(),
+                                            "You decide to stay at home tonight, rather than investigate the rash of murders.");
                             }
                             break;
                         case "LYNCH":
@@ -252,7 +264,7 @@
         if($result && mysqli_num_rows($result) == 1) {
             $row = mysqli_fetch_array($result);
             $total_alive = $row['cnt'];
-            $votes_needed = ceil($total_alive / 2);
+            $votes_needed = floor(($total_alive / 2) + 1);
         } else {
         }
         return $votes_needed;
