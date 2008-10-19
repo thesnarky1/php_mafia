@@ -187,17 +187,27 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         var playerId = player.getElementsByTagName("id")[0].firstChild.data.toString();
         var playerAlive = player.getElementsByTagName("alive")[0].firstChild.data.toString();
         var playerAvatar = player.getElementsByTagName("avatar")[0].firstChild.data.toString();
+        playerRole = player.getElementsByTagName("role_name");
+        //If we have a role, display it. If not, display the faction. If not... well... display nothing!
+        if(playerRole.length > 0) {
+            playerRole = "(" + playerRole[0].firstChild.data.toString() + ")";
+        } else {
+            playerRole = player.getElementsByTagName("role_faction");
+            if(playerRole.length > 0) {
+                playerRole = "(" + playerRole[0].firstChild.data.toString() + ")";
+            } else {
+                playerRole = "(Unknown)";
+            }
+        }
         if(playerAlive == 'Y') {
             aliveListHTML.innerHTML += "<li class='game_player_list_alive'>" + 
                                        "<a href='./profile.php?id=" + playerId + ">" + 
-                                       playerName + "</a></li>\n";
+                                       playerName + "</a> " + playerRole + "</li>\n";
             alivePlayers++;
         } else {
-            //playerRole = player.getElementsByTagName("role_name")[0].firstChild.data.toString();
-            playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
             deadListHTML.innerHTML += "<li class='game_player_list_dead'>" + 
                                        "<a href='./profile.php?id=" + playerId + ">" + 
-                                       playerName + "</a> (" + playerFaction + ")</li>\n";
+                                       playerName + "</a> " + playerRole + "</li>\n";
             deadPlayers++;
         }
         if(playerCount % boxesPerRow == 1) {

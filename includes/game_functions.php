@@ -762,10 +762,11 @@
                         $to_return .= "<avatar>$user_avatar</avatar>\n";
                         $to_return .= "<alive>$player_alive</alive>\n";
                         if($player_alive == 'N' || $player_id == $user_id) {
-                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
+                            //Role information used to come out of here. I'm leaving in case you can turn on total disclosure
                         }
-                        if($player_id == $user_id) {
+                        if($player_id == $user_id || $game_phase == 3) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
+                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
                             $to_return .= "<role_instructions>";
                             $to_return .= "Your role is: $role_name. ";
                             if($player_alive == 'Y') {
