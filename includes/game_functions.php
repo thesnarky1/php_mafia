@@ -97,18 +97,7 @@
                         }
                     }
                 } else { //Night actions (Kill, save, investigate)
-                    foreach($to_kill as $killer_id=>$killee_id) {
-                        if(in_array($killee_id, $to_save)) { //If the guy was saved, don't allow him to be killed
-                            $to_kill[$killer_id][1] = false;
-                        } else {
-                            //Kill player
-                            kill_player($killee_id, $game_id);
-                            add_message(get_system_channel($game_id),
-                                        get_system_id(),
-                                        "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
-                        }
-                    } 
-                    //Investigation stuff
+                    //Investigation stuff comes first
                     foreach($to_investigate as $user_id=>$target_id) {
                         $chan_name = "cop_$user_id_$game_id";
                         $query = "SELECT roles.role_id, roles.role_name ".
@@ -132,6 +121,18 @@
                             }
                         }
                     }
+                    //Kill stuff
+                    foreach($to_kill as $killer_id=>$killee_id) {
+                        if(in_array($killee_id, $to_save)) { //If the guy was saved, don't allow him to be killed
+                            $to_kill[$killer_id][1] = false;
+                        } else {
+                            //Kill player
+                            kill_player($killee_id, $game_id);
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
+                        }
+                    } 
                 }
             }
         }
@@ -493,6 +494,9 @@
             }
         }
         return $to_return;
+    }
+
+    function end_game($game_id) {
     }
 
     function can_game_end($game_id) {
