@@ -41,13 +41,19 @@
                     $action_enum = get_action_by_id($action_id);
                     switch ($action_enum) {
                         case "KILL":
-                            $to_kill[$user_id] = $target_id;
+                            if($target_id != 0) {
+                                $to_kill[$user_id] = $target_id;
+                            }
                             break;
                         case "SAVE":
-                            $to_save[] = $target_id;
+                            if($target_id != 0) {
+                                $to_save[] = $target_id;
+                            }
                             break;
                         case "INVESTIGATE":
-                            $to_investigate[$user_id] = $target_id;
+                            if($target_id != 0) {
+                                $to_investigate[$user_id] = $target_id;
+                            }
                             break;
                         case "LYNCH":
                             if(!isset($to_lynch[$target_id])) {
