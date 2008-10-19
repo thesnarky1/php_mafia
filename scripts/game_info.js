@@ -139,6 +139,19 @@ function readInformation() {
                 altBannerAction = "";
             }
             var votesToLynch = response.getElementsByTagName("votes_required")[0].firstChild.data.toString();
+            var voteTallyHTML = document.getElementById("vote_tally");
+            var voteTally = response.getElementsByTagName("vote_tally");
+            if(voteTally.length > 0) {
+                voteTallyHTML.innerHTML = "";
+                for(var i = 0; i < voteTally.length; i++) {
+                    var vote = voteTally.item(i);
+                    var voteName = vote.getElementsByTagName("name")[0].firstChild.data.toString();
+                    var voteVote = vote.getElementsByTagName("vote")[0].firstChild.data.toString();
+                    voteTallyHTML.innerHTML += "<li class='game_player_list_alive'>" + voteName + ": " + voteVote + " votes</li>\n";
+                }
+            } else {
+                voteTallyHTML.innerHTML = "";
+            }
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
             displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, actionMessage, votesToLynch);
         }

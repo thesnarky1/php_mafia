@@ -686,6 +686,25 @@
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<tracker>$game_tracker</tracker>\n";
                 $to_return .= "<votes_required>" . get_votes_needed($game_id) . "</votes_required>\n";
+                if($game_phase == 2) { //If its day, lets give a vote tally
+                    $lynch_action = get_action_by_enum("LYNCH");
+                    $query = "SELECT COUNT(*) as cnt, target_id ".
+                             "FROM game_actions ".
+                             "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
+                             "game_turn='$game_turn' AND action_id='$lynch_action' ".
+                             "GROUP BY target_id";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_num_rows($result) > 0) {
+                        while($row = mysqli_fetch_array($result)) {
+                            $votes = $row['cnt'];
+                            $target_name = get_user_name($row['target_id']);
+                            $to_return .= "<vote_tally>";
+                            $to_return .= "<name>$target_name</name>\n";
+                            $to_return .= "<vote>$votes</vote>\n";
+                            $to_return .= "</vote_tally>\n";
+                        }
+                    }
+                }
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
                          "game_players.player_alive, game_players.player_ready, ".
