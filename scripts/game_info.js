@@ -191,10 +191,12 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         //If we have a role, display it. If not, display the faction. If not... well... display nothing!
         if(playerRole.length > 0) {
             playerRole = "(" + playerRole[0].firstChild.data.toString() + ")";
+            playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
         } else {
             playerRole = player.getElementsByTagName("role_faction");
             if(playerRole.length > 0) {
                 playerRole = "(" + playerRole[0].firstChild.data.toString() + ")";
+                playerFaction = player.getElementsByTagName("role_faction")[0].firstChild.data.toString();
             } else {
                 playerRole = "(Unknown)";
             }
