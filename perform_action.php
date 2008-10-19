@@ -25,6 +25,7 @@
             }
             $valid_actions = get_user_actions($user_id, $game_id);
             if(in_array($action_id, $valid_actions)) {
+                $priority = get_action_priority($game_id, $user_id);
                 $action_enum = get_action_by_id($action_id);
                 if($action_enum) {
                     //Big ol' switch, I'm thinking
@@ -37,7 +38,7 @@
                             break;
                         case "KILL":
                             echo "You mark " . get_user_name($target_id) . " for death.";
-                            add_player_action($game_id, $user_id, $action_id, $target_id);
+                            add_player_action($game_id, $user_id, $action_id, $target_id, $priority);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
                             break;

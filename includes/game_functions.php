@@ -1,5 +1,18 @@
 <?php
 
+    function get_action_priority($game_id, $user_id) {
+        global $dbh;
+        $query = "SELECT roles.role_action_priority ".
+                 "FROM roles, game_players ".
+                 "WHERE game_players.game_id='$game_id' AND game_players.user_id='$user_id' AND ".
+                 "roles.role_id=game_players.role_id";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysli_fetch_array($result);
+            return $row['role_action_priority'];
+        }
+    }
+
     function auto_ready_game($game_id) {
         global $dbh;
         $nothing = get_action_by_enum("NO_ACTION");
@@ -268,7 +281,7 @@
         }
     }
 
-    function add_player_action($game_id, $user_id, $action_id, $target_id) {
+    function add_player_action($game_id, $user_id, $action_id, $target_id, $priority=0) {
         global $dbh;
         $query = "SELECT game_turn, game_phase FROM games WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
@@ -285,12 +298,12 @@
                     //Update existing
                     $row = mysqli_fetch_array($result);
                     $game_action_id = $row['game_action_id'];
-                    $query = "UPDATE game_actions SET action_id='$action_id', ".
+                    $query = "UPDATE game_actions SET action_id='$action_id', game_action_priority='$priority', ".
                              "target_id='$target_id' WHERE game_action_id='$game_action_id'";
                 } else {
                     //Insert new action
-                    $query = "INSERT INTO game_actions(game_id, user_id, action_id, game_turn, game_phase, target_id) ".
-                             "VALUES('$game_id', '$user_id', '$action_id', '$game_turn', '$game_phase', '$target_id')";
+                    $query = "INSERT INTO game_actions(game_id, user_id, action_id, game_turn, game_phase, target_id, game_action_priority) ".
+                             "VALUES('$game_id', '$user_id', '$action_id', '$game_turn', '$game_phase', '$target_id', '$priority')";
                 }
                 $result = mysqli_query($dbh, $query);
                 if($result && mysqli_affected_rows($dbh) > 0) {
