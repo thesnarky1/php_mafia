@@ -1,5 +1,7 @@
 <?php
 
+    
+
     function get_action_priority($game_id, $user_id) {
         global $dbh;
         $query = "SELECT roles.role_action_priority ".
@@ -500,6 +502,12 @@
     }
 
     function end_game($game_id) {
+        global $dbh;
+        //Set game phase to 3
+        //lock game
+        lock_game($game_id, true);
+        //Send some spam saying its over, of course
+        //Add to stats table (player, win|loss, role)
     }
 
     function can_game_end($game_id) {
