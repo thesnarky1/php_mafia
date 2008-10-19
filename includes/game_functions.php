@@ -27,7 +27,7 @@
             $game_phase = $row['game_phase'];
             $query = "SELECT user_id, target_id, action_id FROM game_actions ".
                      "WHERE game_id='$game_id' AND game_turn='$game_turn' AND ".
-                     "game_phase='$game_phase'";
+                     "game_phase='$game_phase' ORDER BY game_action_priority DESC";
             $result = mysqli_query($dbh, $query);
             if($result && mysqli_num_rows($result) > 0) {
                 $to_kill = array(); //(user_id=>(target_id, true))
@@ -78,6 +78,8 @@
                                 add_message(get_system_channel($game_id),
                                             get_system_id(),
                                             "$victim is lynched.");
+                                if(can_game_end($game_id)) {
+                                }
                             }
                         }
                     }
@@ -480,7 +482,7 @@
         return $to_return;
     }
 
-    function is_game_over($game_id) {
+    function can_game_end($game_id) {
         global $dbh;
         $roles = array();
         $query = "SELECT roles.role_faction, game_players.player_alive ".
@@ -498,17 +500,19 @@
                     $roles[$role_faction]++;
                 }
             }
+            $over = false;
             if(isset($roles['Unknown'])) {
-                $over = false;
             } else if(count($roles) == 1) {
-                if(isset($roles['Town'])) {
+                if(isset($roles['Town']) || isset($roles['Antitown'])) {
                     $over = true;
-                } else if(isset($roles['Antitown'])) {
-                    $over = true;
-                } else {
-                    $over = false;
+                } else if(isset($roles['Alone'])) {
+                    if($roles['Alone'] == 1) {
+                        $over = true;
+                    } else {
+                    }
+                } else{
                 }
-            }
+            } 
 
             if($over) {
                 echo "Game over!<br />";
