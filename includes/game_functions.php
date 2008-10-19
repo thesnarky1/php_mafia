@@ -93,7 +93,7 @@
                                 add_message(get_system_channel($game_id),
                                             get_system_id(),
                                             "$victim is lynched.");
-                                if(can_game_end($game_id)) {
+                                if($winners = can_game_end($game_id)) {
                                 }
                             }
                         }
@@ -133,6 +133,8 @@
                             add_message(get_system_channel($game_id),
                                         get_system_id(),
                                         "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
+                            if($winners = can_game_end($game_id)) {
+                            }
                         }
                     } 
                 }
@@ -501,13 +503,40 @@
         return $to_return;
     }
 
-    function end_game($game_id) {
+    function end_game($game_id, $winning_faction) {
         global $dbh;
         //Set game phase to 3
         //lock game
         lock_game($game_id, true);
         //Send some spam saying its over, of course
         //Add to stats table (player, win|loss, role)
+        $query = "SELECT user_id, role_id, player_alive ".
+                 "FROM game_players ".
+                 "WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+                $player_alive = $row['player_alive'];
+                $user_id = $row['user_id'];
+                $role_id = $row['role_id'];
+                if($player_alive == 'Y') {
+                }
+                $query2 = "INSERT INTO game_player_results(game_id, user_id, role_id, result_id) ".
+                          "VALUES('$game_id', '$user_id', '$role_id', '$result_id')";
+            }
+        }
+    }
+
+    function get_result_by_enum($enum) {
+        global $dbh;
+        $query = "SELECT result_id FROM results WHERE result_enum='$enum'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            return $row['result_id'];
+        } else {
+            return false;
+        }
     }
 
     function can_game_end($game_id) {
@@ -531,11 +560,13 @@
             $over = false;
             if(isset($roles['Unknown'])) {
             } else if(count($roles) == 1) {
-                if(isset($roles['Town']) || isset($roles['Antitown'])) {
-                    $over = true;
+                if(isset($roles['Town'])) {
+                    $over = get_roles_for_faction("Town");
+                } else if(isset($roles['Antitown'])) {
+                    $over = get_roles_for_faction("Antitown");
                 } else if(isset($roles['Alone'])) {
                     if($roles['Alone'] == 1) {
-                        $over = true;
+                        $over = get_roles_for_faction("Alone");
                     } else {
                     }
                 } else{
@@ -549,6 +580,19 @@
             }
             return $over;
         }
+    }
+
+    function get_roles_for_faction($faction) {
+        global $dbh;
+        $role_ids = array();
+        $query = "SELECT role_id FROM roles WHERE role_faction='$faction'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+                $role_ids[] = $row['role_id'];
+            }
+        }
+        return $role_ids;
     }
 
     function capitalize($str) {
