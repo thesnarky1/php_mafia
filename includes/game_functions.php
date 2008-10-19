@@ -62,19 +62,32 @@
                     foreach($to_lynch as $lynchee=>$vote) {
                         if($vote >= $vote_to_lynch) {
                             //Kill player
-                            $victim = get_user_name($lynchee);
-                            kill_player($lynchee, $game_id);
-                            add_message(get_system_channel($game_id),
-                                        get_system_id(),
-                                        "$victim is lynched.");
+                            if($lynchee == 0) { //No lynch vote
+                                add_message(get_system_channel($game_id),
+                                            get_system_id(),
+                                            "There isn't enough proof to convict anyone, no lynch this turn.");
+                            } else {
+                                $victim = get_user_name($lynchee);
+                                kill_player($lynchee, $game_id);
+                                add_message(get_system_channel($game_id),
+                                            get_system_id(),
+                                            "$victim is lynched.");
+                            }
                         }
                     }
                 } else { //Night actions (Kill, save, investigate)
                     foreach($to_kill as $killer_id=>$killee_id) {
-                        if(in_array($killee_id, $to_save)) {
+                        if(in_array($killee_id, $to_save)) { //If the guy was saved, don't allow him to be killed
                             $to_kill[$killer_id][1] = false;
+                        } else {
+                            //Kill player
+                            kill_player($killee_id, $game_id);
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
                         }
-                    }
+                    } 
+                    //Investigation stuff
                     foreach($to_investigate as $user_id=>$target_id) {
                         $chan_name = "cop_$user_id_$game_id";
                         $query = "SELECT roles.role_id, roles.role_name ".
