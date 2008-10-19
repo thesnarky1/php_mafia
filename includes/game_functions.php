@@ -505,10 +505,16 @@
 
     function end_game($game_id, $winning_faction) {
         global $dbh;
+        $winning_roles = get_roles_by_faction($winning_faction);
         //Set game phase to 3
+        $query = "UPDATE games SET game_phase='3', game_locked='1' WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
         //lock game
         lock_game($game_id, true);
         //Send some spam saying its over, of course
+        add_message(get_system_channel($game_id),
+                    get_system_id(),
+                    "With much bloodshed, the game ends. The winning faction was: $winning_faction.");
         //Add to stats table (player, win|loss, role)
         $query = "SELECT user_id, role_id, player_alive ".
                  "FROM game_players ".
@@ -520,9 +526,21 @@
                 $user_id = $row['user_id'];
                 $role_id = $row['role_id'];
                 if($player_alive == 'Y') {
+                    if(in_array($role_id, $winning_roles)) {
+                        $result_id = get_result_by_enum("LIVE_WIN");
+                    } else {
+                        $result_id = get_result_by_enum("LIVE_LOSS");
+                    }
+                } else {
+                    if(in_array($role_id, $winning_roles)) {
+                        $result_id = get_result_by_enum("DEAD_WIN");
+                    } else {
+                        $result_id = get_result_by_enum("DEAD_LOSS");
+                    }
                 }
                 $query2 = "INSERT INTO game_player_results(game_id, user_id, role_id, result_id) ".
                           "VALUES('$game_id', '$user_id', '$role_id', '$result_id')";
+                $result2 = mysqli_query($dbh, $query2);
             }
         }
     }
@@ -561,12 +579,12 @@
             if(isset($roles['Unknown'])) {
             } else if(count($roles) == 1) {
                 if(isset($roles['Town'])) {
-                    $over = get_roles_for_faction("Town");
+                    $over = "Town";
                 } else if(isset($roles['Antitown'])) {
-                    $over = get_roles_for_faction("Antitown");
+                    $over = "Antitown";
                 } else if(isset($roles['Alone'])) {
                     if($roles['Alone'] == 1) {
-                        $over = get_roles_for_faction("Alone");
+                        $over = "Alone";
                     } else {
                     }
                 } else{
