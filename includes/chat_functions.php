@@ -5,7 +5,7 @@
         $query = "SELECT channel_id FROM channels ".
                  "WHERE channel_name='$channel_name' AND game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) { //moer or less and we don't want it!
+        if($result && mysqli_num_rows($result) == 1) { //more or less and we don't want it!
             $row = mysqli_fetch_array($result);
             return $row['channel_id'];
         } else {
@@ -120,6 +120,10 @@
             $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
                      "VALUES('$channel_id', '$user_id', '$message', NOW())";
             $result = mysqli_query($dbh, $query);
+            if($result && mysqli_affected_rows($dbh) == 1) {
+            } else {
+                echo "$query";
+            }
         }
     }
 

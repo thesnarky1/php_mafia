@@ -61,11 +61,11 @@
                         case "SAVE":
                             if($target_id != 0) {
                                 $to_save[] = $target_id;
-                                add_message(get_channel_by_name("doctor_$user_id_$game_id"),
+                                add_message(get_channel_by_name("doctor_$user_id_$game_id", $game_id),
                                             get_system_id(),
                                             "Being the selfish doctor you are, you elect to let everyone die tonight.");
                             } else {
-                                add_message(get_channel_by_name("doctor_$user_id_$game_id"),
+                                add_message(get_channel_by_name("doctor_$user_id_$game_id", $game_id),
                                             get_system_id(),
                                             "You bring " . get_user_name($target_id) . 
                                             " into the OR, praying its not too late to save them.");
@@ -75,7 +75,7 @@
                             if($target_id != 0) {
                                 $to_investigate[$user_id] = $target_id;
                             } else {
-                                add_message(get_channel_by_name("cop_$user_id_$game_id"),
+                                add_message(get_channel_by_name("cop_$user_id_$game_id", $game_id),
                                             get_system_id(),
                                             "You decide to stay at home tonight, rather than investigate the rash of murders.");
                             }
@@ -111,7 +111,7 @@
                 } else { //Night actions (Kill, save, investigate)
                     //Investigation stuff comes first
                     foreach($to_investigate as $user_id=>$target_id) {
-                        $chan_name = "cop_$user_id_$game_id";
+                        $chan_name = "cop_" . $user_id . "_" . $game_id;
                         $query = "SELECT roles.role_id, roles.role_name ".
                                  "FROM roles, game_players ".
                                  "WHERE game_players.game_id='$game_id' AND ".
@@ -123,13 +123,14 @@
                             $target_role_name = $row['role_name'];
                             $target_role_id = $row['role_id'];
                             $query = "INSERT into game_investigations(game_id, user_id, target_id, role_id) ".
-                                     "VALUES('$game_id, '$user_id', '$target_id', '$target_role_id')";
+                                     "VALUES('$game_id', '$user_id', '$target_id', '$target_role_id')";
                             $result = mysqli_query($dbh, $query);
                             if($result && mysqli_affected_rows($dbh) == 1) {
-                                add_message(get_channel_by_name($chan_name),
+                                add_message(get_channel_by_name($chan_name, $game_id),
                                             get_system_id(),
                                             "You investigate " . get_user_name($target_id) . 
                                             " and discover their role is: $target_role_name.");
+                            } else {
                             }
                         }
                     }
@@ -216,7 +217,7 @@
                                              "game_actions.game_turn='$game_turn' AND ".
                                              "game_actions.game_phase='$game_phase'";
                                     $target_result = mysqli_query($dbh, $target_query);
-                                    if($target_result && mysqli_num_rows($target_result) == 1) {
+                                    if($target_result && (mysqli_num_rows($target_result) == 1 || mysqli_num_rows($target_result) == 0)) {
                                         //echo "All $role_target_group want to target the same.\n";
                                         //Have an agreed upon target
                                     } else {
