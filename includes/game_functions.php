@@ -333,6 +333,7 @@
                     $game_action_id = $row['game_action_id'];
                     $query = "UPDATE game_actions SET action_id='$action_id', game_action_priority='$priority', ".
                              "target_id='$target_id' WHERE game_action_id='$game_action_id'";
+                    //query happens below
                 } else {
                     //Insert new action
                     $query = "INSERT INTO game_actions(game_id, user_id, action_id, game_turn, game_phase, target_id, game_action_priority) ".
