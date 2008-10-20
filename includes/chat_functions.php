@@ -33,6 +33,11 @@
 
     function initialize_channels($game_id) {
         global $dbh;
+        //Kill off ability to chat on unassigned channel
+        $channel_id = get_channel_by_name("unassigned_" . $game_id, $game_id);
+        $query = "UPDATE channel_members SET channel_post_rights='0' ".
+                 "WHERE game_id='$game_id' AND channel_id='$channel_id'";
+        $result = mysqli_query($dbh, $query);
         $channel_members = array(); //user_id=>channel
         $channels = array();
         $users = array();
