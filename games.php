@@ -137,8 +137,8 @@
         } else {
             $user_id = false;
         }
-        $game_id = $_GET['game_id'];
-        if(isset($_GET['join']) || isset($_POST['join'])) {
+        $game_id = safetify_input($_GET['game_id']);
+        if(isset($_REQUEST['join'])) {
             if($user_id) {
                 $query = "SELECT game_phase, game_password FROM games WHERE game_id='$game_id'";
                 $result = mysqli_query($dbh, $query);
@@ -166,7 +166,15 @@
                                              "VALUES('$game_id', '$user_id', 5)";
                                     $result = mysqli_query($dbh, $query);
                                     if($result && mysqli_affected_rows($dbh) == 1) {
-                                        //Successful
+                                        $channel_id = get_channel_by_name("unassigned_" . $game_id, $game_id);
+                                        $query = "INSERT INTO channel_members(user_id, channel_id, channel_post_rights) ".
+                                                 "VALUES('$user_id', '$channel_id', '1')";
+                                        $result = mysqli_query($dbh, $query);
+                                        if($result && mysqli_affected_rows($dbh) == 1) {
+                                            //Successful
+                                        } else {
+                                            $error = "Error adding you to the chat channel - $query";
+                                        }
                                     } else {
                                         $error = "Error joining game, please try again if its still open.";
                                     }
