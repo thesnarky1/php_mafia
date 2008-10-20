@@ -37,7 +37,8 @@
         if($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_array($result)) {
                 $user_id = $row['user_id'];
-                if(in_array($nothing, get_user_actions($game_id, $user_id))) {
+                $actions = get_user_actions($game_id, $user_id);
+                if(in_array($nothing, $actions) || count($actions) == 0) {
                     set_player_ready($game_id, $user_id, true);
                 }
             }
@@ -235,10 +236,10 @@
                                              "game_actions.game_phase='$game_phase'";
                                     $target_result = mysqli_query($dbh, $target_query);
                                     if($target_result && (mysqli_num_rows($target_result) == 1 || mysqli_num_rows($target_result) == 0)) {
-                                        //echo "All $role_target_group want to target the same.\n";
+                                        echo "All $role_target_group want to target the same.\n";
                                         //Have an agreed upon target
                                     } else {
-                                        //echo "The $role_target_group can't decide.\n";
+                                        echo "The $role_target_group can't decide. $target_query\n";
                                         $to_return = false;
                                     }
                                 }
