@@ -77,6 +77,7 @@
         }
         echo "/>\n";
         echo "<br />\n";
+        /*
         echo "<label>Minimum Players: </label>\n";
         echo "<input type='text' size='2' name='minimum' class='submit' />\n";
         echo "<br />\n";
@@ -89,6 +90,7 @@
         echo "<label>Game password: </label>\n";
         echo "<input type='password' name='game_pass2' class='submit' />\n";
         echo "<br />\n";
+        */
         echo "<input type='submit' value='Create Game' class='submit' />\n";
         echo "</form>\n";
         echo "</div>\n"; //Close create_game_form
