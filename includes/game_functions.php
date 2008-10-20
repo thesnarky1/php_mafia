@@ -1,5 +1,19 @@
 <?php
 
+    function get_investigated_users($game_id, $user_id) {
+        global $dbh;
+        $to_return = array();
+        $query = "SELECT target_id FROM game_investigations ".
+                 "WHERE game_id='$game_id' AND user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_array($result)) {
+                $to_return[] = $row['target_id'];
+            }
+        }
+        return $to_return;
+    }
+
     function get_action_priority($game_id, $user_id) {
         global $dbh;
         $query = "SELECT roles.role_action_priority ".
@@ -112,7 +126,7 @@
                     //Investigation stuff comes first
                     foreach($to_investigate as $user_id=>$target_id) {
                         $chan_name = "cop_" . $user_id . "_" . $game_id;
-                        $query = "SELECT roles.role_id, roles.role_name ".
+                        $query = "SELECT roles.role_id, roles.role_faction ".
                                  "FROM roles, game_players ".
                                  "WHERE game_players.game_id='$game_id' AND ".
                                  "game_players.user_id='$target_id' AND ".
@@ -120,7 +134,10 @@
                         $result = mysqli_query($dbh, $query);
                         if($result && mysqli_num_rows($result) == 1) {
                             $row = mysqli_fetch_array($result);
-                            $target_role_name = $row['role_name'];
+                            $target_role_name = $row['role_faction'];
+                            if($target_role_name == "Alone") {
+                                $target_role_name = "Antitown";
+                            }
                             $target_role_id = $row['role_id'];
                             $query = "INSERT into game_investigations(game_id, user_id, target_id, role_id) ".
                                      "VALUES('$game_id', '$user_id', '$target_id', '$target_role_id')";
@@ -129,7 +146,7 @@
                                 add_message(get_channel_by_name($chan_name, $game_id),
                                             get_system_id(),
                                             "You investigate " . get_user_name($target_id) . 
-                                            " and discover their role is: $target_role_name.");
+                                            " and discover their faction is: $target_role_name.");
                             } else {
                             }
                         }
@@ -786,6 +803,11 @@
                 $banner = false;
                 $alt_banner = false;
                 $role_instructions = "";
+                if($user_id != 0) {
+                    $investigated_peeps = get_investigated_users($game_id, $user_id);
+                } else {
+                    $investigated_peeps = array();
+                }
                 $to_return .= "<turn>$game_turn</turn>\n";
                 $to_return .= "<phase>$phases[$game_phase]</phase>\n";
                 $to_return .= "<tracker>$game_tracker</tracker>\n";
@@ -846,6 +868,12 @@
                         $to_return .= "<alive>$player_alive</alive>\n";
                         if($player_alive == 'N' || $player_id == $user_id) {
                             //Role information used to come out of here. I'm leaving in case you can turn on total disclosure
+                        }
+                        if(in_array($player_id, $investigated_peeps)) {
+                            if($role_faction == "Alone") {
+                                $role_faction = "Antitown";
+                            }
+                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
                         }
                         if($player_id == $user_id || $game_phase == 3) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
