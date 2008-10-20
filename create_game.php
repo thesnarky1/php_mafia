@@ -7,12 +7,11 @@
     if(isset($_POST['game_name']) && isset($_POST['game_pass']) 
         && isset($_POST['game_pass2']) && is_logged_in()) {
         $user_id = $_SESSION['user_id'];
-        $game_pass = $_POST['game_pass'];
-        $game_pass2 = $_POST['game_pass2'];
-        $game_name = $_POST['game_name'];
+        $game_pass = safetify_input($_REQUEST['game_pass']);
+        $game_pass2 = safetify_input($_REQUEST['game_pass2']);
+        $game_name = safetify_input($_REQUEST['game_name']);
         $game_name = trim($game_name);
         if($game_name != "") {
-            $game_name = safetify_input($game_name);
             if($game_pass == $game_pass2) {
                 $query = "SELECT game_id FROM game_players WHERE user_id='$user_id' AND player_alive='Y'";
                 $result = mysqli_query($dbh, $query);
@@ -38,7 +37,23 @@
                                 $result = mysqli_query($dbh, $query);
                                 if($result && mysqli_affected_rows($dbh) == 1) {
                                     //Successful
-                                    header("Location: games.php");
+                                    $channel_name = "unassigned_" . $game_id;
+                                    $query = "INSERT INTO channels(channel_name, game_id, global) ".
+                                             "VALUES('$channel_name', '$game_id', 'Y')";
+                                    $result = mysqli_query($dbh, $query);
+                                    if($result && mysqli_affected_rows($dbh) == 1) {
+                                        $channel_id = mysqli_insert_id($dbh);
+                                        $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
+                                                 "VALUES('$channel_id', '$user_id', '1')";
+                                        $result = mysqli_query($dbh, $query);
+                                        if($result && mysqli_affected_rows($dbh) == 1) {
+                                            header("Location: games.php");
+                                        } else {
+                                            $error = "Unable to add channel_member - $query";
+                                        }
+                                    } else {
+                                        $error = "Unable to create pre-chat channel - $query";
+                                    }
                                 } else {
                                     $error = "Game created, but unable to add player. Contact an admin.";
                                 }
@@ -77,20 +92,18 @@
         }
         echo "/>\n";
         echo "<br />\n";
-        /*
-        echo "<label>Minimum Players: </label>\n";
-        echo "<input type='text' size='2' name='minimum' class='submit' />\n";
-        echo "<br />\n";
-        echo "<label>Maximum Players: </label>\n";
-        echo "<input type='text' size='2' name='maximum' class='submit' />\n";
-        echo "<br />\n";
+//        echo "<label>Minimum Players: </label>\n";
+//        echo "<input type='text' size='2' name='minimum' class='submit' />\n";
+//        echo "<br />\n";
+//        echo "<label>Maximum Players: </label>\n";
+//        echo "<input type='text' size='2' name='maximum' class='submit' />\n";
+//        echo "<br />\n";
         echo "<label>Game password: </label>\n";
         echo "<input type='password' name='game_pass' class='submit' />\n";
         echo "<br />\n";
         echo "<label>Game password: </label>\n";
         echo "<input type='password' name='game_pass2' class='submit' />\n";
         echo "<br />\n";
-        */
         echo "<input type='submit' value='Create Game' class='submit' />\n";
         echo "</form>\n";
         echo "</div>\n"; //Close create_game_form

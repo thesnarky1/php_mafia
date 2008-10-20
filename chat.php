@@ -32,7 +32,7 @@
             $game_id = safetify_input($_GET['game_id']);
             $message = safetify_input($_GET['message']);
             $query = "SELECT users.user_id, game_players.player_alive ".
-                     "FROM users,game_players ".
+                     "FROM users, game_players ".
                      "WHERE users.user_id='$user_id' AND users.user_hash='$user_hash' AND ".
                      "game_players.user_id=users.user_id AND game_players.game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
@@ -48,9 +48,6 @@
                     if($result && mysqli_num_rows($result) == 1) {
                         $row = mysqli_fetch_array($result);
                         $phase = $row['game_phase'];
-                    }
-                    //Get channel
-                    if($phase) {
                         //Check user and game
                         $query = "SELECT channels.channel_id, channels.channel_name, ".
                                  "channel_members.channel_post_rights ".
@@ -109,6 +106,8 @@
             } else {
                 echo show_chat_error($error);
             }
+        } else {
+            echo show_chat_error(print_r($_GET));
         }
     }
 ?>
