@@ -87,6 +87,9 @@
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
                             echo "You declare that you're ready.";
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        get_user_name($user_id) . " is ready to go.");
                             break;
                         case "SAVE":
                             echo "You run off to help " . get_user_name($target_id) . " in their illness.";
@@ -98,6 +101,9 @@
                             if(can_start_game($game_id)) {
                                 start_game($game_id);
                                 echo "You start the game.";
+                                add_message(get_system_channel($game_id),
+                                            get_system_id(),
+                                            get_user_name($user_id) . " starts the game. Good luck!");
                             } else {
                             }
                             break;
@@ -106,6 +112,9 @@
                             set_player_ready($game_id, $user_id, false);
                             update_player_needs_update($game_id, $user_id, true);
                             echo "You remove all choices and sit, unprepared.";
+                            add_message(get_system_channel($game_id),
+                                        get_system_id(),
+                                        get_user_name($user_id) . " wants to hold everyone up, and unreadies.");
                             break;
                     }
                     if(can_phase_change($game_id)) {
