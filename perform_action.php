@@ -104,6 +104,7 @@
                                             get_user_name($user_id) . " starts the game. Good luck!");
                                 start_game($game_id);
                                 echo "You start the game.";
+                                die();
                             } else {
                             }
                             break;

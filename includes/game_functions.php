@@ -570,10 +570,9 @@
         global $dbh;
         $winning_roles = get_roles_by_faction($winning_faction);
         //Set game phase to 3
+        //lock game
         $query = "UPDATE games SET game_phase='3', game_locked='1' WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
-        //lock game
-        lock_game($game_id, true);
         //Send some spam saying its over, of course
         add_message(get_system_channel($game_id),
                     get_system_id(),
