@@ -788,9 +788,29 @@
         return $to_return;
     }
 
+    function get_user_role_faction($game_id, $user_id) {
+        global $dbh;
+        $to_return = array();
+        $query = "SELECT roles.role_id, roles.role_faction ".
+                 "FROM roles, game_players ".
+                 "WHERE game_players.game_id='$game_id' AND ".
+                 "game_players.user_id='$user_id' AND ".
+                 "roles.role_id=game_players.role_id";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            $to_return['role'] = $row['role_id'];
+            $to_return['faction'] = $row['role_faction'];
+        } else {
+            echo $query;
+        }
+        return $to_return;
+    }
+
     function get_game_information($game_id, $old_game_tracker, $force, $user_id=0) {
         global $dbh, $phases;
         $needs_update = false;
+        $user_role_faction = false;
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
         if($user_id == 0) {
@@ -806,6 +826,7 @@
         if($needs_update) {
             if($user_id != 0) {
                 update_player_needs_update($game_id, $user_id, false); //Turn off needing an update... we just gave it
+                $user_role_faction = get_user_role_faction($game_id, $user_id);
             }
             $query = "SELECT * FROM games WHERE game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
@@ -829,16 +850,23 @@
                 $to_return .= "<votes_required>" . get_votes_needed($game_id) . "</votes_required>\n";
                 if($game_phase == 2) { //If its day, lets give a vote tally
                     $lynch_action = get_action_by_enum("LYNCH");
+                    $no_lynch_action = get_action_by_enum("NO_LYNCH");
                     $query = "SELECT COUNT(*) as cnt, target_id ".
                              "FROM game_actions ".
                              "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
-                             "game_turn='$game_turn' AND action_id='$lynch_action' ".
+                             "game_turn='$game_turn' AND action_id='$lynch_action' OR ".
+                             "action_id='$no_lynch_action' ".
                              "GROUP BY target_id";
                     $result = mysqli_query($dbh, $query);
                     if($result && mysqli_num_rows($result) > 0) {
                         while($row = mysqli_fetch_array($result)) {
                             $votes = $row['cnt'];
-                            $target_name = get_user_name($row['target_id']);
+                            $target_id = $row['target_id'];
+                            if($target_id == 0) {
+                                $target_name = "Lynch no one";
+                            } else {
+                                $target_name = get_user_name($target_id);
+                            }
                             $to_return .= "<vote_tally>";
                             $to_return .= "<name>$target_name</name>\n";
                             $to_return .= "<vote>$votes</vote>\n";
@@ -852,7 +880,8 @@
                          "users.user_id, ".
                          "roles.role_name, roles.role_channel, ".
                          "roles.role_faction, roles.role_id, ".
-                         "roles.day_instructions, roles.night_instructions ".
+                         "roles.day_instructions, roles.night_instructions, ".
+                         "roles.role_inform_others ".
                          "FROM users, game_players, roles ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
@@ -871,6 +900,7 @@
                         $role_name = $row['role_name'];
                         $role_faction = $row['role_faction'];
                         $role_id = $row['role_id'];
+                        $role_inform_others = $row['role_inform_others'];
                         if($game_phase == 1) {
                             $role_instructions = $row['night_instructions'];
                         } else {
@@ -881,15 +911,6 @@
                         $to_return .= "<name>$user_name</name>\n";
                         $to_return .= "<avatar>$user_avatar</avatar>\n";
                         $to_return .= "<alive>$player_alive</alive>\n";
-                        if($player_alive == 'N' || $player_id == $user_id) {
-                            //Role information used to come out of here. I'm leaving in case you can turn on total disclosure
-                        }
-                        if(in_array($player_id, $investigated_peeps)) {
-                            if($role_faction == "Alone") {
-                                $role_faction = "Antitown";
-                            }
-                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
-                        }
                         if($player_id == $user_id || $game_phase == 3) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
@@ -901,6 +922,14 @@
                                 $to_return .= "Too bad you are also dead.";
                             }
                             $to_return .= "</role_instructions>\n";
+                        } else if($role_inform_others == 1 && $role_id == $user_role_faction['role']) {
+                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
+                            $to_return .= "<role_name>$role_name</role_name>\n";
+                        } else if(in_array($player_id, $investigated_peeps)) {
+                            if($role_faction == "Alone") {
+                                $role_faction = "Antitown";
+                            }
+                            $to_return .= "<role_faction>$role_faction</role_faction>\n";
                         }
     
                         //Anything specific to the player viewing needs to go after this.
