@@ -104,6 +104,7 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
     for(var i = 0; i < idArray.length; i++) {
         var user = userArray.item(i).firstChild.data.toString();
         var date = dateArray.item(i).firstChild;
+        var id = idArray.item(i).firstChild.data.toString();
         if(date) {
             date = date.data.toString();
         } else {
@@ -121,7 +122,9 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
         htmlMessage += "<span class='chat_message_user'>" + user + "</span>: ";
         htmlMessage += text; //toString()?
         htmlMessage += "</p>\n";
-        displayMessage(htmlMessage);
+        if(id < 0 || id > lastMessageID) {
+            displayMessage(htmlMessage);
+        }
     }
 }
 
