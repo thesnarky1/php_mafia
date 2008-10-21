@@ -313,14 +313,20 @@
 
     function get_user_name($user_id) {
         global $dbh;
-        $query = "SELECT user_name FROM users WHERE user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
-            return $row['user_name'];
+        $to_return = "";
+        if($user_id == 0) {
+            $to_return = "no one";
         } else {
-            return "Error fetching name.";
+            $query = "SELECT user_name FROM users WHERE user_id='$user_id'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                $to_return = $row['user_name'];
+            } else {
+                $to_return = "Error fetching name.";
+            }
         }
+        return $to_return;
     }
 
     function add_player_action($game_id, $user_id, $action_id, $target_id, $priority=0) {
