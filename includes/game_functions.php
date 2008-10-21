@@ -2,7 +2,7 @@
 
     function user_belongs($game_id, $user_id) {
         global $dbh;
-        $query = "SELECT game_id FROM games_players WHERE game_id='$game_id' AND user_id='$user_id'";
+        $query = "SELECT game_id FROM game_players WHERE game_id='$game_id' AND user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
             return true;
@@ -372,7 +372,6 @@
                     //Success
                 } else {
                     //Failure! 
-                    echo "$query";
                 }
             } 
         }

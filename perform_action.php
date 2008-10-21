@@ -50,6 +50,7 @@
                                         get_system_id(),
                                         get_user_name($user_id) . " wants to lynch " . get_user_name($target_id) . ".");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
+                            update_game_tracker($game_id);
                             break;
                         case "NO_ACTION":
                             echo "You cannot do anything at this juncture.";
@@ -68,6 +69,7 @@
                                         get_system_id(),
                                         get_user_name($user_id) . " wants to lynch no one.");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
+                            update_game_tracker($game_id);
                             break;
                         case "NO_KILL":
                             echo "At the last second you decide that killing is wrong, and elect to let everyone live.";
