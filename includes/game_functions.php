@@ -133,6 +133,8 @@
                                                 "$victim is lynched.");
                                     $already_dead[] = $lynchee;
                                     if($winners = can_game_end($game_id)) {
+                                        end_game($game_id, $winners);
+                                        die();
                                     }
                                 }
                             }
@@ -151,7 +153,7 @@
                         if($result && mysqli_num_rows($result) == 1) {
                             $row = mysqli_fetch_array($result);
                             $target_role_name = $row['role_faction'];
-                            if($target_role_name == "Alone") {
+                            if($target_role_name == "Psychopaths") {
                                 $target_role_name = "Antitown";
                             }
                             $target_role_id = $row['role_id'];
@@ -180,6 +182,8 @@
                                             "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
                                 $already_dead[] = $killee_id;
                                 if($winners = can_game_end($game_id)) {
+                                    end_game($game_id, $winners);
+                                    die();
                                 }
                             }
                         }
@@ -642,9 +646,9 @@
                     $over = "Town";
                 } else if(isset($roles['Antitown'])) {
                     $over = "Antitown";
-                } else if(isset($roles['Alone'])) {
-                    if($roles['Alone'] == 1) {
-                        $over = "Alone";
+                } else if(isset($roles['Psychopaths'])) {
+                    if($roles['Psychopaths'] == 1) {
+                        $over = "Psychopaths";
                     } else {
                     }
                 } else{
@@ -681,48 +685,51 @@
         global $dbh;
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
-        $query = "SELECT game_turn, game_phase FROM games WHERE game_id='$game_id'";
+        $query = "SELECT game_turn, game_phase, game_locked FROM games WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
             $row = mysqli_fetch_array($result);
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
-            if($game_phase == 1) {
-                //Just update game_phase
-                $game_phase++;
-                $query = "UPDATE games ".
-                         "SET game_phase='$game_phase', game_recent_date=NOW() ".
-                         "WHERE game_id='$game_id'";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_affected_rows($dbh) == 1) {
-                    if($chan_id) {
-                        add_message($chan_id, $system_id, "Another day breaks over the town.");
-                    }
-                }
-            } else {
-                //Increment turn as well.
-                if($game_phase != 0) {
-                    $game_phase--;
-                } else {
+            $game_locked = $row['game_locked'];
+            if($game_locked != 1) {
+                if($game_phase == 1) {
+                    //Just update game_phase
                     $game_phase++;
-                }
-                $game_turn++;
-                $query = "UPDATE games ".
-                         "SET game_phase='$game_phase', game_turn='$game_turn', game_recent_date=NOW() ".
-                         "WHERE game_id='$game_id'";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_affected_rows($dbh) == 1) {
-                    if($chan_id) {
-                        add_message($chan_id, $system_id, "Night creeps silently over the town as turn $game_turn begins.");
+                    $query = "UPDATE games ".
+                             "SET game_phase='$game_phase', game_recent_date=NOW() ".
+                             "WHERE game_id='$game_id'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_affected_rows($dbh) == 1) {
+                        if($chan_id) {
+                            add_message($chan_id, $system_id, "Another day breaks over the town.");
+                        }
+                    }
+                } else {
+                    //Increment turn as well.
+                    if($game_phase != 0) {
+                        $game_phase--;
                     } else {
-                        echo "Can't find system channel";
+                        $game_phase++;
+                    }
+                    $game_turn++;
+                    $query = "UPDATE games ".
+                             "SET game_phase='$game_phase', game_turn='$game_turn', game_recent_date=NOW() ".
+                             "WHERE game_id='$game_id'";
+                    $result = mysqli_query($dbh, $query);
+                    if($result && mysqli_affected_rows($dbh) == 1) {
+                        if($chan_id) {
+                            add_message($chan_id, $system_id, "Night creeps silently over the town as turn $game_turn begins.");
+                        } else {
+                            echo "Can't find system channel";
+                        }
                     }
                 }
+                update_game_tracker($game_id);
+                update_game_players($game_id);
+                update_players_ready($game_id);
+                auto_ready_game($game_id);
             }
-            update_game_tracker($game_id);
-            update_game_players($game_id);
-            update_players_ready($game_id);
-            auto_ready_game($game_id);
         } else {
         }
     }
@@ -951,7 +958,7 @@
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
                             $to_return .= "<role_name>$role_name</role_name>\n";
                         } else if(in_array($player_id, $investigated_peeps)) {
-                            if($role_faction == "Alone") {
+                            if($role_faction == "Psychopaths") {
                                 $role_faction = "Antitown";
                             }
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
