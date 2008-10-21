@@ -1,5 +1,16 @@
 <?php
 
+    function user_belongs($game_id, $user_id) {
+        global $dbh;
+        $query = "SELECT game_id FROM games_players WHERE game_id='$game_id' AND user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function get_investigated_users($game_id, $user_id) {
         global $dbh;
         $to_return = array();
@@ -817,9 +828,18 @@
         global $dbh, $phases;
         $needs_update = false;
         $user_role_faction = false;
+        if($user_id == 0) {
+            $user_belongs = false;
+        } else {
+            if(user_belongs($game_id, $user_id)) {
+                $user_belongs = true;
+            } else {
+                $user_belongs = false;
+            }
+        }
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
-        if($user_id == 0) {
+        if(!$user_belongs) {
             //Track based on game_tracker
             $needs_update = player_needs_update($old_game_tracker, $game_id, "TRACKER");
         } else {
@@ -830,7 +850,7 @@
             $needs_update = true;
         }
         if($needs_update) {
-            if($user_id != 0) {
+            if($user_belongs) {
                 update_player_needs_update($game_id, $user_id, false); //Turn off needing an update... we just gave it
                 $user_role_faction = get_user_role_faction($game_id, $user_id);
             }
@@ -845,7 +865,7 @@
                 $banner = false;
                 $alt_banner = false;
                 $role_instructions = "";
-                if($user_id != 0) {
+                if($user_belongs) {
                     $investigated_peeps = get_investigated_users($game_id, $user_id);
                 } else {
                     $investigated_peeps = array();
@@ -1048,7 +1068,7 @@
                     $to_return .= "<alt_banner_action>$alt_banner_action</alt_banner_action>\n";
                 }
             }
-            if($user_id == 0) {
+            if(!$user_belongs) {
                 $to_return .= "<role_instructions>You aren't in this game.</role_instructions>\n";
             }
         }

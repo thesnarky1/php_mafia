@@ -148,6 +148,15 @@
    function retrieve_new_messages($user_id, $game_id, $id = 0) {
        global $dbh;
        global $channel_images;
+       if($user_id == 0 || $user_id = "") {
+           $user_belongs = false;
+       } else {
+           if(user_belongs($game_id, $user_id)) {
+               $user_belongs = true;
+           } else {
+               $user_belongs = false;
+           }
+       }
        $channels = array();
        $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
        $result = mysqli_query($dbh, $query);
@@ -210,7 +219,7 @@
                }
            }
        } else {
-           if($user_id != "") {
+           if($user_belongs) {
                $query = "SELECT channel_members.channel_id ".
                         "FROM channel_members, channels ".
                         "WHERE channel_members.user_id='$user_id' AND channels.game_id='$game_id' AND ".

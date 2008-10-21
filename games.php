@@ -194,9 +194,7 @@
             }
         }
         if($user_id) {
-            $query = "SELECT * FROM game_players WHERE user_id='$user_id' AND game_id='$game_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) > 0) {
+            if(user_belongs($game_id, $user_id)) {
                 $query = "SELECT * ".
                          "FROM games, game_players ".
                          "WHERE games.game_id='$game_id' AND game_players.game_id=games.game_id ".
@@ -262,7 +260,7 @@
             //echo "<p class='chat_channel_name' id='chat_channel'></p>\n";
             echo "<div name='chat_text' id='chat_text' >";
             echo "</div>\n";
-            if(is_logged_in()) {
+            if(is_logged_in() && user_belongs($game_id, $user_id)) {
                 echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";
             }
             echo "<input type='hidden' id='user_id' value='$_SESSION[user_id]' />\n";
