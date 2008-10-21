@@ -103,6 +103,7 @@
                             break;
                     }
                 }
+                $already_dead = array();
                 if($game_phase == 2) { //Day actions (lynch only, so far)
                     $vote_to_lynch = get_votes_needed($game_id);
                     foreach($to_lynch as $lynchee=>$vote) {
@@ -113,12 +114,15 @@
                                             get_system_id(),
                                             "There isn't enough proof to convict anyone, no lynch this turn.");
                             } else {
-                                $victim = get_user_name($lynchee);
-                                kill_player($lynchee, $game_id);
-                                add_message(get_system_channel($game_id),
-                                            get_system_id(),
-                                            "$victim is lynched.");
-                                if($winners = can_game_end($game_id)) {
+                                if(!in_array($lynchee, $already_dead)) {
+                                    $victim = get_user_name($lynchee);
+                                    kill_player($lynchee, $game_id);
+                                    add_message(get_system_channel($game_id),
+                                                get_system_id(),
+                                                "$victim is lynched.");
+                                    $already_dead[] = $lynchee;
+                                    if($winners = can_game_end($game_id)) {
+                                    }
                                 }
                             }
                         }
@@ -157,12 +161,15 @@
                         if(in_array($killee_id, $to_save)) { //If the guy was saved, don't allow him to be killed
                             $to_kill[$killer_id][1] = false;
                         } else {
-                            //Kill player
-                            kill_player($killee_id, $game_id);
-                            add_message(get_system_channel($game_id),
-                                        get_system_id(),
-                                        "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
-                            if($winners = can_game_end($game_id)) {
+                            if(!in_array($killee_id, $already_dead)) {
+                                //Kill player
+                                kill_player($killee_id, $game_id);
+                                add_message(get_system_channel($game_id),
+                                            get_system_id(),
+                                            "Tragically, " . get_user_name($killee_id) . " was found dead during the night.");
+                                $already_dead[] = $killee_id;
+                                if($winners = can_game_end($game_id)) {
+                                }
                             }
                         }
                     } 
@@ -233,13 +240,14 @@
                                              "roles.role_id=game_players.role_id AND ".
                                              "game_actions.user_id=game_players.user_id AND ".
                                              "game_actions.game_turn='$game_turn' AND ".
-                                             "game_actions.game_phase='$game_phase'";
+                                             "game_actions.game_phase='$game_phase' AND ".
+                                             "game_actions.game_id=game_players.game_id ";
                                     $target_result = mysqli_query($dbh, $target_query);
                                     if($target_result && (mysqli_num_rows($target_result) == 1 || mysqli_num_rows($target_result) == 0)) {
                                         echo "All $role_target_group want to target the same.\n";
                                         //Have an agreed upon target
                                     } else {
-                                        echo "The $role_target_group can't decide. $target_query\n";
+                                        echo " The $role_target_group can't decide. $target_query\n";
                                         $to_return = false;
                                     }
                                 }
@@ -320,6 +328,7 @@
         $query = "SELECT game_turn, game_phase FROM games WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
+            //We have a valid game
             $row = mysqli_fetch_array($result);
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
@@ -328,6 +337,7 @@
                      "game_phase='$game_phase' AND game_turn='$game_turn'";
             $result = mysqli_query($dbh, $query);
             if($result) {
+                //No bugs in our query
                 if(mysqli_num_rows($result) == 1) {
                     //Update existing
                     $row = mysqli_fetch_array($result);
@@ -341,8 +351,11 @@
                              "VALUES('$game_id', '$user_id', '$action_id', '$game_turn', '$game_phase', '$target_id', '$priority')";
                 }
                 $result = mysqli_query($dbh, $query);
-                if($result && mysqli_affected_rows($dbh) > 0) {
+                if($result && mysqli_affected_rows($dbh) == 1) {
+                    //Success
                 } else {
+                    //Failure! 
+                    echo "$query";
                 }
             } 
         }
