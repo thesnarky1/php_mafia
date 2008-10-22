@@ -49,7 +49,6 @@
             while($row = mysqli_fetch_array($result)) {
                 $user_id = $row['user_id'];
                 $actions = get_user_actions($game_id, $user_id);
-                echo "$user_id - " . implode(",", $actions) . "\n";
                 if(in_array($nothing, $actions) || count($actions) == 0) {
                     set_player_ready($game_id, $user_id, true);
                 }
@@ -260,10 +259,10 @@
                                              "game_actions.game_id=game_players.game_id ";
                                     $target_result = mysqli_query($dbh, $target_query);
                                     if($target_result && (mysqli_num_rows($target_result) == 1 || mysqli_num_rows($target_result) == 0)) {
-                                        echo "All $role_target_group want to target the same.\n";
+                                        //echo "All $role_target_group want to target the same.\n";
                                         //Have an agreed upon target
                                     } else {
-                                        echo " The $role_target_group can't decide. $target_query\n";
+                                        //echo " The $role_target_group can't decide. $target_query\n";
                                         $to_return = false;
                                     }
                                 }
@@ -494,7 +493,6 @@
         $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
-            update_game_tracker($game_id);
         }
     }
 
@@ -765,6 +763,9 @@
         $query .= "' ".
                   "WHERE game_id='$game_id' AND user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+        } else {
+        }
     }
 
     function update_game_tracker($game_id) {
