@@ -49,6 +49,7 @@
             while($row = mysqli_fetch_array($result)) {
                 $user_id = $row['user_id'];
                 $actions = get_user_actions($game_id, $user_id);
+                echo "$user_id - " . implode(",", $actions) . "\n";
                 if(in_array($nothing, $actions) || count($actions) == 0) {
                     set_player_ready($game_id, $user_id, true);
                 }
@@ -521,9 +522,10 @@
         }
     }
 
-    function get_user_actions($user_id, $game_id) {
+    function get_user_actions($game_id, $user_id) {
         global $dbh;
         $to_return = array();
+        $no_action = get_action_by_enum("NO_ACTION");
         $query = "SELECT game_players.player_ready, game_players.role_id, ".
                  "game_players.player_alive, games.game_phase, games.game_creator ".
                  "FROM game_players, games ".
@@ -531,38 +533,40 @@
                  "AND game_players.game_id=games.game_id";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
-            $player_ready = $row['player_ready'];
-            $player_alive = $row['player_alive'];
-            $game_phase = $row['game_phase'];
-            $game_creator = $row['game_creator'];
-            $role_id = $row['role_id'];
-            if($player_alive == 'Y') {
-                if($game_phase == 2 || $game_phase == 0) { //day
-                    $query = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_num_rows($result) == 1) {
-                        $row = mysqli_fetch_array($result);
-                        $to_return[] = $row['day_action_id'];
-                        $to_return[] = $row['day_alt_action_id'];
-                    }
-                } else {
-                    $query = "SELECT night_action_id, night_alt_action_id FROM roles WHERE role_id='$role_id'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_num_rows($result) == 1) {
-                        $row = mysqli_fetch_array($result);
-                        $to_return[] = $row['night_action_id'];
-                        $to_return[] = $row['night_alt_action_id'];
+            while($row = mysqli_fetch_array($result)) {
+                    $player_ready = $row['player_ready'];
+                    $player_alive = $row['player_alive'];
+                    $game_phase = $row['game_phase'];
+                    $game_creator = $row['game_creator'];
+                    $role_id = $row['role_id'];
+                    if($player_alive == 'Y') {
+                        if($game_phase == 2 || $game_phase == 0) { //day
+                            $query2 = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
+                            $result2 = mysqli_query($dbh, $query2);
+                            if($result2 && mysqli_num_rows($result2) == 1) {
+                                $row2 = mysqli_fetch_array($result2);
+                                $to_return[] = $row2['day_action_id'];
+                                $to_return[] = $row2['day_alt_action_id'];
+                            }
+                        } else {
+                            $query2 = "SELECT night_action_id, night_alt_action_id FROM roles WHERE role_id='$role_id'";
+                            $result2 = mysqli_query($dbh, $query2);
+                            if($result2 && mysqli_num_rows($result2) == 1) {
+                                $row2 = mysqli_fetch_array($result2);
+                                $to_return[] = $row2['night_action_id'];
+                                $to_return[] = $row2['night_alt_action_id'];
+                            }
+                        }
+                        if($player_ready == 'Y' && !in_array($no_action, $to_return)) {
+                            $to_return[] = get_action_by_enum("UN_READY");
+                            if($user_id == $game_creator) {
+                                $to_return[] = get_action_by_enum("START");
+                            }
+                        }
                     }
                 }
-                if($player_ready == 'Y' && !in_array(get_action_by_enum("NO_ACTION"), $to_return)) {
-                    $to_return[] = get_action_by_enum("UN_READY");
-                    if($user_id == $game_creator) {
-                        $to_return[] = get_action_by_enum("START");
-                    }
-                }
+            } else  {
             }
-        }
         return $to_return;
     }
 

@@ -23,7 +23,7 @@
                 echo "</action_data>\n";
                 die();
             }
-            $valid_actions = get_user_actions($user_id, $game_id);
+            $valid_actions = get_user_actions($game_id, $user_id);
             if(in_array($action_id, $valid_actions)) {
                 $priority = get_action_priority($game_id, $user_id);
                 $action_enum = get_action_by_id($action_id);
