@@ -23,6 +23,12 @@
                 echo "</action_data>\n";
                 die();
             }
+            $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
+            $result = mysqli_query($dbh, $query);
+            if($result && mysqli_num_rows($result) == 1) {
+                $row = mysqli_fetch_array($result);
+                $game_phase = $row['game_phase'];
+            }
             $valid_actions = get_user_actions($game_id, $user_id);
             if(in_array($action_id, $valid_actions)) {
                 $priority = get_action_priority($game_id, $user_id);
