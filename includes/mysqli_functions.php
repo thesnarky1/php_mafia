@@ -10,6 +10,26 @@
             return false;
         }
     }
+
+    function mysqli_insert($query) {
+        global $dbh;
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+            return mysqli_insert_id($dbh);
+        } else {
+            return false;
+        }
+    }
+
+    function mysqli_set($query) {
+        global $dbh;
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     function mysqli_get_many($query) {
         global $dbh;

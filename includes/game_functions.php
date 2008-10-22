@@ -3,8 +3,7 @@
     function user_belongs($game_id, $user_id) {
         global $dbh;
         $query = "SELECT game_id FROM game_players WHERE game_id='$game_id' AND user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
+        if(mysqli_get_one($query)) {
             return true;
         } else {
             return false;
@@ -31,9 +30,7 @@
                  "FROM roles, game_players ".
                  "WHERE game_players.game_id='$game_id' AND game_players.user_id='$user_id' AND ".
                  "roles.role_id=game_players.role_id";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             return $row['role_action_priority'];
         }
     }
@@ -59,9 +56,7 @@
     function carry_out_actions($game_id) {
         global $dbh;
         $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
             $query = "SELECT user_id, target_id, action_id FROM game_actions ".

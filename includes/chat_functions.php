@@ -4,9 +4,7 @@
         global $dbh;
         $query = "SELECT channel_id FROM channels ".
                  "WHERE channel_name='$channel_name' AND game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) { //more or less and we don't want it!
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) { //more or less and we don't want it!
             return $row['channel_id'];
         } else {
             return false;
@@ -21,9 +19,7 @@
         global $dbh;
         $system_name = "System";
         $query = "SELECT user_id FROM users WHERE user_name='$system_name'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             return $row['user_id'];
         } else {
             return false;
@@ -33,23 +29,24 @@
 
     function initialize_channels($game_id) {
         global $dbh;
+        $channel_members = array(); //user_id=>channel
+        $channels = array();
+        $users = array();
+
         //Kill off ability to chat on unassigned channel
         $channel_id = get_channel_by_name("unassigned_" . $game_id, $game_id);
         $query = "DELETE FROM channel_members ".
                  "WHERE channel_id='$channel_id' ";
         $result = mysqli_query($dbh, $query);
-        $channel_members = array(); //user_id=>channel
-        $channels = array();
-        $users = array();
+
         //Add in role_channel to roles
         $query = "SELECT roles.role_channel_rights, roles.role_channel, ".
                  "game_players.user_id ".
                  "FROM roles, game_players ".
                  "WHERE game_players.game_id='$game_id' AND ".
                  "roles.role_id=game_players.role_id";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_array($result)) {
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
                 $role_channel = $row['role_channel'];
                 $role_channel_rights = $row['role_channel_rights'];
                 $user_id = $row['user_id'];
@@ -61,7 +58,6 @@
                 }
                 $users[] = $user_id;
             }
-        } else {
         }
         foreach($channel_members as $user_id=>$role_array) {
             $role_channel = $role_array[0];
@@ -71,48 +67,46 @@
                 $channel_name = $role_channel . "_" . $game_id;
                 $query = "INSERT INTO channels(channel_name, game_id) ".
                          "VALUES('$channel_name', '$game_id')";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_affected_rows($dbh) == 1) {
-                    $channel_num = mysqli_insert_id($dbh);
+                if($channel_num = mysqli_insert($query)) {
                     $channels[$role_channel] = $channel_num;
                     $channel_id = $channel_num;
                     $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
                              "VALUES('$channel_id', '$user_id', '$role_rights')";
-                    $result = mysqli_query($dbh, $query);
+                    mysqli_insert($query);
                 }
             } else {
                 //Channel is created
                 $channel_id = $channels[$role_channel];
                 $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
                          "VALUES('$channel_id', '$user_id', '$role_rights')";
-                $result = mysqli_query($dbh, $query);
+                mysqli_insert($query);
             }
         }
+
+        //Add game channel
         $channel_name = "game_" . $game_id;
         $query = "INSERT INTO channels(channel_name, game_id, global) ".
                  "VALUES('$channel_name', '$game_id', 'Y')";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) == 1) {
-            $channel_id = mysqli_insert_id($dbh);
+        if($channel_id = mysqli_insert($query)) {
             if($channel_id && $channel_id != 0) {
                 foreach($users as $user_id) {
                     $query = "INSERT INTO channel_members(channel_id, user_id) ".
                              "VALUES('$channel_id', '$user_id')";
-                    $result = mysqli_query($dbh, $query);
+                    mysqli_insert($query);
                 }
             }
         }
+
+        //Add system channel
         $channel_name = "system_" . $game_id;
         $query = "INSERT INTO channels(channel_name, game_id, global) ".
                  "VALUES('$channel_name', '$game_id', 'Y')";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) == 1) {
-            $channel_id = mysqli_insert_id($dbh);
+        if($channel_id = mysqli_insert($query)) {
             if($channel_id && $channel_id != 0) {
                 foreach($users as $user_id) {
                     $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
                              "VALUES('$channel_id', '$user_id', '0')";
-                    $result = mysqli_query($dbh, $query);
+                    mysqli_insert($query);
                 }
             }
         }
@@ -124,10 +118,9 @@
         if($message != "") {
             $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
                      "VALUES('$channel_id', '$user_id', '$message', NOW())";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_affected_rows($dbh) == 1) {
+            if(mysqli_insert($query)) {
             } else {
-                echo "$query";
+                //echo "$query";
             }
         }
     }
@@ -160,17 +153,14 @@
        }
        $channels = array();
        $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
-       $result = mysqli_query($dbh, $query);
-       if($result && mysqli_num_rows($result) == 1) {
-           $row = mysqli_fetch_array($result);
+       if($row = mysqli_get_one($query)) {
            $game_phase = $row['game_phase'];
        }
        if($game_phase == 3) {
            //Game finished, pull all
             $query = "SELECT * FROM channels WHERE game_id='$game_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) > 0) {
-                while($row = mysqli_fetch_array($result)) {
+            if($rows = mysqli_get_many($query)) {
+                foreach($rows as $row) {
                     $channels[] = $row['channel_id'];
                 }
             }
@@ -189,35 +179,32 @@
                    $channel_query .= " channel_messages.channel_id='$channel' ";
                }
                $channel_query .= ")";
+               $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
+               $xml .= "<messages>\n";
                $query = $query . $channel_query . " ORDER BY channel_messages.message_date";
-               $result = mysqli_query($dbh, $query);
-               if($result) {
-                   $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-                   $xml .= "<messages>\n";
-                   if(mysqli_num_rows($result) > 0) {
-                       while($row = mysqli_fetch_array($result)) {
-                           $channel_name = $row['channel_name'];
-                           $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
-                                           substr($channel_name, 1, strpos($channel_name, "_") - 1);
-                           $channel_name = $channel_images[$channel_name];
-                           $message_text = $row['message_text'];
-                           $message_date = $row['message_date'];
-                           $message_id = $row['message_id'];
-                           $user_name = capitalize($row['user_name']);
-                           $xml .= "<message>\n";
-                           $xml .= "<id>$message_id</id>\n";
-                           $xml .= "<user>$user_name</user>\n";
-                           $xml .= "<date>$message_date</date>\n";
-                           $xml .= "<text>$message_text</text>\n";
-                           $xml .= "<channel>$channel_name</channel>\n";
-                           $xml .= "</message>\n";
-                       }
+               if($rows = mysqli_get_many($query)) {
+                   foreach($rows as $row) {
+                       $channel_name = $row['channel_name'];
+                       $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
+                                       substr($channel_name, 1, strpos($channel_name, "_") - 1);
+                       $channel_name = $channel_images[$channel_name];
+                       $message_text = $row['message_text'];
+                       $message_date = $row['message_date'];
+                       $message_id = $row['message_id'];
+                       $user_name = capitalize($row['user_name']);
+                       $xml .= "<message>\n";
+                       $xml .= "<id>$message_id</id>\n";
+                       $xml .= "<user>$user_name</user>\n";
+                       $xml .= "<date>$message_date</date>\n";
+                       $xml .= "<text>$message_text</text>\n";
+                       $xml .= "<channel>$channel_name</channel>\n";
+                       $xml .= "</message>\n";
                    }
-                   $xml .= "</messages>\n";
-                   return "$xml";
                } else {
                    echo $query;
                }
+               $xml .= "</messages>\n";
+               return "$xml";
            }
        } else {
            if($user_belongs) {
@@ -230,9 +217,8 @@
                         "FROM channels ".
                         "WHERE channels.game_id='$game_id' AND channels.global='Y'";
            }
-           $result = mysqli_query($dbh, $query);
-           if($result && mysqli_num_rows($result) > 0) {
-               while($row = mysqli_fetch_array($result)) {
+           if($rows = mysqli_get_many($query)) {
+               foreach($rows as $row) {
                    $channels[] = $row['channel_id'];
                }
            } else {
@@ -253,36 +239,33 @@
                    $channel_query .= "channel_messages.channel_id='$channel'";
                }
                $channel_query .= ")";
+               $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
+               $xml .= "<messages>\n";
                $query = $query . $channel_query . " ORDER BY channel_messages.message_date";
-               $result = mysqli_query($dbh, $query);
-               if($result) {
-                   $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-                   $xml .= "<messages>\n";
-                   if(mysqli_num_rows($result) > 0) {
-                       while($row = mysqli_fetch_array($result)) {
-                           $channel_name = $row['channel_name'];
-                           $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
-                                           substr($channel_name, 1, strpos($channel_name, "_") - 1);
-                           $channel_name = $channel_images[$channel_name];
-                           $message_text = $row['message_text'];
-                           $message_date = $row['message_date'];
-                           $message_id = $row['message_id'];
-                           $user_name = $row['user_name'];
-                           $xml .= "<message>\n";
-                           $xml .= "<id>$message_id</id>\n";
-                           $xml .= "<user>$user_name</user>\n";
-                           $xml .= "<date>$message_date</date>\n";
-                           $xml .= "<text>$message_text</text>\n";
-                           $xml .= "<channel>$channel_name</channel>\n";
-                           $xml .= "</message>\n";
-                       }
+               if($rows = mysqli_get_many($query)) {
+                   foreach($rows as $row) {
+                       $channel_name = $row['channel_name'];
+                       $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
+                                       substr($channel_name, 1, strpos($channel_name, "_") - 1);
+                       $channel_name = $channel_images[$channel_name];
+                       $message_text = $row['message_text'];
+                       $message_date = $row['message_date'];
+                       $message_id = $row['message_id'];
+                       $user_name = $row['user_name'];
+                       $xml .= "<message>\n";
+                       $xml .= "<id>$message_id</id>\n";
+                       $xml .= "<user>$user_name</user>\n";
+                       $xml .= "<date>$message_date</date>\n";
+                       $xml .= "<text>$message_text</text>\n";
+                       $xml .= "<channel>$channel_name</channel>\n";
+                       $xml .= "</message>\n";
                    }
-                   $xml .= "</messages>\n";
-                   return "$xml";
                }
            } else {
                //Non-player, show them game only
            }
+           $xml .= "</messages>\n";
+           return "$xml";
        }
    }
 
