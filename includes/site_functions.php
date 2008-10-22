@@ -3,12 +3,7 @@
     function valid_user($user_id, $user_hash) {
         global $dbh;
         $query = "SELECT user_id FROM users WHERE user_id='$user_id' AND user_hash='$user_hash'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return mysqli_get_one($query);
     }
 
     function login_user($user_name, $user_id, $user_hash) {
@@ -29,7 +24,6 @@
         $subject = "Thieves Tavern (Mafia) Invitation";
         $headers = "From: " . $name . " <" . $from_email . ">\r\n";
         return mail($email, $subject, $body, $headers);
-
     }
 
     function create_user_hash() {
@@ -116,9 +110,7 @@
     function get_player_avatar($user_id) {
         global $dbh;
         $query = "SELECT user_avatar FROM users WHERE user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             return $row['user_avatar'];
         } else {
             return 'face.png';
