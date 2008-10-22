@@ -27,8 +27,7 @@
                         $query = "UPDATE users ".
                                  "SET user_pass=MD5('$pass') ".
                                  "WHERE user_id='$user_id' ";
-                        $result = mysqli_query($dbh, $query);
-                        if(mysqli_affected_rows($dbh) == 1) {
+                        if(mysqli_set_one($query)) {
                             //Success
                             $error = "Password updated successfully.";
                         } else {

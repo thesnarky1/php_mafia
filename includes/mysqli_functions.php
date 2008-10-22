@@ -21,7 +21,17 @@
         }
     }
 
-    function mysqli_set($query) {
+    function mysqli_set_many($query) {
+        global $dbh;
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    function mysqli_set_one($query) {
         global $dbh;
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
@@ -30,7 +40,7 @@
             return false;
         }
     }
-    
+
     function mysqli_get_many($query) {
         global $dbh;
         $result = mysqli_query($dbh, $query);
