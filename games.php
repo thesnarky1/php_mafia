@@ -172,6 +172,8 @@
                                         $result = mysqli_query($dbh, $query);
                                         if($result && mysqli_affected_rows($dbh) == 1) {
                                             //Successful
+                                            update_game_tracker($game_id);
+                                            update_game_players($game_id);
                                         } else {
                                             $error = "Error adding you to the chat channel - $query";
                                         }

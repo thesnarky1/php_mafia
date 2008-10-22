@@ -642,6 +642,7 @@
             }
             $over = false;
             if(isset($roles['Unknown'])) {
+                //Game ain't even begun yet!
             } else if(count($roles) == 1) {
                 if(isset($roles['Town'])) {
                     $over = "Town";
@@ -654,7 +655,8 @@
                     }
                 } else{
                 }
-            } 
+            } else {
+            }
 
             if($over) {
             } else {
@@ -760,8 +762,7 @@
         } else {
             $query .= "0";
         }
-        $query .= "' ".
-                  "WHERE game_id='$game_id' AND user_id='$user_id'";
+        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
         $result = mysqli_query($dbh, $query);
         if($result && mysqli_affected_rows($dbh) == 1) {
         } else {
@@ -781,38 +782,39 @@
                      "WHERE game_id='$game_id'";
             $result = mysqli_query($dbh, $query);
         }
-        $result = mysqli_query($dbh, $query);
     }
 
-    function player_needs_update($user_id, $game_id, $type) {
+    function player_needs_update_id($game_id, $user_id) {
         global $dbh;
-        if($type == "ID") {
-            $query = "SELECT player_needs_update FROM game_players ".
-                     "WHERE game_id='$game_id' AND user_id='$user_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
-                if($row['player_needs_update'] == 1) {
-                    $to_return = true;
-                } else {
-                    $to_return = false;
-                }
+        $query = "SELECT player_needs_update FROM game_players ".
+                 "WHERE game_id='$game_id' AND user_id='$user_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            if($row['player_needs_update'] == 1) {
+                return true;
             } else {
-                $to_return = false;
+                return false;
             }
-        } else if($type == "TRACKER") {
-            $query = "SELECT game_tracker FROM games WHERE game_id='$game_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
-                if($row['game_tracker'] < $user_id) {
-                    $to_return = false;
-                } else {
-                    $to_return = true;
-                }
+        } else {
+            return false;
+        }
+        return false;
+    }
+
+    function player_needs_update_tracker($game_id, $tracker_id) {
+        global $dbh;
+        $query = "SELECT game_tracker FROM games WHERE game_id='$game_id'";
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_array($result);
+            if($row['game_tracker'] < $tracker_id) {
+                return false;
+            } else {
+                return true;
             }
         }
-        return $to_return;
+        return false;
     }
 
     function get_user_role_faction($game_id, $user_id) {
@@ -847,17 +849,27 @@
                 $user_belongs = false;
             }
         }
+        if($user_belongs) {
+            //echo "User belongs";
+        } else {
+            echo "Does not belong";
+        }
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
-        if(!$user_belongs) {
-            //Track based on game_tracker
-            $needs_update = player_needs_update($old_game_tracker, $game_id, "TRACKER");
-        } else {
+        if($user_belongs) {
             //Track based on player_needs_update
-            $needs_update = player_needs_update($user_id, $game_id, "ID");
+            $needs_update = player_needs_update_id($game_id, $user_id);
+        } else {
+            //Track based on game_tracker
+            $needs_update = player_needs_update_tracker($game_id, $old_game_tracker);
         }
         if($force) { //ignore anything else, we HAVE to update
             $needs_update = true;
+        }
+        if($needs_update) {
+            //echo "Needs update.";
+        } else {
+            echo "Does not need update.";
         }
         if($needs_update) {
             if($user_belongs) {
@@ -875,15 +887,15 @@
                 $banner = false;
                 $alt_banner = false;
                 $role_instructions = "";
+                $to_return .= "<turn>$game_turn</turn>\n";
+                $to_return .= "<phase>$phases[$game_phase]</phase>\n";
+                $to_return .= "<tracker>$game_tracker</tracker>\n";
+                $to_return .= "<votes_required>" . get_votes_needed($game_id) . "</votes_required>\n";
                 if($user_belongs) {
                     $investigated_peeps = get_investigated_users($game_id, $user_id);
                 } else {
                     $investigated_peeps = array();
                 }
-                $to_return .= "<turn>$game_turn</turn>\n";
-                $to_return .= "<phase>$phases[$game_phase]</phase>\n";
-                $to_return .= "<tracker>$game_tracker</tracker>\n";
-                $to_return .= "<votes_required>" . get_votes_needed($game_id) . "</votes_required>\n";
                 if($game_phase == 2) { //If its day, lets give a vote tally
                     $lynch_action = get_action_by_enum("LYNCH");
                     $no_lynch_action = get_action_by_enum("NO_LYNCH");

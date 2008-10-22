@@ -37,19 +37,18 @@
                     //Big ol' switch, I'm thinking
                     switch($action_enum) {
                         case "INVESTIGATE":
-                            echo "You ask around about " . get_user_name($target_id) . ".";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
+                            echo "You ask around about " . get_user_name($target_id) . ".";
                             break;
                         case "KILL":
-                            echo "You mark " . get_user_name($target_id) . " for death.";
                             add_player_action($game_id, $user_id, $action_id, $target_id, $priority);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
+                            echo "You mark " . get_user_name($target_id) . " for death.";
                             break;
                         case "LYNCH":
-                            echo "You publically declare that " . get_user_name($target_id) . " should be brought to trial.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             add_message(get_system_channel($game_id),
@@ -57,18 +56,18 @@
                                         get_user_name($user_id) . " wants to lynch " . get_user_name($target_id) . ".");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             update_game_tracker($game_id);
+                            echo "You publically declare that " . get_user_name($target_id) . " should be brought to trial.";
                             break;
                         case "NO_ACTION":
                             echo "You cannot do anything at this juncture.";
                             break;
                         case "NO_INVESTIGATE":
-                            echo "Going off a hunch, you decide not to look into anyone's life.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
+                            echo "Going off a hunch, you decide not to look into anyone's life.";
                             break;
                         case "NO_LYNCH":
-                            echo "You have a change of heart and decide no one should be lynched.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             add_message(get_system_channel($game_id),
@@ -76,18 +75,19 @@
                                         get_user_name($user_id) . " wants to lynch no one.");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             update_game_tracker($game_id);
+                            echo "You have a change of heart and decide no one should be lynched.";
                             break;
                         case "NO_KILL":
-                            echo "At the last second you decide that killing is wrong, and elect to let everyone live.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
+                            echo "At the last second you decide that killing is wrong, and elect to let everyone live.";
                             break;
                         case "NO_SAVE":
-                            echo "Remembering that this town skips out on the bill, you elect to help no one.";
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
+                            echo "Remembering that this town skips out on the bill, you elect to help no one.";
                             break;
                         case "READY":
                             set_player_ready($game_id, $user_id, true);
@@ -101,10 +101,10 @@
                             break;
                         case "SAVE":
                             if($target_id != $user_id) {
-                                echo "You run off to help " . get_user_name($target_id) . " in their illness.";
                                 add_player_action($game_id, $user_id, $action_id, $target_id);
                                 set_player_ready($game_id, $user_id, true);
                                 update_player_needs_update($game_id, $user_id, true);
+                                echo "You run off to help " . get_user_name($target_id) . " in their illness.";
                             } else {
                                 echo "Now you're just being selfish! We don't allow that!";
                             }
