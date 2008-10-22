@@ -153,6 +153,13 @@ function readInformation() {
                 voteTallyHTML.innerHTML = "";
             }
             playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
+            var targetMessage = response.getElementsByTagName("target");
+            if(targetMessage.length > 0) {
+                targetMessage = targetMessage[0].firstChild.data.toString();
+            } else {
+                targetMessage = "No current target";
+            }
+            document.getElementById("target").innerHTML = targetMessage;
             displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, actionMessage, votesToLynch);
         }
     }
