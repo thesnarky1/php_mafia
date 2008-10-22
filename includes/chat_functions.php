@@ -35,7 +35,8 @@
         global $dbh;
         //Kill off ability to chat on unassigned channel
         $channel_id = get_channel_by_name("unassigned_" . $game_id, $game_id);
-        $query = "DELETE FROM channel_members WHERE game_id='$game_id' AND channel_id='$channel_id'";
+        $query = "DELETE FROM channel_members ".
+                 "WHERE channel_id='$channel_id' ";
         $result = mysqli_query($dbh, $query);
         $channel_members = array(); //user_id=>channel
         $channels = array();

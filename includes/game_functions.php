@@ -724,10 +724,10 @@
                         }
                     }
                 }
-                update_game_tracker($game_id);
-                update_game_players($game_id);
                 update_players_ready($game_id);
                 auto_ready_game($game_id);
+                update_game_players($game_id);
+                update_game_tracker($game_id);
             }
         } else {
         }
