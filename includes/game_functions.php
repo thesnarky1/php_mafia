@@ -1,5 +1,15 @@
 <?php
 
+    function get_game_phase_turn($game_id) {
+        $query = "SELECT game_phase, game_turn ".
+                 "FROM games ".
+                 "WHERE game_id='$game_id'";
+        if($row = mysqli_get_one($query)) {
+            return $row;
+        }
+        return false;
+    }
+
     function user_belongs($game_id, $user_id) {
         global $dbh;
         $query = "SELECT game_id FROM game_players WHERE game_id='$game_id' AND user_id='$user_id'";

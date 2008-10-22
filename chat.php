@@ -35,19 +35,15 @@
                      "FROM users, game_players ".
                      "WHERE users.user_id='$user_id' AND users.user_hash='$user_hash' AND ".
                      "game_players.user_id=users.user_id AND game_players.game_id='$game_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
+            if($row = mysqli_get_one($query)) {
                 $player_alive = $row['player_alive'];
                 if($player_alive == 'Y') {
-                    //Get phase
-                    $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
-                    $result = mysqli_query($dbh, $query);
                     $phase = false;
                     $channel = false;
-                    if($result && mysqli_num_rows($result) == 1) {
-                        $row = mysqli_fetch_array($result);
-                        $phase = $row['game_phase'];
+                    //Get phase
+                    $turn_and_phase = get_game_phase_turn($game_id);
+                    if($turn_and_phase) {
+                        $phase = $turn_and_phase['game_phase'];
                         //Check user and game
                         $query = "SELECT channels.channel_id, channels.channel_name, ".
                                  "channel_members.channel_post_rights ".
@@ -58,9 +54,8 @@
                                  "channel_members.channel_id=channels.channel_id AND ".
                                  "channels.game_id='$game_id' AND ".
                                  "channel_members.channel_post_rights='1'";
-                        $result = mysqli_query($dbh, $query);
-                        if($result && mysqli_num_rows($result) >= 1) {
-                            while($row = mysqli_fetch_array($result)) {
+                        if($rows = mysqli_get_many($query)) {
+                            foreach($rows as $row) {
                                 $channel_name = $row['channel_name'];
                                 $channel_id = $row['channel_id'];
                                 $channel_post_rights = $row['channel_post_rights'];
@@ -78,8 +73,7 @@
                             if($channel) {
                                 $query = "INSERT INTO channel_messages(channel_id, user_id, message_text, message_date) ".
                                          "VALUES('$channel', '$user_id', '$message', NOW())";
-                                $result = mysqli_query($dbh, $query);
-                                if($result && mysqli_affected_rows($dbh) > 0) {
+                                if(mysqli_insert($query)) {
                                 } else {
                                     $error = "Unknown issue adding message into system.";
                                 }
