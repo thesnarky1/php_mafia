@@ -9,9 +9,8 @@
     echo "<br />\n";
     echo "<ul>\n";
     $query = "SELECT role_name FROM roles";
-    $result = mysqli_query($dbh, $query);
-    if($result && mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_array($result)) {
+    if($rows = mysqli_get_many($query)) {
+        foreach($rows as $row) {
             $role_name = $row['role_name'];
             echo "<li>$role_name</li>\n";
         }
