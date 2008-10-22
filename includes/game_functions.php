@@ -1052,6 +1052,17 @@
                                             $alt_banner_action = $row2['action_id'];
                                         }
                                     }
+                                    $query2 = "SELECT action_id, target_id ".
+                                             "FROM game_actions ".
+                                             "WHERE game_id='$game_id' AND user_id='$user_id' AND ".
+                                             "game_phase='$game_phase' AND game_turn='$game_turn'";
+                                    $result2 = mysqli_query($dbh, $query2);
+                                    if($result2 && mysqli_num_rows($result2) == 1) {
+                                        $row2 = mysqli_fetch_array($result2);
+                                        $set_action_id = $row2['action_id'];
+                                        $set_target = $row2['target_id'];
+                                        $to_return .= "<target>".get_user_name($set_target)."</target>\n";
+                                    }
                                 }
                             }
                         }
