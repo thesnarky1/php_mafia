@@ -15,15 +15,14 @@
                  "FROM games ".
                  "WHERE games.game_phase=0 AND games.game_password=''".
                  "LIMIT 20";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
+        if($rows = mysqli_get_many($query)) {
             echo "<table class='game_table' align='center'>\n";
             echo "<tr class='header'>\n";
             echo "<td class='name'>Name</td>\n";
             echo "<td class='small'>Players</td>\n";
             echo "<td class='small'>Join</td>\n";
             echo "</tr>\n";
-            while($row = mysqli_fetch_array($result)) {
+            foreach($rows as $row) {
                 $game_name = $row['game_name'];
                 $game_id = $row['game_id'];
                 $game_players = $row['players'];
@@ -50,8 +49,7 @@
                      "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
                      "AND games.game_phase != 3 ".
                      "ORDER BY games.game_turn DESC";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) > 0) {
+            if($rows = mysqli_get_many($query)) {
                 echo "<table class='game_table' align='center'>\n";
                 echo "<tr class='header'>\n";
                 echo "<td class='name'>Name</td>\n";
@@ -60,7 +58,7 @@
                 echo "<td class='small'>Alive</td>\n";
                 echo "<td class='small'>Dead</td>\n";
                 echo "</tr>\n";
-                while($row = mysqli_fetch_array($result)) {
+                foreach($rows as $row) {
                     $game_name = $row['game_name'];
                     $game_id = $row['game_id'];
                     $game_phase = $row['game_phase'];
@@ -83,6 +81,8 @@
         } else {
             echo "<p class='error'>Please login to check your current games.</p>\n";
         }
+
+        //Finished games
         echo "<div id='finished_games'>\n";
         echo "<h3>Your Finished Games</h3>\n";
         if(is_logged_in()) {
@@ -95,8 +95,7 @@
                      "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
                      "AND games.game_phase='3' ".
                      "ORDER BY games.game_turn DESC";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) > 0) {
+            if($rows = mysqli_get_many($query)) {
                 echo "<table class='game_table' align='center'>\n";
                 echo "<tr class='header'>\n";
                 echo "<td class='name'>Name</td>\n";
@@ -105,7 +104,7 @@
                 echo "<td class='small'>Alive</td>\n";
                 echo "<td class='small'>Dead</td>\n";
                 echo "</tr>\n";
-                while($row = mysqli_fetch_array($result)) {
+                foreach($rows as $row) {
                     $game_name = $row['game_name'];
                     $game_id = $row['game_id'];
                     $game_phase = $row['game_phase'];
@@ -141,20 +140,18 @@
         if(isset($_REQUEST['join'])) {
             if($user_id) {
                 $query = "SELECT game_phase, game_password FROM games WHERE game_id='$game_id'";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_num_rows($result) == 1) {
-                    $row = mysqli_fetch_array($result);
+                if($row = mysqli_get_one($query)) {
                     $game_password = $row['game_password'];
                     if($row['game_phase'] == 0) {
                         $query = "SELECT user_id FROM game_players ".
                                  "WHERE user_id='$user_id' AND ".
                                  "player_alive='Y'";
-                        $result = mysqli_query($dbh, $query);
-                        if($result && mysqli_num_rows($result) <= 4) {
+                        $rows = mysqli_get_many($query);
+                        if(count($rows) <= 4) {
                             $query = "SELECT user_id FROM game_players ".
                                      "WHERE game_id='$game_id' AND user_id='$user_id'";
-                            $result = mysqli_query($dbh, $query);
-                            if($result && mysqli_num_rows($result) == 0) {
+                            $rows = mysqli_get_many($query);
+                            if(count($rows) == 0) {
                                 if($game_password != "") {
                                     if(isset($_POST['password'])) {
                                         //Check password
@@ -164,13 +161,11 @@
                                 } else {
                                     $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
                                              "VALUES('$game_id', '$user_id', 5)";
-                                    $result = mysqli_query($dbh, $query);
-                                    if($result && mysqli_affected_rows($dbh) == 1) {
+                                    if(mysqli_insert($query)) {
                                         $channel_id = get_channel_by_name("unassigned_" . $game_id, $game_id);
                                         $query = "INSERT INTO channel_members(user_id, channel_id, channel_post_rights) ".
                                                  "VALUES('$user_id', '$channel_id', '1')";
-                                        $result = mysqli_query($dbh, $query);
-                                        if($result && mysqli_affected_rows($dbh) == 1) {
+                                        if(mysqli_insert($query)) {
                                             //Successful
                                             update_game_tracker($game_id);
                                             update_game_players($game_id);
@@ -208,9 +203,7 @@
         } else {
             $query = "SELECT * FROM games WHERE game_id='$game_id'";
         }
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             $game_name = $row['game_name'];
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
