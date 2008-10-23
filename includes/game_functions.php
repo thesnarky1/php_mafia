@@ -866,14 +866,16 @@
                         if($player_id == $user_id || $game_phase == 3) {
                             $to_return .= "<role_name>$role_name</role_name>\n";
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
-                            $to_return .= "<role_instructions>";
-                            $to_return .= "Your role is: $role_name. ";
-                            if($player_alive == 'Y') {
-                                $to_return .= $role_instructions;
-                            } else {
-                                $to_return .= "Too bad you are also dead.";
-                            }
+                            if($player_id == $user_id) {
+                                $to_return .= "<role_instructions>";
+                                $to_return .= "Your role is: $role_name. ";
+                                if($player_alive == 'Y') {
+                                    $to_return .= $role_instructions;
+                                } else {
+                                    $to_return .= "Too bad you are also dead.";
+                                }
                             $to_return .= "</role_instructions>\n";
+                            }
                         } else if($role_inform_others == 1 && $role_id == $user_role_faction['role']) {
                             $to_return .= "<role_faction>$role_faction</role_faction>\n";
                             $to_return .= "<role_name>$role_name</role_name>\n";
