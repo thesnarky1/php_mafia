@@ -34,7 +34,6 @@
     }
 
     function get_action_priority($game_id, $user_id) {
-        global $dbh;
         $query = "SELECT roles.role_action_priority ".
                  "FROM roles, game_players ".
                  "WHERE game_players.game_id='$game_id' AND game_players.user_id='$user_id' AND ".
@@ -330,7 +329,6 @@
     }
 
     function add_player_action($game_id, $user_id, $action_id, $target_id, $priority=0) {
-        global $dbh;
         $game_phase_turn = get_game_phase_turn($game_id);
         if($game_phase_turn) {
             //We have a valid game
@@ -357,14 +355,12 @@
     }
 
     function start_game($game_id) {
-        global $dbh;
         dole_out_roles($game_id);
         initialize_channels($game_id);
         next_phase($game_id);
     }
 
     function update_game_recent_date($game_id) {
-        global $dbh;
         $query = "UPDATE games SET game_recent_date=NOW() WHERE game_id='$game_id'";
         $result = mysqli_set_one($query);
     }
@@ -380,7 +376,10 @@
             foreach($rows as $row) {
                 $players[] = $row['user_id'];
             }
-            $query = "SELECT roleset_roles, roleset_id FROM rolesets ORDER BY RAND() LIMIT 1";
+            $query = "SELECT roleset_roles, roleset_id ".
+                     "FROM rolesets ".
+                     "WHERE roleset_num_players='$num_players' ".
+                     "ORDER BY RAND() LIMIT 1";
             if($row = mysqli_get_one($query)) {
                 $roleset = explode(",", $row['roleset_roles']);
                 $roleset_id = $row['roleset_id'];
@@ -401,7 +400,7 @@
                     $query = "UPDATE game_players SET role_id='$finished_role', ".
                              "player_ready='N', player_needs_update='1' ".
                              "WHERE game_id='$game_id' AND user_id='$finished_player'";
-                    if($mysqli_set_one($dbh)) {
+                    if(mysqli_set_one($query)) {
                         $query = "UPDATE games SET game_roleset_id='$roleset_id' WHERE game_id='$game_id'";
                         mysqli_set_one($query);
                     } else {
@@ -626,7 +625,6 @@
     }
 
     function next_phase($game_id) {
-        global $dbh;
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
         $query = "SELECT game_turn, game_phase, game_locked FROM games WHERE game_id='$game_id'";
@@ -690,15 +688,15 @@
     }
 
     function update_player_needs_update($game_id, $user_id, $needs) {
-        global $dbh;
-        $query = "UPDATE game_players SET player_needs_update='";
-        if($needs) {
-            $query .= "1";
-        } else {
-            $query .= "0";
-        }
-        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
-        mysqli_set_one($query);
+        update_game_tracker($game_id);
+//        $query = "UPDATE game_players SET player_needs_update='";
+//        if($needs) {
+//            $query .= "1";
+//        } else {
+//            $query .= "0";
+//        }
+//        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
+//        mysqli_set_one($query);
     }
 
     function update_game_tracker($game_id) {
@@ -774,7 +772,7 @@
         }
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
-        if($user_belongs) {
+        if(false) {                                 //if($user_belongs) {
             //Track based on player_needs_update
             $needs_update = player_needs_update_id($game_id, $user_id);
         } else {
@@ -959,10 +957,11 @@
                                             $banner = "ERROR"; //Should never hit here. If we do... let me know
                                         }
                                     }
+
+                                    //Add UN_READY
                                     if($action_id != get_action_by_enum("NO_ACTION")) {
                                         $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
-                                        $result2 = mysqli_query($dbh, $query);
-                                        if($row2 && mysqli_get_one($query)) {
+                                        if($row2 = mysqli_get_one($query)) {
                                             $alt_banner = $row2['action_banner'];
                                             $alt_banner_action = $row2['action_id'];
                                         }
