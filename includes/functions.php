@@ -7,7 +7,7 @@
                             'Cop'=>'cop.png',
                             'System'=>'system.png',
                             'Unassigned'=>'unassigned.png',
-                            'Mason'=>'unassigned.png',
+                            'Mason'=>'mason.png',
                             'Mafia'=>'mafia.gif');
     $game_name_limit = 40;
     include('./includes/mysql_config.php');
