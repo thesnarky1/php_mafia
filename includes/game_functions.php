@@ -473,9 +473,7 @@
     function get_action_by_enum($action_enum) {
         global $dbh;
         $query = "SELECT action_id FROM actions WHERE action_enum='$action_enum'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             return $row['action_id'];
         } else {
             return false;
@@ -491,42 +489,34 @@
                  "FROM game_players, games ".
                  "WHERE games.game_id='$game_id' AND game_players.user_id='$user_id' ".
                  "AND game_players.game_id=games.game_id";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            while($row = mysqli_fetch_array($result)) {
-                    $player_ready = $row['player_ready'];
-                    $player_alive = $row['player_alive'];
-                    $game_phase = $row['game_phase'];
-                    $game_creator = $row['game_creator'];
-                    $role_id = $row['role_id'];
-                    if($player_alive == 'Y') {
-                        if($game_phase == 2 || $game_phase == 0) { //day
-                            $query2 = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
-                            $result2 = mysqli_query($dbh, $query2);
-                            if($result2 && mysqli_num_rows($result2) == 1) {
-                                $row2 = mysqli_fetch_array($result2);
-                                $to_return[] = $row2['day_action_id'];
-                                $to_return[] = $row2['day_alt_action_id'];
-                            }
-                        } else {
-                            $query2 = "SELECT night_action_id, night_alt_action_id FROM roles WHERE role_id='$role_id'";
-                            $result2 = mysqli_query($dbh, $query2);
-                            if($result2 && mysqli_num_rows($result2) == 1) {
-                                $row2 = mysqli_fetch_array($result2);
-                                $to_return[] = $row2['night_action_id'];
-                                $to_return[] = $row2['night_alt_action_id'];
-                            }
-                        }
-                        if($player_ready == 'Y' && !in_array($no_action, $to_return)) {
-                            $to_return[] = get_action_by_enum("UN_READY");
-                            if($user_id == $game_creator) {
-                                $to_return[] = get_action_by_enum("START");
-                            }
-                        }
+        if($row = mysqli_get_one($query)) {
+            $player_ready = $row['player_ready'];
+            $player_alive = $row['player_alive'];
+            $game_phase = $row['game_phase'];
+            $game_creator = $row['game_creator'];
+            $role_id = $row['role_id'];
+            if($player_alive == 'Y') {
+                if($game_phase == 2 || $game_phase == 0) { //day
+                    $query = "SELECT day_action_id, day_alt_action_id FROM roles WHERE role_id='$role_id'";
+                    if($row = mysqli_get_one($query)) {
+                        $to_return[] = $row['day_action_id'];
+                        $to_return[] = $row['day_alt_action_id'];
+                    }
+                } else {
+                    $query = "SELECT night_action_id, night_alt_action_id FROM roles WHERE role_id='$role_id'";
+                    if($row = mysqli_get_one($query)) {
+                        $to_return[] = $row['night_action_id'];
+                        $to_return[] = $row['night_alt_action_id'];
                     }
                 }
-            } else  {
+                if($player_ready == 'Y' && !in_array($no_action, $to_return)) {
+                    $to_return[] = get_action_by_enum("UN_READY");
+                    if($user_id == $game_creator) {
+                        $to_return[] = get_action_by_enum("START");
+                    }
+                }
             }
+        }
         return $to_return;
     }
 
@@ -545,9 +535,8 @@
         $query = "SELECT user_id, role_id, player_alive ".
                  "FROM game_players ".
                  "WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_array($result)) {
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
                 $player_alive = $row['player_alive'];
                 $user_id = $row['user_id'];
                 $role_id = $row['role_id'];
@@ -564,20 +553,19 @@
                         $result_id = get_result_by_enum("DEAD_LOSS");
                     }
                 }
-                $query2 = "INSERT INTO game_player_results(game_id, user_id, role_id, result_id) ".
+                $query = "INSERT INTO game_player_results(game_id, user_id, role_id, result_id) ".
                           "VALUES('$game_id', '$user_id', '$role_id', '$result_id')";
-                $result2 = mysqli_query($dbh, $query2);
+                mysqli_insert($query);
             }
         }
         update_game_players($game_id);
+        update_game_tracker();
     }
 
     function get_result_by_enum($enum) {
         global $dbh;
         $query = "SELECT result_id FROM results WHERE result_enum='$enum'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             return $row['result_id'];
         } else {
             return false;
@@ -590,9 +578,8 @@
         $query = "SELECT roles.role_faction, game_players.player_alive ".
                  "FROM game_players, roles ".
                  "WHERE game_players.game_id='$game_id' AND roles.role_id=game_players.role_id";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_array($result)) {
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
                 $role_faction = $row['role_faction'];
                 $player_alive = $row['player_alive'];
                 if($player_alive == 'Y') {
@@ -607,33 +594,27 @@
                 //Game ain't even begun yet!
             } else if(count($roles) == 1) {
                 if(isset($roles['Town'])) {
-                    $over = "Town";
+                    return "Town";
                 } else if(isset($roles['Antitown'])) {
-                    $over = "Antitown";
+                    return "Antitown";
                 } else if(isset($roles['Psychopaths'])) {
                     if($roles['Psychopaths'] == 1) {
-                        $over = "Psychopaths";
+                        return "Psychopaths";
                     } else {
                     }
                 } else{
                 }
-            } else {
             }
-
-            if($over) {
-            } else {
-            }
-            return $over;
         }
+        return false;
     }
 
     function get_roles_by_faction($faction) {
         global $dbh;
         $role_ids = array();
         $query = "SELECT role_id FROM roles WHERE role_faction='$faction'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_array($result)) {
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
                 $role_ids[] = $row['role_id'];
             }
         }
@@ -651,9 +632,7 @@
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
         $query = "SELECT game_turn, game_phase, game_locked FROM games WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
             $game_locked = $row['game_locked'];
@@ -664,8 +643,7 @@
                     $query = "UPDATE games ".
                              "SET game_phase='$game_phase', game_recent_date=NOW() ".
                              "WHERE game_id='$game_id'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_affected_rows($dbh) == 1) {
+                    if(mysqli_set_one($query)) {
                         if($chan_id) {
                             add_message($chan_id, $system_id, "Another day breaks over the town.");
                         }
@@ -681,8 +659,7 @@
                     $query = "UPDATE games ".
                              "SET game_phase='$game_phase', game_turn='$game_turn', game_recent_date=NOW() ".
                              "WHERE game_id='$game_id'";
-                    $result = mysqli_query($dbh, $query);
-                    if($result && mysqli_affected_rows($dbh) == 1) {
+                    if(mysqli_set_one($query)) {
                         if($chan_id) {
                             add_message($chan_id, $system_id, "Night creeps silently over the town as turn $game_turn begins.");
                         } else {
@@ -695,22 +672,20 @@
                 update_game_players($game_id);
                 update_game_tracker($game_id);
             }
-        } else {
-        }
+        } 
     }
 
     function update_players_ready($game_id) {
         global $dbh;
         $query = "UPDATE game_players SET player_ready='N' WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
+        mysqli_set_many($query);
     }
 
     function update_game_players($game_id) {
         global $dbh;
         $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_array($result)) {
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
                 update_player_needs_update($game_id, $row['user_id'], true); 
             }
         }
