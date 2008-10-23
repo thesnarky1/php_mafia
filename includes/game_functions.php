@@ -555,7 +555,7 @@
             }
         }
         update_game_players($game_id);
-        update_game_tracker();
+        update_game_tracker($game_id);
     }
 
     function get_result_by_enum($enum) {
