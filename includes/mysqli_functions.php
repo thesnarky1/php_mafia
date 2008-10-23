@@ -53,4 +53,14 @@
         }
         return false;
     }
+
+    function mysqli_delete($query) {
+        global $dbh;
+        $result = mysqli_query($dbh, $query);
+        if($result && mysqli_affected_rows($dbh) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 ?>
