@@ -10,9 +10,7 @@
     } else {
         $user_id = $_SESSION['user_id'];
         $query = "SELECT user_role FROM users WHERE user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             $user_role = $row['user_role'];
             if($user_role == "A") { //Admin - good to go
                 $belongs = true;
@@ -32,26 +30,22 @@
         $query = "SELECT user_email ".
                  "FROM users ".
                  "WHERE user_email='$email'";
-        $result = mysqli_query($dbh, $query);
-        if($result) {
-            if(mysqli_num_rows($result) == 0) {
+        if($rows = mysqli_get_many($query)) {
+            if(count($rows) == 0) {
                 $query = "SELECT user_email FROM registration_codes WHERE user_email='$email'";
-                $result = mysqli_query($dbh, $query);
-                if($result) {
-                    if(mysqli_num_rows($result) == 0) {
+                if($rows = mysqli_get_many($query)) {
+                    if(count($rows) == 0) {
                         $reg_code = create_user_hash();
                         $query = "INSERT INTO registration_codes(user_email, reg_code) ".
                                  "VALUES('$email', '$reg_code')";
-                        $result = mysqli_query($dbh, $query);
-                        if($result && mysqli_affected_rows($dbh) == 1) {
+                        if(mysqli_insert($query)) {
                             $user = $_SESSION['user_name'];
                             if(send_invite_email($email, $reg_code, $user)) {
                                 $error = "Invitation sent successfully to $email";
                             } else {
                                 $error = "Registration code created, but email failed to send, ";
                                 $query = "DELETE FROM registration_codes WHERE reg_code='$reg_code' AND user_email='$email'";
-                                $result = mysqli_query($dbh, $query);
-                                if(mysqli_affected_rows($dbh) == 1) {
+                                if(mysqli_delete($query)) {
                                     $error .= "registration code deleted.";
                                 } else {
                                     $error .= "registration code failed to delete - $query";

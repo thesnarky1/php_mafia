@@ -7,9 +7,8 @@
     echo "<div id='news_feed'>\n";
     echo "<h3><a href='./news.php'>News</a></h3>\n";
     $query = "SELECT * FROM news ORDER BY news_date DESC LIMIT 10";
-    $result = mysqli_query($dbh, $query);
-    if($result && mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_array($result)) {
+    if($rows = mysqli_get_many($query)) {
+        foreach($rows as $row) {
             $news_id = $row['news_id'];
             $news_text = $row['news_text'];
             $news_date = $row['news_date'];

@@ -57,7 +57,7 @@
     function mysqli_delete($query) {
         global $dbh;
         $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) == 1) {
+        if($result && mysqli_affected_rows($dbh) > 0) {
             return true;
         } else {
             return false;
