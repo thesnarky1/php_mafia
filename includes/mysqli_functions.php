@@ -44,7 +44,7 @@
     function mysqli_get_many($query) {
         global $dbh;
         $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) > 0) {
+        if($result) {
             $to_return = array();
             while($row = mysqli_fetch_array($result)) {
                 $to_return[] = $row;

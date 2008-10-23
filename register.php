@@ -13,37 +13,33 @@
             //Check email/registration code again... TRUST NO ONE!
             $query = "SELECT reg_id FROM registration_codes ".
                      "WHERE user_email='$email' AND reg_code='$code'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
+            if($row = mysqli_get_one($query)) {
                 $reg_id = $row['reg_id'];
                 if(isset($_REQUEST['username'])) {
                     $username = safetify_input($_REQUEST['username']);
                     if(username_check($username)) {
                         $query = "SELECT user_id FROM users WHERE user_name='$username'";
-                        $result = mysqli_query($dbh, $query);
-                        if($result && mysqli_num_rows($result) == 0) {
+                        $rows = mysqli_get_many($query);
+                        if(count($rows) == 0) {
                             if(isset($_REQUEST['pass']) && isset($_REQUEST['pass2'])) {
                                 $pass = safetify_input($_REQUEST['pass']);
                                 $pass2 = safetify_input($_REQUEST['pass2']);
                                 if($pass == $pass2) {
                                     if(pass_check($pass)) {
                                         $query = "SELECT user_id FROM users WHERE user_email='$email'";
-                                        $result = mysqli_query($dbh, $query);
-                                        if($result && mysqli_num_rows($result) == 0) {
+                                        $rows = mysqli_get_many($query);
+                                        if(count($rows) == 0) {
                                             //Good username / pass, lets register
                                             $hash = create_user_hash();
                                             $query = "INSERT INTO users(user_name, ".
                                                      "user_email, user_pass, user_hash, user_joined)".
                                                      "VALUES('$username', '$email', MD5('$pass'), '$hash', NOW())";
-                                            $result = mysqli_query($dbh, $query);
-                                            if($result && mysqli_affected_rows($dbh) == 1) {
+                                            if($user_id = mysqli_insert($query)) {
                                                 $user_id = mysqli_insert_id($dbh);
                                                 login_user($username, $user_id, $hash);
                                                 //Remove registration code
                                                 $query = "DELETE FROM registration_codes WHERE reg_id='$reg_id'";
-                                                $result = mysqli_query($dbh, $query);
-                                                if($result && mysqli_affected_rows($dbh) == 1) {
+                                                if(mysqli_delte($query)) {
                                                     $error = "Registration complete, you are now logged in.";
                                                     $blocking_error = true;
                                                 } else {
@@ -81,18 +77,13 @@
         } else {
             //Check if email is already registered
             $query = "SELECT user_id FROM users WHERE user_email='$email'";
-            $result = mysqli_query($dbh, $query);
-            if($result) {
-                if(mysqli_num_rows($result) == 1) {
-                    $error = "Sorry, this email address is already registered.";
-                    $blocking_error = true;
-                }
+            if(mysqli_get_one($query)) {
+                $error = "Sorry, this email address is already registered.";
+                $blocking_error = true;
             } else {
                 //Check if registration code is correct
                 $query = "SELECT reg_code FROM registration_codes WHERE user_email='$email'";
-                $result = mysqli_query($dbh, $query);
-                if($result && mysqli_num_rows($result) == 1) {
-                    $row = mysqli_fetch_array($result);
+                if($row = mysqli_get_one($query)) {
                     $reg_code = $row['reg_code'];
                     if($reg_code != $code) {
                         $error = "Sorry, this registration code is incorrect.";
