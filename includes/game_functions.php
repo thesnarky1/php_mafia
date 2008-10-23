@@ -352,9 +352,11 @@
     }
 
     function start_game($game_id) {
+        lock_game($game_id, true);
         dole_out_roles($game_id);
         initialize_channels($game_id);
         next_phase($game_id);
+        lock_game($game_id, false);
     }
 
     function update_game_recent_date($game_id) {
@@ -629,7 +631,7 @@
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
             $game_locked = $row['game_locked'];
-            if($game_locked != 1) {
+            if($game_locked == 1) {
                 if($game_phase == 1) {
                     //Just update game_phase
                     $game_phase++;
