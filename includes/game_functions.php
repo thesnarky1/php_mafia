@@ -44,7 +44,6 @@
     }
 
     function auto_ready_game($game_id) {
-        global $dbh;
         $nothing = get_action_by_enum("NO_ACTION");
         $query = "SELECT user_id ".
                  "FROM game_players ".
@@ -55,6 +54,7 @@
                 $actions = get_user_actions($game_id, $user_id);
                 if(in_array($nothing, $actions) || count($actions) == 0) {
                     set_player_ready($game_id, $user_id, true);
+                } else {
                 }
             }
         }
@@ -216,9 +216,6 @@
 
     function can_phase_change($game_id) {
         global $dbh;
-        $to_return = false; //Don't want to change unless I say so!
-        $query = "SELECT game_phase, game_turn FROM games WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
         $game_phase_turn = get_game_phase_turn($game_id);
         if($game_phase_turn) {
             $game_phase = $game_phase_turn['game_phase'];
