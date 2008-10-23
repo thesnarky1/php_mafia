@@ -586,20 +586,15 @@
                 }
             }
             $over = false;
-            if(isset($roles['Unknown'])) {
-                //Game ain't even begun yet!
-            } else if(count($roles) == 1) {
-                if(isset($roles['Town'])) {
-                    return "Town";
-                } else if(isset($roles['Antitown'])) {
-                    return "Antitown";
-                } else if(isset($roles['Psychopaths'])) {
-                    if($roles['Psychopaths'] == 1) {
-                        return "Psychopaths";
-                    } else {
-                    }
-                } else{
-                }
+
+            if(isset($roles['Town']) && count($roles) == 1) {
+                return "Town";
+            } else if((!isset($roles['Town']) || $roles['Town'] == 1) && isset($roles['Antitown']) &&
+                       !isset($roles['Psychopaths'])) {
+                return "Antitown";
+            } else if((!isset($roles['Town']) || $roles['Town'] == 1) && !isset($roles['Anittown']) &&
+                        $roles['Psychopaths'] == 1) {
+                return "Psychopaths";
             }
         }
         return false;
