@@ -142,7 +142,7 @@
    function retrieve_new_messages($user_id, $game_id, $id = 0) {
        global $dbh;
        global $channel_images;
-       if($user_id == 0 || $user_id = "") {
+       if($user_id == 0 || $user_id == "") {
            $user_belongs = false;
        } else {
            if(user_belongs($game_id, $user_id)) {
