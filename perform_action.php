@@ -24,9 +24,7 @@
                 die();
             }
             $query = "SELECT game_phase FROM games WHERE game_id='$game_id'";
-            $result = mysqli_query($dbh, $query);
-            if($result && mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
+            if($row = mysqli_get_one($query)) {
                 $game_phase = $row['game_phase'];
             }
             $valid_actions = get_user_actions($game_id, $user_id);

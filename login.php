@@ -11,7 +11,6 @@
                  "LIMIT 1";
         if($row = mysqli_get_one($query)) {
             $error = "";
-            $row = mysqli_fetch_array($result);
             $user_name = $row['user_name'];
             $user_id = $row['user_id'];
             $user_hash = $row['user_hash'];
