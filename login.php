@@ -9,16 +9,15 @@
         $query = "SELECT * FROM users ".
                  "WHERE user_name LIKE '$user_name' AND user_pass=MD5('$user_pass') ".
                  "LIMIT 1";
-        $result = mysqli_query($dbh, $query);
-        if(mysqli_num_rows($result) < 1) {
-            $error = "Unknown user/password combination.";
-        } else {
+        if($row = mysqli_get_one($query)) {
             $error = "";
             $row = mysqli_fetch_array($result);
             $user_name = $row['user_name'];
             $user_id = $row['user_id'];
             $user_hash = $row['user_hash'];
             login_user($user_name, $user_id, $user_hash);
+        } else {
+            $error = "Unknown user/password combination.";
         }
 
         render_header("Thieves Tavern Login");
