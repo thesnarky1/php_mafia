@@ -236,30 +236,30 @@
                                  "WHERE game_players.game_id='$game_id' AND ".
                                  "roles.role_id=game_players.role_id AND ".
                                  "roles.role_target_group IS NOT NULL";
-                        if($rows = mysqli_get_many($query)) {
-                            $to_return = true;
-                            if(count($rows) == 0) {
-                                //Good to go!
-                            } else {
-                                foreach($rows as $row) {
-                                    $role_target_group = $row['role_target_group'];
-                                    $target_query = "SELECT DISTINCT game_actions.target_id ".
-                                             "FROM game_players, roles, game_actions ".
-                                             "WHERE game_players.game_id='$game_id' AND ".
-                                             "roles.role_target_group='$role_target_group' AND ".
-                                             "roles.role_id=game_players.role_id AND ".
-                                             "game_actions.user_id=game_players.user_id AND ".
-                                             "game_actions.game_turn='$game_turn' AND ".
-                                             "game_actions.game_phase='$game_phase' AND ".
-                                             "game_actions.game_id=game_players.game_id ";
-                                    $target_rows = mysqli_get_many($target_query);
-                                    if($target_rows && (count($target_rows) == 1 || count($target_rows) == 0)) {
-                                        //echo "All $role_target_group want to target the same.\n";
-                                        //Have an agreed upon target
-                                    } else {
-                                        //echo " The $role_target_group can't decide. $target_query\n";
-                                        $to_return = false;
-                                    }
+                        $rows = mysqli_get_many($query);
+                        if(count($rows) == 0) {
+                            //Good to go
+                            return true;
+                        } else {
+                            foreach($rows as $row) {
+                                $role_target_group = $row['role_target_group'];
+                                $target_query = "SELECT DISTINCT game_actions.target_id ".
+                                         "FROM game_players, roles, game_actions ".
+                                         "WHERE game_players.game_id='$game_id' AND ".
+                                         "roles.role_target_group='$role_target_group' AND ".
+                                         "roles.role_id=game_players.role_id AND ".
+                                         "game_actions.user_id=game_players.user_id AND ".
+                                         "game_actions.game_turn='$game_turn' AND ".
+                                         "game_actions.game_phase='$game_phase' AND ".
+                                         "game_actions.game_id=game_players.game_id ";
+                                $target_rows = mysqli_get_many($target_query);
+                                if($target_rows && (count($target_rows) == 1 || count($target_rows) == 0)) {
+                                    //echo "All $role_target_group want to target the same.\n";
+                                    //Have an agreed upon target
+                                    return true;
+                                } else {
+                                    //echo " The $role_target_group can't decide. $target_query\n";
+                                    return false;
                                 }
                             }
                         }
@@ -421,29 +421,27 @@
                  "WHERE game_players.game_id='$game_id' ".
                  "AND game_players.player_ready='N' ".
                  "AND users.user_id=game_players.user_id";
-        if($rows = mysqli_get_many($query)) {
-            if(count($rows) > 0) {
-                $unready_players = array();
-                foreach($rows as $row) {
-                    $unready_players[] = $row['user_name'];
-                }
-                echo "Game cannot start because someone's not ready: " . implode(", ", $unready_players);
-                return false;
-            } else {
-                $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
+        $rows = mysqli_get_many($query);
+        if(count($rows) > 0) {
+            $unready_players = array();
+            foreach($rows as $row) {
+                $unready_players[] = $row['user_name'];
+            }
+            echo "Game cannot start because someone's not ready: " . implode(", ", $unready_players);
+            return false;
+        } else {
+            $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
+            if($rows = mysqli_get_many($query)) {
+                $num_players = count($rows);
+                $query = "SELECT roleset_roles FROM rolesets WHERE roleset_num_players='$num_players'";
                 if($rows = mysqli_get_many($query)) {
-                    $num_players = count($rows);
-                    $query = "SELECT roleset_roles FROM rolesets WHERE roleset_num_players='$num_players'";
-                    if($rows = mysqli_get_many($query)) {
-                        return true;
-                    } else {
-                        echo "Game cannot start with that number of players($num_players), sorry... we just don't know of any fair rolesets.";
-                        return false;
-                    }
+                    return true;
                 } else {
-                    echo "DB error - $query";
+                    echo "Game cannot start with that number of players($num_players), sorry... we just don't know of any fair rolesets.";
                     return false;
                 }
+            } else {
+                return false;
             }
         }
     }

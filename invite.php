@@ -30,41 +30,38 @@
         $query = "SELECT user_email ".
                  "FROM users ".
                  "WHERE user_email='$email'";
-        if($rows = mysqli_get_many($query)) {
-            if(count($rows) == 0) {
-                $query = "SELECT user_email FROM registration_codes WHERE user_email='$email'";
-                if($rows = mysqli_get_many($query)) {
-                    if(count($rows) == 0) {
-                        $reg_code = create_user_hash();
-                        $query = "INSERT INTO registration_codes(user_email, reg_code) ".
-                                 "VALUES('$email', '$reg_code')";
-                        if(mysqli_insert($query)) {
-                            $user = $_SESSION['user_name'];
-                            if(send_invite_email($email, $reg_code, $user)) {
-                                $error = "Invitation sent successfully to $email";
-                            } else {
-                                $error = "Registration code created, but email failed to send, ";
-                                $query = "DELETE FROM registration_codes WHERE reg_code='$reg_code' AND user_email='$email'";
-                                if(mysqli_delete($query)) {
-                                    $error .= "registration code deleted.";
-                                } else {
-                                    $error .= "registration code failed to delete - $query";
-                                }
-                            }
+        $rows = mysqli_get_many($query);
+        if(count($rows) == 0) {
+            $query = "SELECT user_email FROM registration_codes WHERE user_email='$email'";
+            if($rows = mysqli_get_many($query)) {
+                if(count($rows) == 0) {
+                    $reg_code = create_user_hash();
+                    $query = "INSERT INTO registration_codes(user_email, reg_code) ".
+                             "VALUES('$email', '$reg_code')";
+                    if(mysqli_insert($query)) {
+                        $user = $_SESSION['user_name'];
+                        if(send_invite_email($email, $reg_code, $user)) {
+                            $error = "Invitation sent successfully to $email";
                         } else {
-                            $error = "DB error - $query";
+                            $error = "Registration code created, but email failed to send, ";
+                            $query = "DELETE FROM registration_codes WHERE reg_code='$reg_code' AND user_email='$email'";
+                            if(mysqli_delete($query)) {
+                                $error .= "registration code deleted.";
+                            } else {
+                                $error .= "registration code failed to delete - $query";
+                            }
                         }
                     } else {
-                        $error = "Email address already has an invitation sent.";
+                        $error = "DB error - $query";
                     }
                 } else {
-                    $error = "DB error - $query";
+                    $error = "Email address already has an invitation sent.";
                 }
             } else {
-                $error = "Email address already registered.";
+                $error = "DB error - $query";
             }
         } else {
-            $error = "DB error - $query";
+                $error = "Email address already registered.";
         }
     }
 

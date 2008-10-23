@@ -14,46 +14,45 @@
         if($game_name != "") {
             if($game_pass == $game_pass2) {
                 $query = "SELECT game_id FROM game_players WHERE user_id='$user_id' AND player_alive='Y'";
-                if($rows = mysqli_get_many($query)) {
-                    if(count($rows) >= 5) {
-                        $error = "Sorry, you may only be in 5 games, alive, at any one time.";
+                $rows = mysqli_get_many($query);
+                if(count($rows) >= 5) {
+                    $error = "Sorry, you may only be in 5 games, alive, at any one time.";
+                } else {
+                    if($game_pass != "") {
+                        $game_pass = "MD5('$game_pass')";
+                    }
+                    if(strlen($game_name) > $game_name_limit) {
+                        $error = "Sorry, game name may not exceed $game_name_limit characters.";
+                        $game_name = substr($game_name, 0, $game_name_limit);
                     } else {
-                        if($game_pass != "") {
-                            $game_pass = "MD5('$game_pass')";
-                        }
-                        if(strlen($game_name) > $game_name_limit) {
-                            $error = "Sorry, game name may not exceed $game_name_limit characters.";
-                            $game_name = substr($game_name, 0, $game_name_limit);
-                        } else {
-                            $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
-                                     "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
-                            if($game_id = mysqli_insert($query)) {
+                        $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
+                                 "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
+                        if($game_id = mysqli_insert($query)) {
+                            //Successful
+                            $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
+                                     "VALUES('$game_id', '$user_id', 5)";
+                            if(mysqli_insert($query)) {
                                 //Successful
-                                $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
-                                         "VALUES('$game_id', '$user_id', 5)";
-                                if(mysqli_insert($query)) {
-                                    //Successful
-                                    //Add in unassigned channel for pre-game chit chat
-                                    $channel_name = "unassigned_" . $game_id;
-                                    $query = "INSERT INTO channels(channel_name, game_id, global) ".
-                                             "VALUES('$channel_name', '$game_id', 'Y')";
-                                    if($channel_id = mysqli_insert($query)) {
-                                        $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
-                                                 "VALUES('$channel_id', '$user_id', '1')";
-                                        if(mysqli_insert($query)) {
-                                            header("Location: games.php?game_id=$game_id");
-                                        } else {
-                                            $error = "Unable to add channel_member - $query";
-                                        }
+                                //Add in unassigned channel for pre-game chit chat
+                                $channel_name = "unassigned_" . $game_id;
+                                $query = "INSERT INTO channels(channel_name, game_id, global) ".
+                                         "VALUES('$channel_name', '$game_id', 'Y')";
+                                if($channel_id = mysqli_insert($query)) {
+                                    $query = "INSERT INTO channel_members(channel_id, user_id, channel_post_rights) ".
+                                             "VALUES('$channel_id', '$user_id', '1')";
+                                    if(mysqli_insert($query)) {
+                                        header("Location: games.php?game_id=$game_id");
                                     } else {
-                                        $error = "Unable to create pre-chat channel - $query";
+                                        $error = "Unable to add channel_member - $query";
                                     }
                                 } else {
-                                    $error = "Game created, but unable to add player. Contact an admin.";
+                                    $error = "Unable to create pre-chat channel - $query";
                                 }
                             } else {
-                                $error = "Error occured during creation, please try again.";
+                                $error = "Game created, but unable to add player. Contact an admin.";
                             }
+                        } else {
+                            $error = "Error occured during creation, please try again.";
                         }
                     }
                 }
