@@ -188,7 +188,7 @@
                        $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
                                        substr($channel_name, 1, strpos($channel_name, "_") - 1);
                        $channel_name = $channel_images[$channel_name];
-                       $message_text = $row['message_text'];
+                       $message_text = stripslashes(htmlentities($row['message_text']));
                        $message_date = $row['message_date'];
                        $message_id = $row['message_id'];
                        $user_name = capitalize($row['user_name']);
@@ -248,7 +248,7 @@
                        $channel_name = strtoupper(substr($channel_name, 0, 1)) . 
                                        substr($channel_name, 1, strpos($channel_name, "_") - 1);
                        $channel_name = $channel_images[$channel_name];
-                       $message_text = $row['message_text'];
+                       $message_text = stripslashes(htmlentities($row['message_text']));
                        $message_date = $row['message_date'];
                        $message_id = $row['message_id'];
                        $user_name = $row['user_name'];

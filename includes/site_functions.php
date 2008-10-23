@@ -168,6 +168,7 @@
 
     function safetify_input($str) {
         global $dbh;
+        $str = htmlentities($str);
         $str = mysqli_real_escape_string($dbh, $str);
         return $str;
     }
