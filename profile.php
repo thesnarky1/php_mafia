@@ -6,10 +6,9 @@
 
     if(isset($_GET['id'])) {
         $user_id = int_replace($_GET['id']);
+        $user_name = get_user_name($user_id);
         $query = "SELECT user_name FROM users WHERE user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_num_rows($result) == 1) {
-            $row = mysqli_fetch_array($result);
+        if($row = mysqli_get_one($query)) {
             $user_name = $row['user_name'];
             echo "<div id='profile_header'>\n";
             echo "<div id='profile_header_img'>\n";
