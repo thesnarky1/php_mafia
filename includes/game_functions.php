@@ -108,6 +108,7 @@
                             }
                             break;
                         case "LYNCH":
+                        case "NO_LYNCH":
                             if(!isset($to_lynch[$target_id])) {
                                 $to_lynch[$target_id] = 0;
                             }
@@ -264,9 +265,11 @@
             } else if($game_phase == 2) { //Day
                 $votes_required = get_votes_needed($game_id);
                 $lynch_action = get_action_by_enum("LYNCH");
+                $no_lynch_action = get_action_by_enum("NO_LYNCH");
                 $query = "SELECT target_id FROM game_actions ".
                          "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
-                         "game_turn='$game_turn' AND action_id='$lynch_action'";
+                         "game_turn='$game_turn' AND ".
+                         "(action_id='$lynch_action' OR action_id='$no_lynch_action')";
                 $rows = mysqli_get_many($query);
                 if($rows && count($rows) >= $votes_required) {
                     $lynchees = array();
@@ -805,8 +808,8 @@
                     $query = "SELECT COUNT(*) as cnt, target_id ".
                              "FROM game_actions ".
                              "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
-                             "game_turn='$game_turn' AND action_id='$lynch_action' OR ".
-                             "action_id='$no_lynch_action' ".
+                             "game_turn='$game_turn' AND (action_id='$lynch_action' OR ".
+                             "action_id='$no_lynch_action') ".
                              "GROUP BY target_id";
                     if($rows = mysqli_get_many($query)) {
                         foreach($rows as $row) {
