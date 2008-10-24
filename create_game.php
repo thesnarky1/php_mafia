@@ -13,9 +13,7 @@
         $game_name = trim($game_name);
         if($game_name != "") {
             if($game_pass == $game_pass2) {
-                $query = "SELECT game_id FROM game_players WHERE user_id='$user_id' AND player_alive='Y'";
-                $rows = mysqli_get_many($query);
-                if(count($rows) >= 5) {
+                if(count(get_user_open_games($user_id)) >= 5) {
                     $error = "Sorry, you may only be in 5 games, alive, at any one time.";
                 } else {
                     if($game_pass != "") {

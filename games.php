@@ -143,11 +143,7 @@
                 if($row = mysqli_get_one($query)) {
                     $game_password = $row['game_password'];
                     if($row['game_phase'] == 0) {
-                        $query = "SELECT user_id FROM game_players ".
-                                 "WHERE user_id='$user_id' AND ".
-                                 "player_alive='Y'";
-                        $rows = mysqli_get_many($query);
-                        if(count($rows) <= 4) {
+                        if(count(get_user_open_games($user_id)) <= 4) {
                             $query = "SELECT user_id FROM game_players ".
                                      "WHERE game_id='$game_id' AND user_id='$user_id'";
                             $rows = mysqli_get_many($query);

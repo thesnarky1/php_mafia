@@ -1,5 +1,15 @@
 <?php
 
+    function get_user_open_games($user_id) {
+        $query = "SELECT games.game_id ".
+                 "FROM games, game_players ".
+                 "WHERE game_players.user_id='$user_id' AND ".
+                 "games.game_id=game_players.game_id AND ".
+                 "games.game_phase IS NOT '3'";
+        $rows = mysqli_get_many($query);
+        return $rows;
+    }
+
     function get_game_phase_turn($game_id) {
         $query = "SELECT game_phase, game_turn ".
                  "FROM games ".
