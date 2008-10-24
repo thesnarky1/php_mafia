@@ -39,7 +39,7 @@
                                                 login_user($username, $user_id, $hash);
                                                 //Remove registration code
                                                 $query = "DELETE FROM registration_codes WHERE reg_id='$reg_id'";
-                                                if(mysqli_delte($query)) {
+                                                if(mysqli_delete($query)) {
                                                     $error = "Registration complete, you are now logged in.";
                                                     $blocking_error = true;
                                                 } else {
