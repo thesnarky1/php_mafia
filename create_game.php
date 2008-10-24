@@ -74,7 +74,7 @@
         echo "<form method='POST' action='./create_game.php'>\n";
         echo "<h3>Create Game</h3>\n";
         echo "<label><span class='error'>*</span>Game name: </label>\n";
-        echo "<input type='text' name='game_name' size='60' ";
+        echo "<input type='text' name='game_name' size='60' maxlength='40' ";
         if(isset($game_name) || isset($_POST['game_name'])) {
             if(isset($game_name)) {
                 $game_name = stripslashes($game_name);
