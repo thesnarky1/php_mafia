@@ -24,8 +24,8 @@
 
     function send_invite_email($email, $reg_code, $inviter) {
         $body = "Hey there!\n".
-                "Someone over at Thieves Tavern ($inviter) thought you'd have a blast if you joined. If you would like to, please use the invitation link below to create a user on our site.\n".
-                "http://thievestavern.com/register.php?email=$email&code=$reg_code\n".
+                "Someone over at Thieves Tavern ($inviter) thought you'd have a blast if you joined. If you would like to, please use the invitation link below to create a user on our site.\n\n".
+                "http://thievestavern.com/register.php?email=$email&code=$reg_code\n\n".
                 "If the above address doesn't show up as a link, try cutting and pasting the URL into a browser.\n".
                 "Have a great day, and survive the night!\n".
                 "--Thieves Tavern Management\n";
