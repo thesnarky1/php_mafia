@@ -212,7 +212,8 @@
         echo "\trequestNewMessages();\n";
         echo "\trequestGameInformation();\n";
         echo "}\n";
-        echo "google.setOnLoadCallback(onLoad)\n";
+        echo "}\n";
+        echo "google.setOnLoadCallback(onLoad);\n";
         echo "</script>\n";
         echo "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
         echo "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
