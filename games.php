@@ -129,7 +129,7 @@
         echo "</div>\n";
         echo "</div>\n";
     } else { //Have a game to view
-        render_header("Thieves Tavern Games", "init_chat();init_info();");
+        render_header("Thieves Tavern Games", "");
         $error = "";
         if(is_logged_in()) {
             $user_id = $_SESSION['user_id'];
