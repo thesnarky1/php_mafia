@@ -205,6 +205,15 @@
         echo "<head>\n";
         echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
         echo "<title>$title</title>\n";
+        echo "<script src='http://www.google.com/jsapi?key=ABQIAAAAUsFEjhe8hOp3ncAxs_I-ZxTuReQOfkQuMttBdN_0aRFZ3els6xTBpqQ46vNpQyeS1piAI3qyWSxRaw' type='text/javascript'></script>";
+        echo "<script language='Javascript' type='text/javascript'>\n";
+        echo "function onLoad() {\n";
+        echo "if(document.getElementById('game_id')) {\n";
+        echo "\trequestNewMessages();\n";
+        echo "\trequestGameInformation();\n";
+        echo "}\n";
+        echo "google.setOnLoadCallback(onLoad)\n";
+        echo "</script>\n";
         echo "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
         echo "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
         echo "<script type='text/javascript' src='./scripts/perform_action.js'></script>\n";

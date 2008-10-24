@@ -34,8 +34,6 @@ function createXmlHttpRequestObject() {
 //    requestNewMessages();
 //}
 
-Ext.onReady(requestNewMessages());
-
 function requestNewMessages() {
     if(xmlHttpGetMessages) {
         try {

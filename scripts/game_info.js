@@ -37,8 +37,6 @@ function createXmlHttpRequestObject() {
 //    requestGameInformation();
 //}
 
-Ext.onReady(requestGameInformation());
-
 function requestGameInformation() {
     if(xmlHttpGetInformation) {
         try {
