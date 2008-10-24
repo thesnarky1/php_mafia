@@ -147,7 +147,7 @@ function readInformation() {
                     var vote = voteTally.item(i);
                     var voteName = vote.getElementsByTagName("name")[0].firstChild.data.toString();
                     var voteVote = vote.getElementsByTagName("vote")[0].firstChild.data.toString();
-                    voteTallyHTML.innerHTML += "<li class='game_player_list_alive'>" + voteName + ": " + voteVote + " votes</li>\n";
+                    voteTallyHTML.innerHTML += "<li class='game_player_list_alive'>" + voteName + ": " + voteVote + "</li>\n";
                 }
             } else {
                 voteTallyHTML.innerHTML = "";

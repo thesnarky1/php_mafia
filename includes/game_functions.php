@@ -839,7 +839,25 @@
                             }
                             $to_return .= "<vote_tally>";
                             $to_return .= "<name>$target_name</name>\n";
-                            $to_return .= "<vote>$votes</vote>\n";
+                            $to_return .= "<vote>$votes votes</vote>\n";
+                            $to_return .= "</vote_tally>\n";
+                        }
+                    }
+                } else if($game_phase == 0) { //Return a ready list
+                    $query = "SELECT user_id, player_ready ".
+                             "FROM game_players ".
+                             "WHERE game_id='$game_id'";
+                    if($rows = mysqli_get_many($query)) {
+                        foreach($rows as $row) {
+                            $name = get_user_name($row['user_id']);
+                            if($row['player_ready'] == 'Y') {
+                                $ready = "Ready";
+                            } else {
+                                $ready = "NOT Ready";
+                            }
+                            $to_return .= "<vote_tally>\n";
+                            $to_return .= "<name>$name</name>\n";
+                            $to_return .= "<vote>$ready</vote>\n";
                             $to_return .= "</vote_tally>\n";
                         }
                     }
