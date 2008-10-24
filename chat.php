@@ -81,7 +81,7 @@
                                 $error = "You currently can't talk on any channels. Wait for daylight and try again.";
                             }
                         } else {
-                            $error = "You currently can't talk on any channels. $query";
+                            $error = "You currently can't talk on any channels.";
                         }
                     }
                 } else {

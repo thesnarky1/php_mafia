@@ -1,5 +1,10 @@
 <?php
 
+    function revoke_channel($channel_id) {
+        $query = "UPDATE channel_members SET channel_post_rights='0' WHERE channel_id='$channel_id'";
+        mysqli_set_many($query);
+    }
+
     function get_channel_by_name($channel_name, $game_id) {
         global $dbh;
         $query = "SELECT channel_id FROM channels ".

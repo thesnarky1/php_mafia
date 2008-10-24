@@ -524,6 +524,13 @@
         $winning_roles = get_roles_by_faction($winning_faction);
         //Set game phase to 3
         //lock game
+        //Kill off ability to chat in game channels
+        $query = "SELECT channel_id FROM channels WHERE game_id='$game_id'";
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
+                revoke_channel($row['channel_id']);
+            }
+        }
         $query = "UPDATE games SET game_phase='3', game_locked='1' WHERE game_id='$game_id'";
         $result = mysqli_query($dbh, $query);
         //Send some spam saying its over, of course
