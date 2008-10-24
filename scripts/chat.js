@@ -30,9 +30,11 @@ function createXmlHttpRequestObject() {
     }
 }
 
-function init_chat() {
-    requestNewMessages();
-}
+//function init_chat() {
+//    requestNewMessages();
+//}
+
+Ext.onReady(requestNewMessages());
 
 function requestNewMessages() {
     if(xmlHttpGetMessages) {

@@ -33,9 +33,11 @@ function createXmlHttpRequestObject() {
     }
 }
 
-function init_info() {
-    requestGameInformation();
-}
+//function init_info() {
+//    requestGameInformation();
+//}
+
+Ext.onReady(requestGameInformation());
 
 function requestGameInformation() {
     if(xmlHttpGetInformation) {
