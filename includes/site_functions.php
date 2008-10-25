@@ -258,6 +258,7 @@
         echo "<html>\n";
 
         echo "<head>\n";
+        echo "<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />";
         echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
         echo "<title>$title</title>\n";
         echo "<script src='http://www.google.com/jsapi?key=ABQIAAAAUsFEjhe8hOp3ncAxs_I-ZxTuReQOfkQuMttBdN_0aRFZ3els6xTBpqQ46vNpQyeS1piAI3qyWSxRaw' type='text/javascript'></script>";
