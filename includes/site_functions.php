@@ -255,7 +255,9 @@
         $file_name = $file_name_arr[0];
 
         //Render <head> junk
-        echo "<html>\n";
+        echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' \n";
+        echo "'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>";
+        echo "<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n";
 
         echo "<head>\n";
         echo "<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />";
