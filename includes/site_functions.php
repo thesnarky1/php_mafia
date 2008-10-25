@@ -198,41 +198,35 @@
         echo "</div>\n";
     }
 
-    function render_header($title="Thieves Tavern", $on_load='') {
-        //Render <head> junk
-        echo "<html>\n";
+    function get_required_javascript_specific_game() {
+            $to_return = "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
+            $to_return .= "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
+            $to_return .= "<script type='text/javascript' src='./scripts/perform_action.js'></script>\n";
+            $to_return .= "<script language='Javascript' type='text/javascript'>\n";
+            $to_return .= "function onLoad() {\n";
+            $to_return .= "if(document.getElementById('game_id')) {\n";
+            $to_return .= "\trequestNewMessages();\n";
+            $to_return .= "\trequestGameInformation();\n";
+            $to_return .= "}\n";
+            $to_return .= "}\n";
+            $to_return .= "google.setOnLoadCallback(onLoad);\n";
+            $to_return .= "</script>\n";
+            return $to_return;
+    }
 
-        echo "<head>\n";
-        echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
-        echo "<title>$title</title>\n";
-        echo "<script src='http://www.google.com/jsapi?key=ABQIAAAAUsFEjhe8hOp3ncAxs_I-ZxTuReQOfkQuMttBdN_0aRFZ3els6xTBpqQ46vNpQyeS1piAI3qyWSxRaw' type='text/javascript'></script>";
-        echo "<script language='Javascript' type='text/javascript'>\n";
-        echo "function onLoad() {\n";
-        echo "if(document.getElementById('game_id')) {\n";
-        echo "\trequestNewMessages();\n";
-        echo "\trequestGameInformation();\n";
-        echo "}\n";
-        echo "}\n";
-        echo "google.setOnLoadCallback(onLoad);\n";
-        echo "</script>\n";
-        echo "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
-        echo "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
-        echo "<script type='text/javascript' src='./scripts/perform_action.js'></script>\n";
-        echo "</head>\n";
+    function get_nav_bar() {
+        $to_return = "<div id='nav_buttons'>\n";
+        $to_return .= "<span class='nav_button'><a href='./index.php'>Home</a></span>\n";
+        $to_return .= "<span class='nav_button'><a href='./games.php'>Games</a></span>\n";
+        $to_return .= "<span class='nav_button'><a href='./news.php'>News</a></span>\n";
+        $to_return .= "<span class='nav_button'><a href='./help.php'>Help</a></span>\n";
+        $to_return .= "</div>\n"; //Close nav_buttons
+        return $to_return;
+    }
 
-        //Render the top of the body
-        echo "<body onload='$on_load'>\n";
-        echo "<div id='content'>\n";
-
-        echo "<div id='header'>\n";
-
-        echo "<div id='logo'>\n";
-        echo "<a href='./index.php'><img src='./images/mafia_logo.png' /></a>\n";
-        echo "</div>\n"; //Close logo
-
+    function get_player_info_div($logged_in) {
         echo "<div id='player_info'>\n";
-
-        if(is_logged_in()) {
+        if($logged_in) {
             $user_name = $_SESSION['user_name'];
             $user_id = $_SESSION['user_id'];
             echo "<p class='player_name'>$user_name <span class='small_text'><a href='./logout.php'>(logout)</a></span></p>";
@@ -252,13 +246,40 @@
             echo "</form>\n";
         }
         echo "</div>\n"; //Close player_info
+    }
 
-        echo "<div id='nav_buttons'>\n";
-        echo "<span class='nav_button'><a href='./index.php'>Home</a></span>\n";
-        echo "<span class='nav_button'><a href='./games.php'>Games</a></span>\n";
-        echo "<span class='nav_button'><a href='./news.php'>News</a></span>\n";
-        echo "<span class='nav_button'><a href='./help.php'>Help</a></span>\n";
-        echo "</div>\n"; //Close nav_buttons
+    function render_header($title="Thieves Tavern", $on_load='') {
+        $file_name = $_SERVER['REQUEST_URI'];
+        $file_name_arr = explode("/", $file_name);
+        $file_name = $file_name_arr[count($file_name_arr) - 1];
+        $file_name_arr = explode("?", $file_name);
+        $file_name = $file_name_arr[0];
+
+        //Render <head> junk
+        echo "<html>\n";
+
+        echo "<head>\n";
+        echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
+        echo "<title>$title</title>\n";
+        echo "<script src='http://www.google.com/jsapi?key=ABQIAAAAUsFEjhe8hOp3ncAxs_I-ZxTuReQOfkQuMttBdN_0aRFZ3els6xTBpqQ46vNpQyeS1piAI3qyWSxRaw' type='text/javascript'></script>";
+        if(strtolower($file_name) == "games.php" && isset($_REQUEST['game_id'])) {
+            echo get_required_javascript_specific_game();
+        }
+        echo "</head>\n";
+
+        //Render the top of the body
+        echo "<body onload='$on_load'>\n";
+        echo "<div id='content'>\n";
+
+        echo "<div id='header'>\n";
+
+        echo "<div id='logo'>\n";
+        echo "<a href='./index.php'><img src='./images/mafia_logo.png' /></a>\n";
+        echo "</div>\n"; //Close logo
+
+        echo get_player_info_div(is_logged_in());
+
+        echo get_nav_bar();
 
         echo "</div>\n"; //Close header
         echo "<div id='content'>\n";
