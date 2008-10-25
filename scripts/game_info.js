@@ -13,6 +13,8 @@ $(function() {
    userId = document.getElementById("user_id").value;
    userHash = document.getElementById("user_hash").value;
    gameId = document.getElementById("game_id").value;
+   requestGameInformation();
+   requestNewMessages();
   });
 
 function requestGameInformation() {
