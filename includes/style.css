@@ -280,7 +280,7 @@ img a {
 
 #player_box_alive, #player_box_dead {
     width: 150px;
-    height: 130px;
+    //height: 130px;
     display: block;
     text-align: center;
 }

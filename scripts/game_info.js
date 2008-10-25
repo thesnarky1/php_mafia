@@ -232,12 +232,20 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         if(playerAlive == 'Y') {
             playerHTML += "<div id='player_box_alive' onclick='performAction(" + action + "," + playerId + ")'>";
             playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
-            playerHTML += "<p class='player_name'>" + playerName + "</p>";
+            playerHTML += "<p class='player_name'>" + playerName;
+            if(playerRole) {
+                playerHTML += "<br />" + playerRole;
+            }
+            playerHTML += "</p>";
             playerHTML += "</div>";
         } else {
             playerHTML += "<div id='player_box_dead'>";
             playerHTML += "<img src='./images/avatars/dead.png'>";
-            playerHTML += "<p class='player_name'><span class='strikeout'>" + playerName + "</span></p>";
+            playerHTML += "<p class='player_name'><span class='strikeout'>" + playerName + "</span>";
+            if(playerRole) {
+                playerHTML += "<br />" + playerRole;
+            }
+            playerHTML += "</p>";
             playerHTML += "</div>\n";
         }
         playerHTML += "</td>";
