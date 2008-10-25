@@ -100,10 +100,7 @@
             $filename = "face.png";
         }
         $query = "UPDATE users SET user_avatar='$filename' WHERE user_id='$user_id'";
-        $result = mysqli_query($dbh, $query);
-        if($result && mysqli_affected_rows($dbh) == 1) {
-        } else {
-        }
+        $row = mysqli_set_one($query);
     }
 
     function get_ext($file) {
@@ -199,18 +196,20 @@
     }
 
     function get_required_javascript_specific_game() {
-            $to_return = "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
-            $to_return .= "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
-            $to_return .= "<script type='text/javascript' src='./scripts/perform_action.js'></script>\n";
+            $to_return = "";
             $to_return .= "<script language='Javascript' type='text/javascript'>\n";
+            $to_return .= "google.load('jquery', '1.2');\n";
             $to_return .= "function onLoad() {\n";
-            $to_return .= "if(document.getElementById('game_id')) {\n";
-            $to_return .= "\trequestNewMessages();\n";
-            $to_return .= "\trequestGameInformation();\n";
-            $to_return .= "}\n";
+            $to_return .= "\tif(document.getElementById('game_id')) {\n";
+            $to_return .= "\t\trequestNewMessages();\n";
+            $to_return .= "\t\trequestGameInformation();\n";
+            $to_return .= "\t}\n";
             $to_return .= "}\n";
             $to_return .= "google.setOnLoadCallback(onLoad);\n";
             $to_return .= "</script>\n";
+            $to_return .= "<script type='text/javascript' src='./scripts/chat.js'></script>\n";
+            $to_return .= "<script type='text/javascript' src='./scripts/game_info.js'></script>\n";
+            $to_return .= "<script type='text/javascript' src='./scripts/perform_action.js'></script>\n";
             return $to_return;
     }
 
