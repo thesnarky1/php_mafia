@@ -1,7 +1,6 @@
 /*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var gameInfoURL = './game_information.php';
-//var xmlHttpGetInformation = createXmlHttpRequestObject();
 var updateInterval = 1000;
 var gameInfoCache = new Array();
 var debugMode = true;

@@ -1,98 +1,23 @@
 /*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
-var xmlHttpGetMessages = createXmlHttpRequestObject();
 var updateInterval = 1000;
-var chatCache = new Array();
 var lastMessageID = -1;
 var debugMode = true;
 
-function createXmlHttpRequestObject() {
-    var xmlHttp;
-    try {
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) {
-        var XmlHttpVersions = new Array("MSXML2.XMLHTTP.6.0",
-                                        "MSXML2.XMLHTTP.5.0",
-                                        "MSXML2.XMLHTTP.4.0",
-                                        "MSXML2.XMLHTTP.3.0",
-                                        "MSXML2.XMLHTTP.0",
-                                        "Microsoft.XMLHTTP");
-        for(var i = 0; i<XmlHttpVersions.length && !xmlHttp; i++) {
-            try {
-                xmlHttp = new ActiveXObject(XmlHttpVersions[i]);
-            } catch (e) {}
-        }
-    }
-    if(!xmlHttp) {
-    } else {
-        return xmlHttp;
-    }
-}
-
-//function init_chat() {
-//    requestNewMessages();
-//}
-
 function requestNewMessages() {
-    if(xmlHttpGetMessages) {
-        try {
-            if(xmlHttpGetMessages.readyState == 4 || 
-               xmlHttpGetMessages.readyState == 0) {
-                var params = "";
-                if(chatCache.length > 0) {
-                    params = chatCache.shift();
-                } else {
-                    var user = document.getElementById("user_id").value;
-                    var user_hash = document.getElementById("user_hash").value;
-                    var game_id = document.getElementById("game_id").value;
-                    params = "mode=RetrieveNew" + 
-                             "&game_id=" + game_id + 
-                             "&user_hash=" + user_hash + 
-                             "&user_id=" + user + 
-                             "&id=" + lastMessageID;
-                }
-                //xmlHttpGetMessages.open("POST", chatURL, true);
-                xmlHttpGetMessages.open("GET", chatURL+"?"+params, true);
-                xmlHttpGetMessages.setRequestHeader("Content-Type",
-                                                    "application/x-www-form-urlencoded");
-                xmlHttpGetMessages.onreadystatechange = handleReceivingMessages;
-                xmlHttpGetMessages.send(); //params goes here
-            } else {
-                setTimeout("requestNewMessages();", updateInterval);
-            }
-        } catch (e) {
-            displayError(e.toString());
-        }
-    }
+    var chatParams = {mode:'RetrieveNew', game_id:gameId,
+                      user_hash: userHash, user_id:userId, 
+                      id:lastMessageID};
+    $.get(chatURL, chatParams, readMessages);
 }
 
-function handleReceivingMessages() {
-    if(xmlHttpGetMessages.readyState == 4) {
-        if(xmlHttpGetMessages.status == 200) {
-            try {
-                readMessages();
-            } catch(e) {
-                displayError(e.toString());
-            }
-        } else {
-            displayError(xmlHttpGetMessages.statusText);
-        }
-    }
-}
-
-function readMessages() {
-    var response = xmlHttpGetMessages.responseText;
-    if(response.indexOf("ERRNO") >= 0 || response.indexOf("error:") >= 0 ||
-       response.length == 0) {
-        throw(response.length == 0? "Void server response." : response);
-    }
-    response = xmlHttpGetMessages.responseXML.documentElement;
-    idArray = response.getElementsByTagName("id");
-    userArray = response.getElementsByTagName("user");
-    dateArray = response.getElementsByTagName("date");
-    textArray = response.getElementsByTagName("text");
-    channelArray = response.getElementsByTagName("channel");
+function readMessages(chatResponse) {
+    idArray = chatResponse.getElementsByTagName("id");
+    userArray = chatResponse.getElementsByTagName("user");
+    dateArray = chatResponse.getElementsByTagName("date");
+    textArray = chatResponse.getElementsByTagName("text");
+    channelArray = chatResponse.getElementsByTagName("channel");
     displayMessages(idArray, userArray, dateArray, textArray, channelArray);
     if(idArray.length > 0 && idArray.item(idArray.length - 1).firstChild.data > 0) {
         lastMessageID = idArray.item(idArray.length - 1).firstChild.data;
@@ -139,10 +64,6 @@ function displayError(message) {
     displayMessage("Error accessing the server! " + (debugMode ? "<br />" + message : ""));
 }
 
-function trim(s) {
-    return s.replace(/(^\s+)|(\s+$)/g, "");
-}
-
 function handleKey(e) {
     e = (!e) ? window.event : e;
     code = (e.charCode) ? e.charCode : 
@@ -159,17 +80,14 @@ function handleKey(e) {
 
 function sendMessage() {
     var currentMessage = document.getElementById("text_box");
-    var currentUser = document.getElementById("user_id").value;
-    var currentUserHash = document.getElementById("user_hash").value;
-    var game = document.getElementById("game_id").value;
-    if(trim(currentMessage.value) != '' && trim(currentUser) != '') {
-        params = "mode=SendAndRetrieveNew" + 
-                 "&id=" + encodeURIComponent(lastMessageID) + 
-                 "&user_id=" + encodeURIComponent(currentUser) +
-                 "&user_hash=" + encodeURIComponent(currentUserHash) + 
-                 "&game_id=" + encodeURIComponent(game) + 
-                 "&message=" + encodeURIComponent(currentMessage.value);
-        chatCache.push(params);
+    if($.trim(currentMessage.value) != '' && $.trim(userId) != '') {
+        chatParams = {mode:'SendAndRetrieveNew',  
+                      id:encodeURIComponent(lastMessageID),
+                      user_id:encodeURIComponent(userId),
+                      user_hash:encodeURIComponent(userHash),
+                      game_id:encodeURIComponent(gameId),
+                      message:currentMessage.value};
+        $.get(chatURL, chatParams, readMessages);
         currentMessage.value = "";
     }
 }
