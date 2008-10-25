@@ -5,7 +5,8 @@
                  "FROM games, game_players ".
                  "WHERE game_players.user_id='$user_id' AND ".
                  "games.game_id=game_players.game_id AND ".
-                 "games.game_phase IS NOT '3'";
+                 "games.game_phase IS NOT '3' AND ".
+                 "game_players.player_alive='Y'";
         $rows = mysqli_get_many($query);
         return $rows;
     }
