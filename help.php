@@ -8,11 +8,15 @@
     echo "Roles";
     echo "<br />\n";
     echo "<ul>\n";
-    $query = "SELECT role_name FROM roles";
+    $query = "SELECT role_name, role_help FROM roles";
     if($rows = mysqli_get_many($query)) {
         foreach($rows as $row) {
             $role_name = $row['role_name'];
-            echo "<li>$role_name</li>\n";
+            $role_help = $row['role_help'];
+            echo "<li>";
+            echo "<b>$role_name</b>";
+            echo "<p>$role_help</p>\n";
+            echo "</li>\n";
         }
     }
     echo "</ul>\n";
