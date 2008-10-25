@@ -1,7 +1,7 @@
 /*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var gameInfoURL = './game_information.php';
-var xmlHttpGetInformation = createXmlHttpRequestObject();
+//var xmlHttpGetInformation = createXmlHttpRequestObject();
 var updateInterval = 1000;
 var gameInfoCache = new Array();
 var debugMode = true;
@@ -10,104 +10,39 @@ var playerCount = 1;
 var gameTracker = -1;
 var forceUpdate = true;
 
-function createXmlHttpRequestObject() {
-    var xmlHttp;
-    try {
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) {
-        var XmlHttpVersions = new Array("MSXML2.XMLHTTP.6.0",
-                                        "MSXML2.XMLHTTP.5.0",
-                                        "MSXML2.XMLHTTP.4.0",
-                                        "MSXML2.XMLHTTP.3.0",
-                                        "MSXML2.XMLHTTP.0",
-                                        "Microsoft.XMLHTTP");
-        for(var i = 0; i<XmlHttpVersions.length && !xmlHttp; i++) {
-            try {
-                xmlHttp = new ActiveXObject(XmlHttpVersions[i]);
-            } catch (e) {}
-        }
-    }
-    if(!xmlHttp) {
-    } else {
-        return xmlHttp;
-    }
-}
-
-//function init_info() {
-//    requestGameInformation();
-//}
+$(function() {
+   userId = document.getElementById("user_id").value;
+   userHash = document.getElementById("user_hash").value;
+   gameId = document.getElementById("game_id").value;
+  });
 
 function requestGameInformation() {
-    if(xmlHttpGetInformation) {
-        try {
-            if(xmlHttpGetInformation.readyState == 4 || 
-               xmlHttpGetInformation.readyState == 0) {
-                var gameInforParams = "";
-                if(gameInfoCache.length > 0) {
-                    gameInforParams = gameInfoCache.shift();
-                } else {
-                    user = document.getElementById("user_id").value;
-                    userHash = document.getElementById("user_hash").value;
-                    gameId = document.getElementById("game_id").value;
-                    gameInforParams = "game_id=" + gameId + 
-                             "&game_tracker=" + gameTracker + 
-                             "&user_id=" + user + 
-                             "&user_hash=" + userHash;
-                    if(forceUpdate) {
-                        gameInforParams += "&force=true";
-                        forceUpdate = false;
-                    }
-                }
-                //xmlHttpGetInformation.open("POST", gameInfoURL, true);
-                xmlHttpGetInformation.open("GET", gameInfoURL+"?"+gameInforParams, true);
-                xmlHttpGetInformation.setRequestHeader("Content-Type",
-                                                       "application/x-www-form-urlencoded");
-                xmlHttpGetInformation.onreadystatechange = handleReceivingInformation;
-                xmlHttpGetInformation.send(); //gameInforParams goes here
-            } else {
-                setTimeout("requestGameInformation();", updateInterval);
-            }
-        } catch (e) {
-            displayError(e.toString());
-        }
+    var gameInfoParams = {game_id:gameId, user_id:userId,
+                          user_hash:userHash, game_tracker:gameTracker};
+    if(forceUpdate) {
+        gameInfoParams['force'] = 'true';
+        forceUpdate = false;
     }
+    $.get(gameInfoURL, 
+          gameInfoParams,
+          dealWithGameInformation);
 }
 
-function handleReceivingInformation() {
-    if(xmlHttpGetInformation.readyState == 4) {
-        if(xmlHttpGetInformation.status == 200) {
-            try {
-                readInformation();
-            } catch(e) {
-                displayError(e.toString()); //Status is 200...
-            }
-        } else {
-            displayError(xmlHttpGetInformation.statusText);
-        }
-    }
-}
-
-function readInformation() {
-    var response = xmlHttpGetInformation.responseText;
-    if(response.indexOf("ERRNO") >= 0 || response.indexOf("error:") >= 0 ||
-       response.length == 0) {
-        throw(response.length == 0? "Void server response." : response);
-    }
-    response = xmlHttpGetInformation.responseXML.documentElement;
-    if(response.getElementsByTagName("phase").length > 0) {
-        var tmpGameTracker = response.getElementsByTagName("tracker")[0].firstChild.data.toString();
+function dealWithGameInformation(gameResponse) {
+    if(gameResponse.getElementsByTagName("game_data").length > 0) {
+        var tmpGameTracker = gameResponse.getElementsByTagName("tracker")[0].firstChild.data.toString();
         if(tmpGameTracker > gameTracker) {
             gameTracker = tmpGameTracker;
             var gameChatHTML = document.getElementById("chat_channel");
             var gamePhaseHTML = document.getElementById("game_phase");
             var gameTurnHTML = document.getElementById("game_turn");
             var roleInstructionsHTML = document.getElementById("role_instructions");
-            var gamePhase = response.getElementsByTagName("phase")[0].firstChild.data.toString();
+            var gamePhase = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
             gameChatHTML.innerHTML = "";
-            gameChatHTML.innerHTML = response.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
-            gamePhaseHTML.innerHTML = response.getElementsByTagName("phase")[0].firstChild.data.toString();
-            gameTurnHTML.innerHTML = response.getElementsByTagName("turn")[0].firstChild.data.toString();
-            var roleMessage = response.getElementsByTagName("role_instructions");
+            gameChatHTML.innerHTML = gameResponse.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
+            gamePhaseHTML.innerHTML = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
+            gameTurnHTML.innerHTML = gameResponse.getElementsByTagName("turn")[0].firstChild.data.toString();
+            var roleMessage = gameResponse.getElementsByTagName("role_instructions");
             if(roleMessage.length > 0) {
                 roleMessage = roleMessage[0].firstChild.data.toString();
             } else {
@@ -116,31 +51,31 @@ function readInformation() {
             if(roleMessage != "" && roleMessage != roleInstructionsHTML.innerHTML) {
                 roleInstructionsHTML.innerHTML = roleMessage;
             }
-            var actionMessage = response.getElementsByTagName("action");
+            var actionMessage = gameResponse.getElementsByTagName("action");
             if(actionMessage.length > 0) {
                 actionMessage = actionMessage[0].firstChild.data.toString();
             } else {
                 actionMessage = "";
             }
-            var bannerMessage = response.getElementsByTagName("banner");
+            var bannerMessage = gameResponse.getElementsByTagName("banner");
             if(bannerMessage.length > 0) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();
-                bannerAction = response.getElementsByTagName("banner_action")[0].firstChild.data.toString();
+                bannerAction = gameResponse.getElementsByTagName("banner_action")[0].firstChild.data.toString();
             } else {
                 bannerMessage = "";
                 bannerAction = "";
             }
-            var altBannerMessage = response.getElementsByTagName("alt_banner");
+            var altBannerMessage = gameResponse.getElementsByTagName("alt_banner");
             if(altBannerMessage.length > 0) {
                 altBannerMessage = altBannerMessage[0].firstChild.data.toString();
-                altBannerAction = response.getElementsByTagName("alt_banner_action")[0].firstChild.data.toString();
+                altBannerAction = gameResponse.getElementsByTagName("alt_banner_action")[0].firstChild.data.toString();
             } else {
                 altBannerMessage = "";
                 altBannerAction = "";
             }
-            var votesToLynch = response.getElementsByTagName("votes_required")[0].firstChild.data.toString();
+            var votesToLynch = gameResponse.getElementsByTagName("votes_required")[0].firstChild.data.toString();
             var voteTallyHTML = document.getElementById("vote_tally");
-            var voteTally = response.getElementsByTagName("vote_tally");
+            var voteTally = gameResponse.getElementsByTagName("vote_tally");
             if(voteTally.length > 0) {
                 voteTallyHTML.innerHTML = "";
                 for(var i = 0; i < voteTally.length; i++) {
@@ -152,8 +87,8 @@ function readInformation() {
             } else {
                 voteTallyHTML.innerHTML = "";
             }
-            playerArray = response.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            var targetMessage = response.getElementsByTagName("target");
+            playerArray = gameResponse.getElementsByTagName("player_list")[0].getElementsByTagName("player");
+            var targetMessage = gameResponse.getElementsByTagName("target");
             if(targetMessage.length > 0) {
                 targetMessage = targetMessage[0].firstChild.data.toString();
             } else {
@@ -262,8 +197,4 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
     playerBoxTable.innerHTML = playerTable;
     document.getElementById("game_alive").innerHTML = alivePlayers;
     document.getElementById("game_dead").innerHTML = deadPlayers;
-}
-
-function trim(s) {
-    return s.replace(/(^\s+)|(\s+$)/g, "");
 }
