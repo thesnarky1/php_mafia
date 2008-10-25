@@ -24,7 +24,7 @@
                         $game_name = substr($game_name, 0, $game_name_limit);
                     } else {
                         $query = "INSERT INTO games(game_name, game_creator, game_creation_date, game_phase, game_password, game_recent_date) ".
-                                 "VALUES('$game_name', '$user_id', NOW(), 0, '$game_pass', NOW())";
+                                 "VALUES('$game_name', '$user_id', NOW(), 0, $game_pass, NOW())";
                         if($game_id = mysqli_insert($query)) {
                             //Successful
                             $query = "INSERT INTO game_players(game_id, user_id, role_id) ".
