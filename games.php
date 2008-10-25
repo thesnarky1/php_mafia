@@ -10,7 +10,7 @@
         }
         echo "<div id='open_games'>\n";
         echo "<h3>Open Games</h3>\n";
-        $query = "SELECT games.game_id, games.game_name, ".
+        $query = "SELECT games.game_id, games.game_name, games.game_creator, ".
                  "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as players ".
                  "FROM games ".
                  "WHERE games.game_phase=0 AND games.game_password=''".
@@ -20,15 +20,18 @@
             echo "<tr class='header'>\n";
             echo "<td class='name'>Name</td>\n";
             echo "<td class='small'>Players</td>\n";
+            echo "<td class='small'>Creator</td>\n";
             echo "<td class='small'>Join</td>\n";
             echo "</tr>\n";
             foreach($rows as $row) {
                 $game_name = $row['game_name'];
                 $game_id = $row['game_id'];
                 $game_players = $row['players'];
+                $game_creator = get_user_name($row['game_creator']);
                 echo "<tr>\n";
                 echo "<td class='name'><a href='./games.php?game_id=$game_id'>$game_name</a></td>\n";
                 echo "<td>$game_players</td>\n";
+                echo "<td>$game_creator</td>\n";
                 echo "<td><a href='./games.php?game_id=$game_id&join=true'>Join</a></td>\n";
                 echo "</tr>\n";
             }
