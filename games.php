@@ -203,6 +203,7 @@
             $game_name = $row['game_name'];
             $game_phase = $row['game_phase'];
             $game_turn = $row['game_turn'];
+            $game_creator = $row['game_creator'];
             $player_alive = $row['player_alive'];
             if($user_id) {
                 $role_id = $row['role_id'];
@@ -233,6 +234,7 @@
             echo "<div id='game_information'>\n";
             echo "<h3 class='game_h3'>Game Information</h3>\n";
             echo "<p>\n";
+            echo "Creator: ".get_user_name($game_creator)."<br />\n";
             echo "Turn: <span id='game_turn'></span><br />\n";
             echo "Phase: <span id='game_phase'></span><br />\n";
             echo "Target: <span id='target'></span><br />\n";
