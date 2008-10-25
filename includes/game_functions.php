@@ -828,7 +828,7 @@
                              "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
                              "game_turn='$game_turn' AND (action_id='$lynch_action' OR ".
                              "action_id='$no_lynch_action') ".
-                             "GROUP BY target_id";
+                             "GROUP BY target_id ORDER BY cnt DESC";
                     if($rows = mysqli_get_many($query)) {
                         foreach($rows as $row) {
                             $votes = $row['cnt'];
@@ -847,7 +847,8 @@
                 } else if($game_phase == 0) { //Return a ready list
                     $query = "SELECT user_id, player_ready ".
                              "FROM game_players ".
-                             "WHERE game_id='$game_id'";
+                             "WHERE game_id='$game_id' ".
+                             "ORDER BY player_ready ASC";
                     if($rows = mysqli_get_many($query)) {
                         foreach($rows as $row) {
                             $name = get_user_name($row['user_id']);
