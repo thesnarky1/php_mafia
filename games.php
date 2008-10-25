@@ -212,7 +212,12 @@
                 echo "<p class='banner'><span class='error'>$error</span></p>\n";
             }
             if($game_phase == 0){
-                echo "<div class='banner' id='role_instructions'>Game not yet started.</div>\n";
+                echo "<div class='banner' id='role_instructions'>";
+                echo "Game not yet started.";
+                if(is_logged_in() && !$user_id) {
+                    echo " Care to <a href='games.php?game_id=".$game_id."&join=true'>join</a>?";
+                }
+                echo "</div>\n";
             } else if($game_phase == 3) {
                 echo "<div class='banner' id='role_instructions'>Game has finished.</div>\n";
             } else {

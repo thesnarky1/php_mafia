@@ -113,7 +113,7 @@ function readInformation() {
             } else {
                 roleMessage = "";
             }
-            if(roleMessage != roleInstructionsHTML.innerHTML) {
+            if(roleMessage != "" && roleMessage != roleInstructionsHTML.innerHTML) {
                 roleInstructionsHTML.innerHTML = roleMessage;
             }
             var actionMessage = response.getElementsByTagName("action");

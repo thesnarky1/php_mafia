@@ -1036,7 +1036,7 @@
                 }
             }
             if(!$user_belongs) {
-                $to_return .= "<role_instructions>You aren't in this game.</role_instructions>\n";
+                //This is taken care of on the game screen, no need to increase our AJAX load.
             }
         }
         $to_return .= "</game_data>\n";
