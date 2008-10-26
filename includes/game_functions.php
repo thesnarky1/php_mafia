@@ -157,16 +157,14 @@
                     //Investigation stuff comes first
                     foreach($to_investigate as $user_id=>$target_id) {
                         $chan_name = "cop_" . $user_id . "_" . $game_id;
-                        $query = "SELECT roles.role_id, roles.role_faction ".
-                                 "FROM roles, game_players ".
+                        $query = "SELECT roles.role_id, factions.faction_name ".
+                                 "FROM roles, game_players, factions ".
                                  "WHERE game_players.game_id='$game_id' AND ".
                                  "game_players.user_id='$target_id' AND ".
-                                 "roles.role_id=game_players.role_id";
+                                 "roles.role_id=game_players.role_id AND ".
+                                 "factions.faction_id=roles.investigate_faction_id";
                         if($row = mysqli_get_one($query)) {
-                            $target_role_name = $row['role_faction'];
-                            if($target_role_name == "Psychopaths") {
-                                $target_role_name = "Antitown";
-                            }
+                            $target_role_name = $row['faction_name'];
                             $target_role_id = $row['role_id'];
                             $query = "INSERT into game_investigations(game_id, user_id, target_id, role_id) ".
                                      "VALUES('$game_id', '$user_id', '$target_id', '$target_role_id')";
@@ -532,7 +530,8 @@
 
     function end_game($game_id, $winning_faction) {
         global $dbh;
-        $winning_roles = get_roles_by_faction($winning_faction);
+        $winning_faction_id = get_faction_id($winning_faction);
+        $winning_roles = get_roles_by_faction_id($winning_faction_id);
         //Set game phase to 3
         //lock game
         //Kill off ability to chat in game channels
@@ -592,12 +591,13 @@
     function can_game_end($game_id) {
         global $dbh;
         $roles = array();
-        $query = "SELECT roles.role_faction, game_players.player_alive ".
-                 "FROM game_players, roles ".
-                 "WHERE game_players.game_id='$game_id' AND roles.role_id=game_players.role_id";
+        $query = "SELECT factions.faction_name, game_players.player_alive ".
+                 "FROM game_players, roles, factions ".
+                 "WHERE game_players.game_id='$game_id' AND roles.role_id=game_players.role_id ".
+                 "AND factions.faction_id=roles.faction_id";
         if($rows = mysqli_get_many($query)) {
             foreach($rows as $row) {
-                $role_faction = $row['role_faction'];
+                $role_faction = $row['faction_name'];
                 $player_alive = $row['player_alive'];
                 if($player_alive == 'Y') {
                     if(!isset($roles[$role_faction])) {
@@ -621,10 +621,18 @@
         return false;
     }
 
-    function get_roles_by_faction($faction) {
-        global $dbh;
+    function get_faction_id($faction) {
+        $query = "SELECT faction_id FROM factions WHERE faction_name LIKE '$faction'";
+        if($row = mysqli_get_one($query)) {
+            return $row['faction_id'];
+        } else {
+            return false;
+        }
+    }
+
+    function get_roles_by_faction_id($faction) {
         $role_ids = array();
-        $query = "SELECT role_id FROM roles WHERE role_faction='$faction'";
+        $query = "SELECT role_id FROM roles WHERE faction_id='$faction'";
         if($rows = mysqli_get_many($query)) {
             foreach($rows as $row) {
                 $role_ids[] = $row['role_id'];
@@ -759,14 +767,15 @@
     function get_user_role_faction($game_id, $user_id) {
         global $dbh;
         $to_return = array();
-        $query = "SELECT roles.role_id, roles.role_faction ".
-                 "FROM roles, game_players ".
+        $query = "SELECT roles.role_id, factions.faction_name ".
+                 "FROM roles, game_players, factions ".
                  "WHERE game_players.game_id='$game_id' AND ".
                  "game_players.user_id='$user_id' AND ".
-                 "roles.role_id=game_players.role_id";
+                 "roles.role_id=game_players.role_id AND ".
+                 "factions.faction_id=roles.faction_id";
         if($row = mysqli_get_one($query)) {
             $to_return['role'] = $row['role_id'];
-            $to_return['faction'] = $row['role_faction'];
+            $to_return['faction'] = $row['faction_name'];
             return $to_return;
         }
         return false;
@@ -869,13 +878,14 @@
                          "game_players.player_alive, game_players.player_ready, ".
                          "users.user_id, ".
                          "roles.role_name, roles.role_channel, ".
-                         "roles.role_faction, roles.role_id, ".
+                         "factions.faction_name, roles.role_id, ".
                          "roles.day_instructions, roles.night_instructions, ".
                          "roles.role_inform_others ".
-                         "FROM users, game_players, roles ".
+                         "FROM users, game_players, roles, factions ".
                          "WHERE game_players.game_id='$game_id' AND ".
                          "roles.role_id=game_players.role_id AND ".
-                         "users.user_id=game_players.user_id ".
+                         "users.user_id=game_players.user_id AND ".
+                         "factions.faction_id=roles.faction_id ".
                          "ORDER BY game_players.player_alive DESC ";
                 if($rows = mysqli_get_many($query)) {
                     $real_channel = false;
@@ -887,7 +897,7 @@
                         $player_alive = $row['player_alive'];
                         $player_ready = $row['player_ready'];
                         $role_name = $row['role_name'];
-                        $role_faction = $row['role_faction'];
+                        $role_faction = $row['faction_name'];
                         $role_id = $row['role_id'];
                         $role_inform_others = $row['role_inform_others'];
                         if($game_phase == 1) {

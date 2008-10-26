@@ -7,6 +7,7 @@ a {
 body {
     background-color: #E0DBC8;
     width: 1245px;
+    font-family: helvetica;
 }
 
 img {
@@ -346,6 +347,16 @@ img a {
     margin-top: 32px;
     margin-left: 117px;
     width: 50%;
+}
+
+#profile_open_games_table {
+    float: left;
+    width: 35em;
+}
+
+#profile_finished_games_table {
+    float: right;
+    width: 25em;
 }
 
 #registration_div {
