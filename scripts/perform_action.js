@@ -8,9 +8,9 @@ var actionCache = new Array();
 var myTimeout = null;
 
 $(function() {
-   userId = document.getElementById("user_id").value;
-   userHash = document.getElementById("user_hash").value;
-   gameId = document.getElementById("game_id").value;
+   userId = $('#user_id')[0].value;
+   userHash = $('#user_hash')[0].value;
+   gameId = $('#game_id')[0].value;
   });
 
 /*
@@ -29,15 +29,12 @@ function showActionMessage(str) {
         clearTimeout(myTimeout);
         myTimeout = null;
     }
-    var action_message = document.getElementById("action_message");
-    action_message.innerHTML = str;
-    action_message.style.display = "block";
+    $('#action_message').html(str).attr('display', 'block');
     myTimeout = setTimeout("hideActionMessage()", 5000);
 }
 
 function hideActionMessage() {
-    var action_message = document.getElementById("action_message");
-    action_message.style.display = "none";
+    $('#action_message').attr('display', 'none');
     myTimeout = null;
 }
 
