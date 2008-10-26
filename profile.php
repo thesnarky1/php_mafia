@@ -20,11 +20,13 @@
 
             //Show current games
             echo "<div id='profile_open_games_table'>\n";
+            echo "<h3>Current Games</h3>\n";
             echo get_player_open_game_table($user_id);
             echo "</div>\n";
 
             //Show finished games
             echo "<div id='profile_finished_games_table'>\n";
+            echo "<h3>Finished Games</h3>\n";
             echo get_player_finished_game_table($user_id);
             echo "</div>\n";
         } else {

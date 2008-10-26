@@ -359,6 +359,14 @@ img a {
     width: 25em;
 }
 
+#profile_finished_games_table h3 {
+    text-align: center;
+}
+
+#profile_open_games_table h3 {
+    text-align: center;
+}
+
 #registration_div {
     margin-top: 1em;
     width: 30em;

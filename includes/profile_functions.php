@@ -45,17 +45,19 @@
     function get_player_finished_game_table($user_id) {
         global $phases;
         $to_return = "";
-        $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name ".
-                 "FROM game_players, games ".
-                 "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
+        $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name, factions.faction_name ".
+                 "FROM game_players, games, factions, game_results ".
+                 "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id AND ".
+                 "game_results.game_id=games.game_id AND factions.faction_id=game_results.faction_id ".
                  "AND games.game_phase='3' ".
-                 "ORDER BY games.game_turn DESC";
+                 "ORDER BY factions.faction_name ASC";
         if($rows = mysqli_get_many($query)) {
             $to_return .= "<table class='game_table' align='center'>\n";
             $to_return .= "<tr class='header'>\n";
             $to_return .= "<td class='name'>Name</td>\n";
             $to_return .= "<td class='small'>Turn</td>\n";
             $to_return .= "<td class='small'>Phase</td>\n";
+            $to_return .= "<td class='small'>Winner</td>\n";
             $to_return .= "</tr>\n";
             foreach($rows as $row) {
                 $game_name = $row['game_name'];
@@ -63,10 +65,12 @@
                 $game_phase = $row['game_phase'];
                 $game_phase = $phases[$game_phase];
                 $game_turn = $row['game_turn'];
+                $winner = $row['faction_name'];
                 $to_return .= "<tr>\n";
                 $to_return .= "<td class='name'><a href='./games.php?game_id=$game_id'>$game_name</a></td>\n";
                 $to_return .= "<td>$game_turn</td>\n";
                 $to_return .= "<td>$game_phase</td>\n";
+                $to_return .= "<td>$winner</td>\n";
                 $to_return .= "</tr>\n";
             }
             $to_return .= "</table>\n";

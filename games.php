@@ -7,6 +7,9 @@
         render_header("Thieves Tavern Games", "");
         if(is_logged_in()) {
             echo "<p class='banner'><a href='./create_game.php'>Create a game</a>?</p>\n";
+            $user_id = $_SESSION['user_id'];
+        } else {
+            $user_id = false;
         }
         echo "<div id='open_games'>\n";
         echo "<h3>Open Games</h3>\n";
@@ -41,93 +44,21 @@
         }
         echo "</div>\n"; //Close open games
         echo "<div id='my_games'>\n";
-            echo "<h3>Your Current Games</h3>\n";
+        echo "<h3>Your Current Games</h3>\n";
         if(is_logged_in()) {
-            $user_id = $_SESSION['user_id'];
             //Current games
-            $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name, ".
-                     "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as alive, ".
-                     "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='N') as dead ".
-                     "FROM game_players, games ".
-                     "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
-                     "AND games.game_phase != 3 ".
-                     "ORDER BY games.game_turn DESC";
-            if($rows = mysqli_get_many($query)) {
-                echo "<table class='game_table' align='center'>\n";
-                echo "<tr class='header'>\n";
-                echo "<td class='name'>Name</td>\n";
-                echo "<td class='small'>Turn</td>\n";
-                echo "<td class='small'>Phase</td>\n";
-                echo "<td class='small'>Alive</td>\n";
-                echo "<td class='small'>Dead</td>\n";
-                echo "</tr>\n";
-                foreach($rows as $row) {
-                    $game_name = $row['game_name'];
-                    $game_id = $row['game_id'];
-                    $game_phase = $row['game_phase'];
-                    $game_phase = $phases[$game_phase];
-                    $game_turn = $row['game_turn'];
-                    $alive = $row['alive'];
-                    $dead = $row['dead'];
-                    echo "<tr>\n";
-                    echo "<td class='name'><a href='./games.php?game_id=$game_id'>$game_name</a></td>\n";
-                    echo "<td>$game_turn</td>\n";
-                    echo "<td>$game_phase</td>\n";
-                    echo "<td>$alive</td>\n";
-                    echo "<td>$dead</td>\n";
-                    echo "</tr>\n";
-                }
-                echo "</table>\n";
-            } else {
-                echo "<p class='error'>You're not playing any games currently</p>\n";
-            }
+            echo get_player_open_game_table($user_id);
         } else {
-            echo "<p class='error'>Please login to check your current games.</p>\n";
+            echo "<p class='error'>Please login to check your games.</p>\n";
         }
 
         //Finished games
         echo "<div id='finished_games'>\n";
         echo "<h3>Your Finished Games</h3>\n";
         if(is_logged_in()) {
-            $user_id = $_SESSION['user_id'];
-            //Current games
-            $query = "SELECT game_players.game_id, games.game_phase, games.game_turn, games.game_name, ".
-                     "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as alive, ".
-                     "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='N') as dead ".
-                     "FROM game_players, games ".
-                     "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
-                     "AND games.game_phase='3' ".
-                     "ORDER BY games.game_turn DESC";
-            if($rows = mysqli_get_many($query)) {
-                echo "<table class='game_table' align='center'>\n";
-                echo "<tr class='header'>\n";
-                echo "<td class='name'>Name</td>\n";
-                echo "<td class='small'>Turn</td>\n";
-                echo "<td class='small'>Phase</td>\n";
-                echo "<td class='small'>Alive</td>\n";
-                echo "<td class='small'>Dead</td>\n";
-                echo "</tr>\n";
-                foreach($rows as $row) {
-                    $game_name = $row['game_name'];
-                    $game_id = $row['game_id'];
-                    $game_phase = $row['game_phase'];
-                    $game_phase = $phases[$game_phase];
-                    $game_turn = $row['game_turn'];
-                    $alive = $row['alive'];
-                    $dead = $row['dead'];
-                    echo "<tr>\n";
-                    echo "<td class='name'><a href='./games.php?game_id=$game_id'>$game_name</a></td>\n";
-                    echo "<td>$game_turn</td>\n";
-                    echo "<td>$game_phase</td>\n";
-                    echo "<td>$alive</td>\n";
-                    echo "<td>$dead</td>\n";
-                    echo "</tr>\n";
-                }
-                echo "</table>\n";
-            } else {
-                echo "<p class='error'>You have no finished games, yet.</p>\n";
-            }
+            echo get_player_finished_game_table($user_id);
         } else {
+            echo "<p class='error'>Please login to check your games.</p>\n";
         }
         echo "</div>\n";
         echo "</div>\n";
