@@ -530,8 +530,8 @@
 
     function end_game($game_id, $winning_faction) {
         global $dbh;
-        $winning_faction_id = get_faction_id($winning_faction);
-        $winning_roles = get_roles_by_faction_id($winning_faction_id);
+        $faction_id = get_faction_id($winning_faction);
+        $winning_roles = get_roles_by_faction_id($faction_id);
         //Set game phase to 3
         //lock game
         //Kill off ability to chat in game channels
@@ -574,6 +574,18 @@
                 mysqli_insert($query);
             }
         }
+
+        //Add stats to game_results table
+        $query = "SELECT game_roleset_id ".
+                 "FROM games ".
+                 "WHERE game_id='$game_id";
+        if($row = mysqli_get_one($query)) {
+            $roleset_id = $row['game_roleset_id'];
+            $query = "INSERT INTO game_results(game_id, roleset_id, faction_id) ".
+                     "VALUES('$game_id', '$roleset_id', '$faction_id') ":
+            mysqli_insert($query);
+        }
+
         update_game_players($game_id);
         update_game_tracker($game_id);
     }
