@@ -24,7 +24,7 @@ function performAction(actionId, targetId) {
     $.get(actionURL, actionParams, showActionMessage);
 }
 
-function show_action_message(str) {
+function showActionMessage(str) {
     if(myTimeout) {
         clearTimeout(myTimeout);
         myTimeout = null;
@@ -32,10 +32,10 @@ function show_action_message(str) {
     var action_message = document.getElementById("action_message");
     action_message.innerHTML = str;
     action_message.style.display = "block";
-    myTimeout = setTimeout("hide_action_message()", 5000);
+    myTimeout = setTimeout("hideActionMessage()", 5000);
 }
 
-function hide_action_message() {
+function hideActionMessage() {
     var action_message = document.getElementById("action_message");
     action_message.style.display = "none";
     myTimeout = null;
