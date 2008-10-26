@@ -161,7 +161,7 @@
        if($row = mysqli_get_one($query)) {
            $game_phase = $row['game_phase'];
        }
-       if($game_phase == 3) {
+/*       if($game_phase == 3) {
            //Game finished, pull all
             $query = "SELECT * FROM channels WHERE game_id='$game_id'";
             if($rows = mysqli_get_many($query)) {
@@ -211,7 +211,7 @@
                $xml .= "</messages>\n";
                return "$xml";
            }
-       } else {
+       } else { */
            if($user_belongs) {
                $query = "SELECT channel_members.channel_id ".
                         "FROM channel_members, channels ".
@@ -271,7 +271,7 @@
            }
            $xml .= "</messages>\n";
            return "$xml";
-       }
+       //}
    }
 
 ?>
