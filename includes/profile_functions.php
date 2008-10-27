@@ -50,7 +50,7 @@
                  "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id AND ".
                  "game_results.game_id=games.game_id AND factions.faction_id=game_results.faction_id ".
                  "AND games.game_phase='3' ".
-                 "ORDER BY factions.faction_name ASC";
+                 "ORDER BY games.game_recent_date DESC";
         if($rows = mysqli_get_many($query)) {
             $to_return .= "<table class='game_table' align='center'>\n";
             $to_return .= "<tr class='header'>\n";
