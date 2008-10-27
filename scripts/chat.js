@@ -2,7 +2,7 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
 var updateInterval = 1000;
-var lastMessageID = $("chat_message input").get(length);
+var lastMessageID = $("chat_message:last input").get(length);
 var debugMode = true;
 
 function requestNewMessages() {
