@@ -491,6 +491,11 @@ img a {
     text-align: right;
 }
 
+.game_table .long {
+    width: 15em;
+    text-align: center;
+}
+
 .game_table .small {
     width: 5em;
 }
