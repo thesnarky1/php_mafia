@@ -18,6 +18,8 @@
                 } else {
                     if($game_pass != "") {
                         $game_pass = "MD5('$game_pass')";
+                    } else {
+                        $game_pass = "''";
                     }
                     if(strlen($game_name) > $game_name_limit) {
                         $error = "Sorry, game name may not exceed $game_name_limit characters.";
@@ -50,7 +52,7 @@
                                 $error = "Game created, but unable to add player. Contact an admin.";
                             }
                         } else {
-                            $error = "Error occured during creation, please try again.";
+                            $error = "Error occured during creation, please try again. $query";
                         }
                     }
                 }
