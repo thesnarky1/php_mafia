@@ -1,5 +1,9 @@
 <?php
 
+    function get_timestamp($file) {
+        return filectime($file);
+    }
+
     function is_user_admin($user_id) {
         $query = "SELECT user_role FROM users WHERE user_id='$user_id'";
         if($row = mysqli_get_one($query)) {
