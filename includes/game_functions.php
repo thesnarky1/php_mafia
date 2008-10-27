@@ -579,14 +579,13 @@
         //Add stats to game_results table
         $query = "SELECT game_roleset_id ".
                  "FROM games ".
-                 "WHERE game_id='$game_id";
+                 "WHERE game_id='$game_id'";
         if($row = mysqli_get_one($query)) {
             $roleset_id = $row['game_roleset_id'];
             $query = "INSERT INTO game_results(game_id, roleset_id, faction_id) ".
                      "VALUES('$game_id', '$roleset_id', '$faction_id') ";
             mysqli_insert($query);
         }
-
         update_game_players($game_id);
         update_game_tracker($game_id);
     }
