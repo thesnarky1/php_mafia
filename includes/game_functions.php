@@ -369,6 +369,7 @@
         initialize_channels($game_id);
         next_phase($game_id);
         lock_game($game_id, false);
+        update_game_tracker($game_id);
     }
 
     function update_game_recent_date($game_id) {
