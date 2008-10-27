@@ -543,7 +543,7 @@
             }
         }
         $query = "UPDATE games SET game_phase='3', game_locked='1' WHERE game_id='$game_id'";
-        $result = mysqli_query($dbh, $query);
+        mysqli_set_one($query);
         //Send some spam saying its over, of course
         add_message(get_system_channel($game_id),
                     get_system_id(),
