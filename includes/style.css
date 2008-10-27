@@ -355,12 +355,12 @@ img a {
 
 #profile_open_games_table {
     float: left;
-    width: 35em;
+    width: 45%;
 }
 
 #profile_finished_games_table {
     float: right;
-    width: 25em;
+    width: 45%;
 }
 
 #profile_finished_games_table h3 {
