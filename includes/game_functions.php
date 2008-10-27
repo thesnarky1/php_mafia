@@ -982,7 +982,7 @@
                                         $banner_action = $row2['day_alt_action_id'];
                                         $banner = $row2['day_alt_action_banner'];
                                     }
-                                } else { //If nighttime
+                                } else if($game_phase == 1) { //If nighttime
                                     $query = "SELECT * FROM ".
                                              "(SELECT actions.action_id as night_action_id, ".
                                              "actions.action_banner as night_action_banner ".
@@ -1017,7 +1017,7 @@
                                     }
 
                                     //Add UN_READY
-                                    if($action_id != get_action_by_enum("NO_ACTION")) {
+                                    if($action_id != get_action_by_enum("NO_ACTION") && $game_phase != 3) {
                                         $query = "SELECT * FROM actions WHERE action_enum='UN_READY'";
                                         if($row2 = mysqli_get_one($query)) {
                                             $alt_banner = $row2['action_banner'];
