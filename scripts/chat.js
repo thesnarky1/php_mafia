@@ -2,8 +2,13 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
 var updateInterval = 1000;
-var lastMessageID = $("chat_message:last input").get(length);
+var lastMessageID = $("chat_message:last input");
 var debugMode = true;
+
+function scrollChatBox() {
+    //var chatText = $("#chat_text")[0];
+    //chatText.scrollTop = chatText.scrollHeight;
+}
 
 function requestNewMessages() {
     var chatParams = {mode:'RetrieveNew', game_id:gameId,

@@ -13,6 +13,7 @@ $(function() {
    userId = $('#user_id')[0].value;
    userHash = $('#user_hash')[0].value;
    gameId = $('#game_id')[0].value;
+   scrollChatBox();
    requestGameInformation();
    requestNewMessages();
   });
