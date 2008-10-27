@@ -10,9 +10,9 @@ var gameTracker = -1;
 var forceUpdate = true;
 
 $(function() {
-   userId = document.getElementById("user_id").value;
-   userHash = document.getElementById("user_hash").value;
-   gameId = document.getElementById("game_id").value;
+   userId = $('#user_id')[0].value;
+   userHash = $('#user_hash')[0].value;
+   gameId = $('#game_id')[0].value;
    requestGameInformation();
    requestNewMessages();
   });

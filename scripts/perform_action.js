@@ -1,17 +1,10 @@
 /*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var actionURL = './perform_action.php';
-var debugMode = true;
 var targetId = null;
 var actionId = null;
 var actionCache = new Array();
 var myTimeout = null;
-
-$(function() {
-   userId = $('#user_id')[0].value;
-   userHash = $('#user_hash')[0].value;
-   gameId = $('#game_id')[0].value;
-  });
 
 /*
  * actionId = type of action.

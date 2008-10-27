@@ -190,8 +190,21 @@
             //Game chat
             echo "<div id='game_chat'>\n";
             echo "<h3 class='game_h3'>Chat (<span class='chat_channel_name' id='chat_channel'></span>)</h3>\n";
-            //echo "<p class='chat_channel_name' id='chat_channel'></p>\n";
             echo "<div name='chat_text' id='chat_text' >";
+            $messages = retrieve_new_messages($user_id, $game_id, 0, true);
+            foreach($messages as $message_id=>$message_arr) {
+                $date = $message_arr['date'];
+                $text = $message_arr['text'];
+                $user = $message_arr['user'];
+                $channel = $message_arr['channel'];
+                echo "<div class='chat_message'>\n";
+                echo "<input type='hidden' name='message_id' value='$message_id' />\n";
+                echo "<span class='chat_message_channel'><img src='./images/roles/$channel'/></span> \n";
+                echo "<span class='chat_message_date'>($date) </span>\n";
+                echo "<span class='chat_message_user'>$user</span>: \n";
+                echo $text;
+                echo "</div>\n";
+            }
             echo "</div>\n";
             if(is_logged_in() && user_belongs($game_id, $user_id)) {
                 echo "<input type='text' onkeydown='handleKey(event)' name='text_box' id='text_box' style='width: 100%' />\n";

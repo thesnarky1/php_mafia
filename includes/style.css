@@ -135,6 +135,10 @@ img a {
     margin: 0em;
 }
 
+.chat_message {
+    font-size: 10pt;
+}
+
 #chat_text .chat_message_user, .chat_message_date, .chat_message_channel {
     font-weight: bold;
 }

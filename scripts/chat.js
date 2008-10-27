@@ -2,7 +2,7 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var chatURL = './chat.php';
 var updateInterval = 1000;
-var lastMessageID = -1;
+var lastMessageID = $("chat_message input").get(length);
 var debugMode = true;
 
 function requestNewMessages() {
@@ -37,7 +37,8 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
         }
         var text = textArray.item(i).firstChild.data.toString();
         var channel = channelArray.item(i).firstChild.data.toString();
-        var htmlMessage = "<p class='chat_message'>\n";
+        var htmlMessage = "<div class='chat_message'>\n";
+        htmlMessage += "<input type='hidden' value='" + id + "' />\n";
         htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> ";
         if(date) {
             htmlMessage += "<span class='chat_message_date'>(" + date + ") </span>";
@@ -46,7 +47,7 @@ function displayMessages(idArray, userArray, dateArray, textArray, channelArray)
         }
         htmlMessage += "<span class='chat_message_user'>" + user + "</span>: ";
         htmlMessage += text; //toString()?
-        htmlMessage += "</p>\n";
+        htmlMessage += "</div>\n";
         if(id < 0 || id > lastMessageID) {
             displayMessage(htmlMessage);
         }

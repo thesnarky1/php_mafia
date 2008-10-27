@@ -144,9 +144,10 @@
         return "$xml";
     }
 
-   function retrieve_new_messages($user_id, $game_id, $id = 0) {
+   function retrieve_new_messages($user_id, $game_id, $id = 0, $wants_array=false) {
        global $dbh;
        global $channel_images;
+       $return_array = array();
        if($user_id == 0 || $user_id == "") {
            $user_belongs = false;
        } else {
@@ -197,19 +198,30 @@
                        $message_date = $row['message_date'];
                        $message_id = $row['message_id'];
                        $user_name = capitalize($row['user_name']);
-                       $xml .= "<message>\n";
-                       $xml .= "<id>$message_id</id>\n";
-                       $xml .= "<user>$user_name</user>\n";
-                       $xml .= "<date>$message_date</date>\n";
-                       $xml .= "<text>$message_text</text>\n";
-                       $xml .= "<channel>$channel_name</channel>\n";
-                       $xml .= "</message>\n";
+                       if($wants_array) {
+                           $return_array[$message_id] = array('user'=>$user_name,
+                                                              'date'=>$message_date,
+                                                              'text'=>$message_text,
+                                                              'channel'=>$channel_name);
+                       } else {
+                           $xml .= "<message>\n";
+                           $xml .= "<id>$message_id</id>\n";
+                           $xml .= "<user>$user_name</user>\n";
+                           $xml .= "<date>$message_date</date>\n";
+                           $xml .= "<text>$message_text</text>\n";
+                           $xml .= "<channel>$channel_name</channel>\n";
+                           $xml .= "</message>\n";
+                       }
                    }
                } else {
                    echo $query;
                }
                $xml .= "</messages>\n";
-               return "$xml";
+               if($wants_array) {
+                   return $return_array;
+               } else {
+                   return "$xml";
+               }
            }
        } else { */
            if($user_belongs) {
@@ -257,20 +269,31 @@
                        $message_date = $row['message_date'];
                        $message_id = $row['message_id'];
                        $user_name = $row['user_name'];
-                       $xml .= "<message>\n";
-                       $xml .= "<id>$message_id</id>\n";
-                       $xml .= "<user>$user_name</user>\n";
-                       $xml .= "<date>$message_date</date>\n";
-                       $xml .= "<text>$message_text</text>\n";
-                       $xml .= "<channel>$channel_name</channel>\n";
-                       $xml .= "</message>\n";
+                       if($wants_array) {
+                           $return_array[$message_id] = array('user'=>$user_name,
+                                                              'date'=>$message_date,
+                                                              'text'=>$message_text,
+                                                              'channel'=>$channel_name);
+                       } else {
+                           $xml .= "<message>\n";
+                           $xml .= "<id>$message_id</id>\n";
+                           $xml .= "<user>$user_name</user>\n";
+                           $xml .= "<date>$message_date</date>\n";
+                           $xml .= "<text>$message_text</text>\n";
+                           $xml .= "<channel>$channel_name</channel>\n";
+                           $xml .= "</message>\n";
+                       }
                    }
                }
            } else {
                //Non-player, show them game only
            }
            $xml .= "</messages>\n";
-           return "$xml";
+           if($wants_array) {
+               return $return_array;
+           } else {
+                return "$xml";
+           }
        //}
    }
 
