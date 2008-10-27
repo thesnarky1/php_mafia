@@ -17,17 +17,18 @@ function performAction(actionId, targetId) {
     $.get(actionURL, actionParams, showActionMessage);
 }
 
-function showActionMessage(str) {
+function showActionMessage(response) {
     if(myTimeout) {
         clearTimeout(myTimeout);
         myTimeout = null;
     }
-    $('#action_message').html(str).attr('display', 'block');
+    str = response.getElementsByTagName("action_data")[0].firstChild.data.toString();
+    $('#action_message').html(str).show('slow');
     myTimeout = setTimeout("hideActionMessage()", 5000);
 }
 
 function hideActionMessage() {
-    $('#action_message').attr('display', 'none');
+    $('#action_message').html(str).hide('slow');
     myTimeout = null;
 }
 

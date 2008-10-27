@@ -15,5 +15,6 @@
     include('./includes/site_functions.php');
     include('./includes/chat_functions.php');
     include('./includes/profile_functions.php');
+    include('./includes/xml_functions.php');
     include('./includes/mysqli_functions.php');
 ?>
