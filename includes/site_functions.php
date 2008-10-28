@@ -1,5 +1,11 @@
 <?php
 
+    function capitalize($str) {
+        $str = strtoupper(substr($str, 0, 1)) . 
+               substr($str, 1);
+        return $str;
+    }
+
     function get_timestamp($file) {
         return filectime($file);
     }
