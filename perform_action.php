@@ -32,13 +32,13 @@
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "You ask around about " . get_user_name($target_id) . ".");
+                            build_action_xml("You ask around about " . get_user_name($target_id) . ".");
                             break;
                         case "KILL":
                             add_player_action($game_id, $user_id, $action_id, $target_id, $priority);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "You mark " . get_user_name($target_id) . " for death.");
+                            build_action_xml("You mark " . get_user_name($target_id) . " for death.");
                             break;
                         case "LYNCH":
                             add_player_action($game_id, $user_id, $action_id, $target_id);
@@ -48,16 +48,16 @@
                                         get_user_name($user_id) . " wants to lynch " . get_user_name($target_id) . ".");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             update_game_tracker($game_id);
-                            build_action_xml( "You publically declare that " . get_user_name($target_id) . " should be brought to trial.");
+                            build_action_xml("You publically declare that " . get_user_name($target_id) . " should be brought to trial.");
                             break;
                         case "NO_ACTION":
-                            build_action_xml( "You cannot do anything at this juncture.");
+                            build_action_xml("You cannot do anything at this juncture.");
                             break;
                         case "NO_INVESTIGATE":
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "Going off a hunch, you decide not to look into anyone's life.");
+                            build_action_xml("Going off a hunch, you decide not to look into anyone's life.");
                             break;
                         case "NO_LYNCH":
                             add_player_action($game_id, $user_id, $action_id, $target_id);
@@ -67,24 +67,24 @@
                                         get_user_name($user_id) . " wants to lynch no one.");
                             update_game_players($game_id); //We always want a lynch vote to refresh ALL pages.
                             update_game_tracker($game_id);
-                            build_action_xml( "You have a change of heart and decide no one should be lynched.");
+                            build_action_xml("You have a change of heart and decide no one should be lynched.");
                             break;
                         case "NO_KILL":
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "At the last second you decide that killing is wrong, and elect to let everyone live.");
+                            build_action_xml("At the last second you decide that killing is wrong, and elect to let everyone live.");
                             break;
                         case "NO_SAVE":
                             add_player_action($game_id, $user_id, $action_id, $target_id);
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "Remembering that this town skips out on the bill, you elect to help no one.");
+                            build_action_xml("Remembering that this town skips out on the bill, you elect to help no one.");
                             break;
                         case "READY":
                             set_player_ready($game_id, $user_id, true);
                             update_player_needs_update($game_id, $user_id, true);
-                            build_action_xml( "You declare that you're ready.");
+                            build_action_xml("You declare that you're ready.");
                             if($game_phase == 0) {
                                 add_message(get_channel_by_name("unassigned_" . $game_id, $game_id),
                                             get_system_id(),
@@ -96,7 +96,7 @@
                                 add_player_action($game_id, $user_id, $action_id, $target_id);
                                 set_player_ready($game_id, $user_id, true);
                                 update_player_needs_update($game_id, $user_id, true);
-                                build_action_xml( "You run off to help " . get_user_name($target_id) . " in their illness.");
+                                build_action_xml("You run off to help " . get_user_name($target_id) . " in their illness.");
                             } else {
                                 build_action_xml("Now you're just being selfish! We don't allow that!");
                             }
@@ -116,6 +116,7 @@
                             clear_player_action($game_id, $user_id);
                             set_player_ready($game_id, $user_id, false);
                             update_player_needs_update($game_id, $user_id, true);
+                            update_game_tracker($game_id);
                             build_action_xml("You remove all choices and sit, unprepared.");
                             if($game_phase == 0) {
                                 add_message(get_channel_by_name("unassigned_" . $game_id, $game_id),
@@ -129,7 +130,6 @@
                         carry_out_actions($game_id);
                         next_phase($game_id);
                         lock_game($game_id, false);
-                    } else {
                     }
                 } else {
                    build_action_aml("Faker!!!");

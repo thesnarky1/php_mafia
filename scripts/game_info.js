@@ -31,27 +31,22 @@ function requestGameInformation() {
 }
 
 function dealWithGameInformation(gameResponse) {
-    if(gameResponse.getElementsByTagName("game_data").length > 0) {
+    if(gameResponse.getElementsByTagName("tracker").length > 0) {
         var tmpGameTracker = gameResponse.getElementsByTagName("tracker")[0].firstChild.data.toString();
         if(tmpGameTracker > gameTracker) {
             gameTracker = tmpGameTracker;
-            var gameChatHTML = document.getElementById("chat_channel");
-            var gamePhaseHTML = document.getElementById("game_phase");
-            var gameTurnHTML = document.getElementById("game_turn");
-            var roleInstructionsHTML = document.getElementById("role_instructions");
             var gamePhase = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
-            gameChatHTML.innerHTML = "";
-            gameChatHTML.innerHTML = gameResponse.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel";
-            gamePhaseHTML.innerHTML = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
-            gameTurnHTML.innerHTML = gameResponse.getElementsByTagName("turn")[0].firstChild.data.toString();
+            $("#chat_channel").html(gameResponse.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel");
+            $("#game_phase").html(gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString());
+            $("#game_turn").html(gameResponse.getElementsByTagName("turn")[0].firstChild.data.toString());
             var roleMessage = gameResponse.getElementsByTagName("role_instructions");
             if(roleMessage.length > 0) {
                 roleMessage = roleMessage[0].firstChild.data.toString();
             } else {
                 roleMessage = "";
             }
-            if(roleMessage != "" && roleMessage != roleInstructionsHTML.innerHTML) {
-                roleInstructionsHTML.innerHTML = roleMessage;
+            if(roleMessage != "") {
+                $("#role_instructions").html(roleMessage);
             }
             var actionMessage = gameResponse.getElementsByTagName("action");
             if(actionMessage.length > 0) {
@@ -76,7 +71,7 @@ function dealWithGameInformation(gameResponse) {
                 altBannerAction = "";
             }
             var votesToLynch = gameResponse.getElementsByTagName("votes_required")[0].firstChild.data.toString();
-            var voteTallyHTML = document.getElementById("vote_tally");
+            var voteTallyHTML = $("#vote_tally")[0];
             var voteTally = gameResponse.getElementsByTagName("vote_tally");
             if(voteTally.length > 0) {
                 voteTallyHTML.innerHTML = "";

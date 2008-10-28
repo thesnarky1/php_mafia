@@ -653,12 +653,6 @@
         return $role_ids;
     }
 
-    function capitalize($str) {
-        $str = strtoupper(substr($str, 0, 1)) . 
-               substr($str, 1);
-        return $str;
-    }
-
     function next_phase($game_id) {
         $system_id = get_system_id();
         $chan_id = get_system_channel($game_id);
@@ -667,7 +661,7 @@
             $game_turn = $row['game_turn'];
             $game_phase = $row['game_phase'];
             $game_locked = $row['game_locked'];
-            if($game_locked == 1) {
+            if($game_locked == 1) { //ONLY phase change while the game's locked!
                 if($game_phase == 1) {
                     //Just update game_phase
                     $game_phase++;
@@ -723,15 +717,15 @@
     }
 
     function update_player_needs_update($game_id, $user_id, $needs) {
-        update_game_tracker($game_id);
-//        $query = "UPDATE game_players SET player_needs_update='";
-//        if($needs) {
-//            $query .= "1";
-//        } else {
-//            $query .= "0";
-//        }
-//        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
-//        mysqli_set_one($query);
+        //update_game_tracker($game_id);
+        $query = "UPDATE game_players SET player_needs_update='";
+        if($needs) {
+            $query .= "1";
+        } else {
+            $query .= "0";
+        }
+        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
+        mysqli_set_one($query);
     }
 
     function update_game_tracker($game_id) {
@@ -752,9 +746,9 @@
         $query = "SELECT player_needs_update FROM game_players ".
                  "WHERE game_id='$game_id' AND user_id='$user_id'";
         if($row = mysqli_get_one($query)) {
-            if($row['player_needs_update'] == 1) {
+            if($row['player_needs_update'] == "1") {
                 return true;
-            } else {
+            } else { 
                 return false;
             }
         } else {
@@ -808,12 +802,15 @@
         }
         $to_return = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $to_return .= "<game_data>\n";
-        if(false) {                                 //if($user_belongs) {
+        if($user_belongs) {   //if(false) {
             //Track based on player_needs_update
             $needs_update = player_needs_update_id($game_id, $user_id);
         } else {
             //Track based on game_tracker
             $needs_update = player_needs_update_tracker($game_id, $old_game_tracker);
+        }
+        if($needs_update) {
+            //echo "Needs update";
         }
         if($force) { //ignore anything else, we HAVE to update
             $needs_update = true;
