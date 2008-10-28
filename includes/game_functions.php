@@ -438,7 +438,7 @@
             foreach($rows as $row) {
                 $unready_players[] = $row['user_name'];
             }
-            echo "Game cannot start because someone's not ready: " . implode(", ", $unready_players);
+            build_action_xml("Game cannot start because someone's not ready: " . implode(", ", $unready_players));
             return false;
         } else {
             $query = "SELECT user_id FROM game_players WHERE game_id='$game_id'";
@@ -448,7 +448,7 @@
                 if($rows = mysqli_get_many($query)) {
                     return true;
                 } else {
-                    echo "Game cannot start with that number of players($num_players), sorry... we just don't know of any fair rolesets.";
+                    build_action_xml("Game cannot start with that number of players($num_players), sorry... we just don't know of any fair rolesets.");
                     return false;
                 }
             } else {
