@@ -83,13 +83,14 @@
                             break;
                         case "READY":
                             set_player_ready($game_id, $user_id, true);
-                            update_player_needs_update($game_id, $user_id, true);
                             build_action_xml("You declare that you're ready.");
                             if($game_phase == 0) {
                                 add_message(get_channel_by_name("unassigned_" . $game_id, $game_id),
                                             get_system_id(),
                                             get_user_name($user_id) . " is ready to go.");
                             }
+                            update_player_needs_update($game_id, $user_id, true);
+                            update_game_tracker($game_id);
                             break;
                         case "SAVE":
                             if($target_id != $user_id) {
@@ -115,13 +116,15 @@
                         case "UN_READY":
                             clear_player_action($game_id, $user_id);
                             set_player_ready($game_id, $user_id, false);
-                            update_player_needs_update($game_id, $user_id, true);
-                            update_game_tracker($game_id);
                             build_action_xml("You remove all choices and sit, unprepared.");
                             if($game_phase == 0) {
                                 add_message(get_channel_by_name("unassigned_" . $game_id, $game_id),
                                             get_system_id(),
                                             get_user_name($user_id) . " wants to hold everyone up, and unreadies.");
+                                update_game_tracker($game_id);
+                                update_game_players($game_id);
+                            } else {
+                                update_player_needs_update($game_id, $user_id, true);
                             }
                             break;
                     }

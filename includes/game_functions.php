@@ -312,8 +312,7 @@
         return $votes_needed;
     }
 
-    function clear_player_action($game_id, $player_id) {
-        global $dbh;
+    function clear_player_action($game_id, $user_id) {
         $game_phase_turn = get_game_phase_turn($game_id);
         if($game_phase_turn) {
             $game_turn = $game_phase_turn['game_turn'];
@@ -718,14 +717,21 @@
 
     function update_player_needs_update($game_id, $user_id, $needs) {
         //update_game_tracker($game_id);
-        $query = "UPDATE game_players SET player_needs_update='";
-        if($needs) {
-            $query .= "1";
-        } else {
-            $query .= "0";
+        $query = "SELECT player_needs_update FROM game_players ".
+                 "WHERE game_id='$game_id' AND user_id='$user_id'";
+        if($row = mysqli_get_one($query)) {
+            if(($needs && $row['player_needs_update'] == 0) ||
+               (!$needs && $row['player_needs_update'] == 1)) {
+                $query = "UPDATE game_players SET player_needs_update='";
+                if($needs) {
+                    $query .= "1";
+                } else {
+                    $query .= "0";
+                }
+                $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
+                mysqli_set_one($query);
+            }
         }
-        $query .= "' WHERE game_id='$game_id' AND user_id='$user_id'";
-        mysqli_set_one($query);
     }
 
     function update_game_tracker($game_id) {
