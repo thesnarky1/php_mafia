@@ -1028,10 +1028,10 @@
                                         }
                                     }
                                     $query2 = "SELECT action_id, target_id ".
-                                             "FROM game_actions ".
-                                             "WHERE game_id='$game_id' AND user_id='$user_id' AND ".
-                                             "game_phase='$game_phase' AND game_turn='$game_turn'";
-                                    if($row2 = mysqli_get_one($query)) {
+                                              "FROM game_actions ".
+                                              "WHERE game_id='$game_id' AND user_id='$user_id' AND ".
+                                              "game_phase='$game_phase' AND game_turn='$game_turn'";
+                                    if($row2 = mysqli_get_one($query2)) {
                                         $set_action_id = $row2['action_id'];
                                         $set_target = $row2['target_id'];
                                         $to_return .= "<target>".get_user_name($set_target)."</target>\n";
