@@ -35,65 +35,65 @@ function dealWithGameInformation(gameResponse) {
         var tmpGameTracker = gameResponse.getElementsByTagName("tracker")[0].firstChild.data.toString();
         if(tmpGameTracker > gameTracker) {
             gameTracker = tmpGameTracker;
-            var gamePhase = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
-            $("#chat_channel").html(gameResponse.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel");
-            $("#game_phase").html(gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString());
-            $("#game_turn").html(gameResponse.getElementsByTagName("turn")[0].firstChild.data.toString());
-            var roleMessage = gameResponse.getElementsByTagName("role_instructions");
-            if(roleMessage.length > 0) {
-                roleMessage = roleMessage[0].firstChild.data.toString();
-            } else {
-                roleMessage = "";
-            }
-            if(roleMessage != "") {
-                $("#role_instructions").html(roleMessage);
-            }
-            var actionMessage = gameResponse.getElementsByTagName("action");
-            if(actionMessage.length > 0) {
-                actionMessage = actionMessage[0].firstChild.data.toString();
-            } else {
-                actionMessage = "";
-            }
-            var bannerMessage = gameResponse.getElementsByTagName("banner");
-            if(bannerMessage.length > 0) {
-                bannerMessage = bannerMessage[0].firstChild.data.toString();
-                bannerAction = gameResponse.getElementsByTagName("banner_action")[0].firstChild.data.toString();
-            } else {
-                bannerMessage = "";
-                bannerAction = "";
-            }
-            var altBannerMessage = gameResponse.getElementsByTagName("alt_banner");
-            if(altBannerMessage.length > 0) {
-                altBannerMessage = altBannerMessage[0].firstChild.data.toString();
-                altBannerAction = gameResponse.getElementsByTagName("alt_banner_action")[0].firstChild.data.toString();
-            } else {
-                altBannerMessage = "";
-                altBannerAction = "";
-            }
-            var votesToLynch = gameResponse.getElementsByTagName("votes_required")[0].firstChild.data.toString();
-            var voteTallyHTML = $("#vote_tally")[0];
-            var voteTally = gameResponse.getElementsByTagName("vote_tally");
-            if(voteTally.length > 0) {
-                voteTallyHTML.innerHTML = "";
-                for(var i = 0; i < voteTally.length; i++) {
-                    var vote = voteTally.item(i);
-                    var voteName = vote.getElementsByTagName("name")[0].firstChild.data.toString();
-                    var voteVote = vote.getElementsByTagName("vote")[0].firstChild.data.toString();
-                    voteTallyHTML.innerHTML += "<li class='game_player_list_alive'>" + voteName + ": " + voteVote + "</li>\n";
-                }
-            } else {
-                voteTallyHTML.innerHTML = "";
-            }
-            playerArray = gameResponse.getElementsByTagName("player_list")[0].getElementsByTagName("player");
-            var targetMessage = gameResponse.getElementsByTagName("target");
-            if(targetMessage.length > 0) {
-                targetMessage = targetMessage[0].firstChild.data.toString();
-            } else {
-                targetMessage = "No current target";
-            }
-            document.getElementById("target").innerHTML = targetMessage;
-            displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, actionMessage, votesToLynch);
         }
+        var gamePhase = gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString();
+        $("#chat_channel").html(gameResponse.getElementsByTagName("channel")[0].firstChild.data.toString() + " Channel");
+        $("#game_phase").html(gameResponse.getElementsByTagName("phase")[0].firstChild.data.toString());
+        $("#game_turn").html(gameResponse.getElementsByTagName("turn")[0].firstChild.data.toString());
+        var roleMessage = gameResponse.getElementsByTagName("role_instructions");
+        if(roleMessage.length > 0) {
+            roleMessage = roleMessage[0].firstChild.data.toString();
+        } else {
+            roleMessage = "";
+        }
+        if(roleMessage != "") {
+            $("#role_instructions").html(roleMessage);
+        }
+        var actionMessage = gameResponse.getElementsByTagName("action");
+        if(actionMessage.length > 0) {
+            actionMessage = actionMessage[0].firstChild.data.toString();
+        } else {
+            actionMessage = "";
+        }
+        var bannerMessage = gameResponse.getElementsByTagName("banner");
+        if(bannerMessage.length > 0) {
+            bannerMessage = bannerMessage[0].firstChild.data.toString();
+            bannerAction = gameResponse.getElementsByTagName("banner_action")[0].firstChild.data.toString();
+        } else {
+            bannerMessage = "";
+            bannerAction = "";
+        }
+        var altBannerMessage = gameResponse.getElementsByTagName("alt_banner");
+        if(altBannerMessage.length > 0) {
+            altBannerMessage = altBannerMessage[0].firstChild.data.toString();
+            altBannerAction = gameResponse.getElementsByTagName("alt_banner_action")[0].firstChild.data.toString();
+        } else {
+            altBannerMessage = "";
+            altBannerAction = "";
+        }
+        var votesToLynch = gameResponse.getElementsByTagName("votes_required")[0].firstChild.data.toString();
+        var voteTallyHTML = $("#vote_tally")[0];
+        var voteTally = gameResponse.getElementsByTagName("vote_tally");
+        if(voteTally.length > 0) {
+            voteTallyHTML.innerHTML = "";
+            for(var i = 0; i < voteTally.length; i++) {
+                var vote = voteTally.item(i);
+                var voteName = vote.getElementsByTagName("name")[0].firstChild.data.toString();
+                var voteVote = vote.getElementsByTagName("vote")[0].firstChild.data.toString();
+                voteTallyHTML.innerHTML += "<li class='game_player_list_alive'>" + voteName + ": " + voteVote + "</li>\n";
+            }
+        } else {
+            voteTallyHTML.innerHTML = "";
+        }
+        playerArray = gameResponse.getElementsByTagName("player_list")[0].getElementsByTagName("player");
+        var targetMessage = gameResponse.getElementsByTagName("target");
+        if(targetMessage.length > 0) {
+            targetMessage = targetMessage[0].firstChild.data.toString();
+        } else {
+            targetMessage = "No current target";
+        }
+        document.getElementById("target").innerHTML = targetMessage;
+        displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, altBannerMessage, altBannerAction, actionMessage, votesToLynch);
     }
     setTimeout("requestGameInformation();", updateInterval);
 }
