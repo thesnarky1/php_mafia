@@ -65,8 +65,8 @@ function dealWithGameInformation(gameResponse) {
                 bannerMessage = bannerMessage[0].firstChild.data.toString();
                 bannerAction = gameResponse.getElementsByTagName("banner_action")[0].firstChild.data.toString();
             } else {
-                bannerMessage = "";
-                bannerAction = "";
+                bannerMessage = false;
+                bannerAction = false;
             }
             var altBannerMessage = gameResponse.getElementsByTagName("alt_banner");
             if(altBannerMessage.length > 0) {
@@ -114,10 +114,18 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
     deadListHTML.innerHTML = "";
     playerTable = "";
     if(bannerMessage != "") {
-        playerTable += "<div id='action_banner' onclick='performAction(" + bannerAction + ",0);'>" + bannerMessage + "</div>\n";
+        playerTable += "<div id='action_banner' ";
+        if(bannerAction && bannerAction != "") {
+            playerTable += "onclick='performAction(" + bannerAction + ",0);'";
+        }
+        playerTable += ">" + bannerMessage + "</div>\n";
     }
     if(altBannerMessage != "") {
-        playerTable += "<div id='action_banner' onclick='performAction(" + altBannerAction + ",0);'>" + altBannerMessage + "</div>\n";
+        playerTable += "<div id='action_banner' ";
+        if(altBannerAction) {
+            playerTable += "onclick='performAction(" + altBannerAction + ",0);'";
+        }
+        playerTable += ">" + altBannerMessage + "</div>\n";
     }
     playerTable += "<table align='center'>";
     var alivePlayers = 0;
@@ -168,7 +176,11 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         }
         playerHTML += ">";
         if(playerAlive == 'Y') {
-            playerHTML += "<div id='player_box_alive' onclick='performAction(" + action + "," + playerId + ")'>";
+            playerHTML += "<div id='player_box_alive' ";
+            if(bannerAction) {
+                playerHTML += "onclick='performAction(" + action + "," + playerId + ")'";
+            }
+            playerHTML += ">";
             playerHTML += "<img src='./images/avatars/" + playerAvatar + "'>";
             playerHTML += "<p class='player_name'>" + playerName;
             if(playerRole) {
