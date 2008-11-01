@@ -16,7 +16,8 @@
         $query = "SELECT games.game_id, games.game_name, games.game_creator, ".
                  "(SELECT COUNT(*) FROM game_players WHERE game_players.game_id=games.game_id AND game_players.player_alive='Y') as players ".
                  "FROM games ".
-                 "WHERE games.game_phase=0 AND games.game_password=''".
+                 "WHERE games.game_phase=0 AND games.game_password='' AND games.game_id NOT IN ".
+                 "(SELECT game_id FROM game_players WHERE user_id='$user_id') ".
                  "LIMIT 20";
         if($rows = mysqli_get_many($query)) {
             echo "<table class='game_table' align='center'>\n";
