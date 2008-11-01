@@ -1,9 +1,50 @@
-/*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
-  and Bucica, an excellent resource, and a book I highly recommend!*/
+/*Portions of this code originally come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
+  and Bucica, an excellent resource, and a book I highly recommend! However
+  I've since revamped the code, and its now mine. However, I *still* recommend that book.*/
 var chatURL = './chat.php';
 var updateInterval = 1000;
 var lastMessageID = $("chat_message:last input");
 var debugMode = true;
+var title = "Thieves Tavern Games";
+var messageNum = 0;
+var hasFocus = true;
+
+$(setFocusEvents());
+
+/*
+  setFocusEvents comes from 
+  http://odondo.wordpress.com/2007/08/28/javascript-and-cross-browser-window-focus/
+ */
+function setFocusEvents() {
+    if(navigator.appName == "Microsoft Internet Explorer") {
+        document.onfocusout = function() { onWindowBlur(); };
+        document.onfocusin = function() { onWindowFocus(); };
+    } else {
+        window.onblur = function() { onWindowBlur(); };
+        window.onfocus = function() { onWindowFocus(); };
+    }
+}
+
+
+function onWindowBlur() {
+    hasFocus = false;
+}
+
+function onWindowFocus() {
+    if(!hasFocus) {
+        document.title = title;
+        hasFocus = true;
+        messageNum = 0;
+    }
+}
+
+function updateTitle() {
+    if(messageNum > 0) {
+        document.title = "[" + messageNum + "] " + title;
+    } else {
+        document.title = title;
+    }
+}
 
 function scrollChatBox() {
     //var chatText = $("#chat_text")[0];
@@ -64,6 +105,10 @@ function displayMessage(message) {
     var scrollDown = (chatText.scrollHeight - chatText.scrollTop <= chatText.offsetHeight);
     chatText.innerHTML += message;
     chatText.scrollTop = scrollDown ? chatText.scrollHeight : chatText.scrollTop;
+    if(!hasFocus) {
+        messageNum++;
+        updateTitle();
+    }
 }
 
 function displayError(message) {
