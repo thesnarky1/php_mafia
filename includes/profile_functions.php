@@ -9,7 +9,7 @@
                  "FROM game_players, games ".
                  "WHERE game_players.user_id='$user_id' AND games.game_id=game_players.game_id ".
                  "AND games.game_phase != 3 ".
-                 "ORDER BY games.game_turn DESC";
+                 "ORDER BY game_players.player_alive DESC, games.game_turn DESC";
         if($rows = mysqli_get_many($query)) {
             $to_return .= "<table class='game_table' align='center'>\n";
             $to_return .= "<tr class='header'>\n";
