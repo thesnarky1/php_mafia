@@ -15,7 +15,8 @@ $(function() {
    gameId = $('#game_id')[0].value;
    scrollChatBox();
    requestGameInformation();
-   requestNewMessages();
+   setTimeout("getLastMessageID()", 500);
+   setTimeout("requestNewMessages()", 500);
   });
 
 function requestGameInformation() {

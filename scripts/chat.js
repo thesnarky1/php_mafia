@@ -3,13 +3,17 @@
   I've since revamped the code, and its now mine. However, I *still* recommend that book.*/
 var chatURL = './chat.php';
 var updateInterval = 1000;
-var lastMessageID = $("chat_message:last input");
-var debugMode = true;
+var lastMessageID = 0;
 var title = "Thieves Tavern Games";
 var messageNum = 0;
 var hasFocus = true;
 
 $(setFocusEvents());
+$(setTimeout("getLastMessageID()", 500));
+
+function getLastMessageID() {
+    lastMessageID = $(".chat_message:last input").attr("value");
+}
 
 /*
   setFocusEvents comes from 
@@ -59,56 +63,39 @@ function requestNewMessages() {
 }
 
 function readMessages(chatResponse) {
-    idArray = chatResponse.getElementsByTagName("id");
-    userArray = chatResponse.getElementsByTagName("user");
-    dateArray = chatResponse.getElementsByTagName("date");
-    textArray = chatResponse.getElementsByTagName("text");
-    channelArray = chatResponse.getElementsByTagName("channel");
-    displayMessages(idArray, userArray, dateArray, textArray, channelArray);
-    if(idArray.length > 0 && idArray.item(idArray.length - 1).firstChild.data > 0) {
-        lastMessageID = idArray.item(idArray.length - 1).firstChild.data;
-    }
+    var chatText = $('#chat_text');
+    var chatTextObject = chatText.get(0);
+    $(chatResponse).find('message').each(
+        function() {
+            var id = $(this).find('id')[0].firstChild.data.toString();
+            var user = $(this).find('user')[0].firstChild.data.toString();
+            var date = $(this).find('date')[0].firstChild.data.toString();
+            var text = $(this).find('text')[0].firstChild.data.toString();
+            var channel = $(this).find('channel')[0].firstChild.data.toString();
+            var newMessage = $("<div>").addClass('chat_message');
+            newMessage.append($("<input type='hidden'/>").attr("value", id));
+            newMessage.append($("<span>").addClass("chat_message_channel").append("<img src='./images/roles/" + channel + "'/> "));
+            newMessage.append($("<span>").addClass("chat_message_date").append("(" + date + ") "));
+            newMessage.append($("<span>").addClass("chat_message_user").append(user + ": "));
+            newMessage.append(text);
+            if(id < 0 || id > lastMessageID) {
+                var scrollDown = (chatTextObject.scrollHeight - chatTextObject.scrollTop <= chatTextObject.offsetHeight);
+                chatText.append(newMessage);
+                chatTextObject.scrollTop = scrollDown ? chatTextObject.scrollHeight : chatTextObject.scrollTop;
+                //Update our last message id if its smaller than this one.
+                if(id > lastMessageID) {
+                    lastMessageID = id;
+                }
+    
+                //Update the title if we're not on top
+                if(!hasFocus) {
+                    messageNum++;
+                    updateTitle();
+                }
+            }
+        }
+    );
     setTimeout("requestNewMessages();", updateInterval);
-}
-
-function displayMessages(idArray, userArray, dateArray, textArray, channelArray) {
-    for(var i = 0; i < idArray.length; i++) {
-        var user = userArray.item(i).firstChild.data.toString();
-        var date = dateArray.item(i).firstChild;
-        var id = idArray.item(i).firstChild.data.toString();
-        if(date) {
-            date = date.data.toString();
-        } else {
-            date = false;
-        }
-        var text = textArray.item(i).firstChild.data.toString();
-        var channel = channelArray.item(i).firstChild.data.toString();
-        var htmlMessage = "<div class='chat_message'>\n";
-        htmlMessage += "<input type='hidden' value='" + id + "' />\n";
-        htmlMessage += "<span class='chat_message_channel'><img src='./images/roles/" + channel + "'/></span> ";
-        if(date) {
-            htmlMessage += "<span class='chat_message_date'>(" + date + ") </span>";
-        } else {
-            htmlMessage += ": ";
-        }
-        htmlMessage += "<span class='chat_message_user'>" + user + "</span>: ";
-        htmlMessage += text; //toString()?
-        htmlMessage += "</div>\n";
-        if(id < 0 || id > lastMessageID) {
-            displayMessage(htmlMessage);
-        }
-    }
-}
-
-function displayMessage(message) {
-    var chatText = document.getElementById("chat_text");
-    var scrollDown = (chatText.scrollHeight - chatText.scrollTop <= chatText.offsetHeight);
-    chatText.innerHTML += message;
-    chatText.scrollTop = scrollDown ? chatText.scrollHeight : chatText.scrollTop;
-    if(!hasFocus) {
-        messageNum++;
-        updateTitle();
-    }
 }
 
 function displayError(message) {
@@ -130,7 +117,7 @@ function handleKey(e) {
 }
 
 function sendMessage() {
-    var currentMessage = document.getElementById("text_box");
+    var currentMessage = $("#text_box")[0];
     if($.trim(currentMessage.value) != '' && $.trim(userId) != '') {
         chatParams = {mode:'SendAndRetrieveNew',  
                       id:encodeURIComponent(lastMessageID),
