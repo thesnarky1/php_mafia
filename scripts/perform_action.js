@@ -1,9 +1,4 @@
-/*Portions of this code come from "AJAX and PHP" by Darie, Chereches-Tosa, Brinzarea, 
-  and Bucica, an excellent resource, and a book I highly recommend!*/
 var actionURL = './perform_action.php';
-var targetId = null;
-var actionId = null;
-var actionCache = new Array();
 var myTimeout = null;
 
 /*
@@ -22,7 +17,7 @@ function showActionMessage(response) {
         clearTimeout(myTimeout);
         myTimeout = null;
     }
-    str = response.getElementsByTagName("action_data")[0].firstChild.data.toString();
+    var str = $(response).find("action_data")[0];
     $('#action_message').html(str).show('slow');
     myTimeout = setTimeout("hideActionMessage()", 5000);
 }
