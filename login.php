@@ -15,6 +15,10 @@
             $user_id = $row['user_id'];
             $user_hash = $row['user_hash'];
             login_user($user_name, $user_id, $user_hash);
+            if(isset($_POST['next_page'])) {
+                $next = safetify_input($_POST['next_page']);
+                header("Location: $next");
+            }
         } else {
             $error = "Unknown user/password combination.";
         }

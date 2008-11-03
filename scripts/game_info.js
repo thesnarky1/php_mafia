@@ -2,8 +2,6 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var gameInfoURL = './game_information.php';
 var updateInterval = 1000;
-var gameInfoCache = new Array();
-var debugMode = true;
 var boxesPerRow = 2;
 var playerCount = 1;
 var gameTracker = -1;

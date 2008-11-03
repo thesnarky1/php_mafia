@@ -246,6 +246,7 @@
             echo "<label class='fixed_label'>Password: </label>\n";
             echo "<input type='password' name='user_pass' style='margin-top: .25em;' />\n";
             echo "<br />\n";
+            echo "<input type='hidden' name='next_page' value='$_SERVER[PHP_SELF]' />\n";
             echo "<input type='submit' value='Login' style='margin-top: .25em'/>\n";
             echo "</form>\n";
         }
