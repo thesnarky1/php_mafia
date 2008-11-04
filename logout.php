@@ -1,10 +1,8 @@
 <?php
 
     include('./includes/functions.php');
-    if(isset($_SESSION['user_name']) && isset($_SESSION['user_id'])) {
-        $_SESSION['user_name'] = "";
-        $_SESSION['user_id'] = "";
-        session_destroy();
+    if(is_logged_in()) {
+        logout_user();
     } else {
         $error = "Not logged in.";
     }

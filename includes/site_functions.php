@@ -26,10 +26,27 @@
         return mysqli_get_one($query);
     }
 
-    function login_user($user_name, $user_id, $user_hash) {
+    function logout_user() {
+        $_SESSION['user_name'] = "";
+        $_SESSION['user_id'] = "";
+        $_SESSION['user_hash'] = "";
+        if(isset($_COOKIE['thievestavern'])) {
+            setcookie("thievestavern[user_name]", '', time() - 3600);
+            setcookie("thievestavern[user_id]", '', time() - 3600);
+            setcookie("thievestavern[user_hash]", '', time() - 3600);
+        }
+        session_destroy();
+    }
+
+    function login_user($user_name, $user_id, $user_hash, $cookie = false) {
         $_SESSION['user_name'] = $user_name;
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_hash'] = $user_hash;
+        if($cookie) {
+            setcookie("thievestavern[user_name]", $user_name, time() + 60*60*24*30);
+            setcookie("thievestavern[user_id]", $user_id, time() + 60*60*24*30);
+            setcookie("thievestavern[user_hash]", $user_hash, time() + 60*60*24*30);
+        }
     }
 
     function send_invite_email($email, $reg_code, $inviter) {
