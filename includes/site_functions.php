@@ -27,13 +27,16 @@
     }
 
     function logout_user() {
+        $user_name = $_SESSION['user_name'];
+        $user_id = $_SESSION['user_id'];
+        $user_hash = $_SESSION['user_hash'];
         $_SESSION['user_name'] = "";
         $_SESSION['user_id'] = "";
         $_SESSION['user_hash'] = "";
         if(isset($_COOKIE['thievestavern'])) {
-            setcookie("thievestavern[user_name]", '', time() - 3600);
-            setcookie("thievestavern[user_id]", '', time() - 3600);
-            setcookie("thievestavern[user_hash]", '', time() - 3600);
+            setcookie("thievestavern[user_name]", $user_name, time() - (60*60*24*30), '/', $domain);
+            setcookie("thievestavern[user_id]", $user_id, time() - (60*60*24*30), '/', $domain);
+            setcookie("thievestavern[user_hash]", $user_hash, time() - (60*60*24*30), '/', $domain);
         }
         session_destroy();
     }
@@ -43,9 +46,9 @@
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_hash'] = $user_hash;
         if($cookie) {
-            setcookie("thievestavern[user_name]", $user_name, time() + 60*60*24*30);
-            setcookie("thievestavern[user_id]", $user_id, time() + 60*60*24*30);
-            setcookie("thievestavern[user_hash]", $user_hash, time() + 60*60*24*30);
+            setcookie("thievestavern[user_name]", $user_name, time() + (60*60*24*30), '/');
+            setcookie("thievestavern[user_id]", $user_id, time() + (60*60*24*30), '/');
+            setcookie("thievestavern[user_hash]", $user_hash, time() + (60*60*24*30), '/');
         }
     }
 
@@ -264,6 +267,7 @@
             echo "<input type='password' name='user_pass' style='margin-top: .25em;' />\n";
             echo "<br />\n";
             echo "<input type='hidden' name='next_page' value='$_SERVER[PHP_SELF]' />\n";
+            echo "Remember login?<input type='checkbox' name='remember' value='true'/>\n";
             echo "<input type='submit' value='Login' style='margin-top: .25em'/>\n";
             echo "</form>\n";
         }
@@ -276,6 +280,13 @@
         $file_name = $file_name_arr[count($file_name_arr) - 1];
         $file_name_arr = explode("?", $file_name);
         $file_name = $file_name_arr[0];
+
+        if(isset($_COOKIE['thievestavern']) && $_COOKIE['thievestavern']['user_name'] != "") {
+            $user_name = safetify_input($_COOKIE['thievestavern']['user_name']);
+            $user_hash = safetify_input($_COOKIE['thievestavern']['user_hash']);
+            $user_id = safetify_input($_COOKIE['thievestavern']['user_id']);
+            login_user($user_name, $user_id, $user_hash, true);
+        }
 
         //Render <head> junk
         echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' \n";

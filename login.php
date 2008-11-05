@@ -14,7 +14,7 @@
             $user_name = $row['user_name'];
             $user_id = $row['user_id'];
             $user_hash = $row['user_hash'];
-            if(isset($_POST['remember'])) {
+            if(isset($_POST['remember']) && $_POST['remember'] == 'true') {
                 $remember = true;
             } else {
                 $remember = false;

@@ -1,5 +1,6 @@
 <?php
     session_start();
+    ob_start();
     $phases = array('Setup', 'Night', 'Day', 'Finished');
     $channel_images = array('Doctor'=>'doctor.gif',
                             'Game'=>'game.png',
