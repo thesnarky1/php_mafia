@@ -88,9 +88,11 @@
                                 add_message(get_channel_by_name("unassigned_" . $game_id, $game_id),
                                             get_system_id(),
                                             get_user_name($user_id) . " is ready to go.");
+                                update_game_players($game_id);
+                                update_game_tracker($game_id);
+                            } else {
+                                update_player_needs_update($game_id, $user_id, true);
                             }
-                            update_player_needs_update($game_id, $user_id, true);
-                            update_game_tracker($game_id);
                             break;
                         case "SAVE":
                             if($target_id != $user_id) {
