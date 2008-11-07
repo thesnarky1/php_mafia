@@ -47,6 +47,8 @@
                 $news_date = $row['news_date'];
                 $news_title = $row['news_title'];
                 $news_author = $row['news_author'];
+                $news_author_id = $row['news_author_id'];
+                $news_author = "<a href='./profile.php?id=$news_author_id'>$news_author</a>";
                 if(strlen($news_text) > 255) {
                     $news_text = substr($news_text, 0, 255) . "<a href='./news.php?news_id=$news_id'>...</a>";
                 }

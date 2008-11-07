@@ -27,6 +27,7 @@ function setFocusEvents() {
         window.onblur = function() { onWindowBlur(); };
         window.onfocus = function() { onWindowFocus(); };
     }
+    document.onbeforeunload = function() { onWindowBlur(); };
 }
 
 
