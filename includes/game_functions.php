@@ -793,6 +793,57 @@
         return false;
     }
 
+    function get_game_ready_list($game_id) {
+        $to_return = "";
+        $query = "SELECT user_id, player_ready ".
+                 "FROM game_players ".
+                 "WHERE game_id='$game_id' ".
+                 "ORDER BY player_ready ASC";
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
+                $name = get_user_name($row['user_id']);
+                if($row['player_ready'] == 'Y') {
+                    $ready = "Ready";
+                } else {
+                    $ready = "NOT Ready";
+                }
+                $to_return .= "<vote_tally>\n";
+                $to_return .= "<name>$name</name>\n";
+                $to_return .= "<vote>$ready</vote>\n";
+                $to_return .= "</vote_tally>\n";
+            }
+        }
+        return $to_return;
+    }
+
+    function get_game_vote_tally($game_id, $game_phase, $game_turn) {
+        $lynch_action = get_action_by_enum("LYNCH");
+        $no_lynch_action = get_action_by_enum("NO_LYNCH");
+        $to_return = "";
+        $query = "SELECT COUNT(*) as cnt, target_id ".
+                 "FROM game_actions ".
+                 "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
+                 "game_turn='$game_turn' AND (action_id='$lynch_action' OR ".
+                 "action_id='$no_lynch_action') ".
+                 "GROUP BY target_id ORDER BY cnt DESC";
+        if($rows = mysqli_get_many($query)) {
+            foreach($rows as $row) {
+                $votes = $row['cnt'];
+                $target_id = $row['target_id'];
+                if($target_id == 0) {
+                    $target_name = "Lynch no one";
+                } else {
+                    $target_name = get_user_name($target_id);
+                }
+                $to_return .= "<vote_tally>";
+                $to_return .= "<name>$target_name</name>\n";
+                $to_return .= "<vote>$votes votes</vote>\n";
+                $to_return .= "</vote_tally>\n";
+            }
+        }
+        return $to_return;
+    }
+
     function get_game_information($game_id, $old_game_tracker, $force, $user_id=0) {
         global $dbh, $phases;
         $needs_update = false;
@@ -845,48 +896,9 @@
                     $investigated_peeps = array();
                 }
                 if($game_phase == 2) { //If its day, lets give a vote tally
-                    $lynch_action = get_action_by_enum("LYNCH");
-                    $no_lynch_action = get_action_by_enum("NO_LYNCH");
-                    $query = "SELECT COUNT(*) as cnt, target_id ".
-                             "FROM game_actions ".
-                             "WHERE game_id='$game_id' AND game_phase='$game_phase' AND ".
-                             "game_turn='$game_turn' AND (action_id='$lynch_action' OR ".
-                             "action_id='$no_lynch_action') ".
-                             "GROUP BY target_id ORDER BY cnt DESC";
-                    if($rows = mysqli_get_many($query)) {
-                        foreach($rows as $row) {
-                            $votes = $row['cnt'];
-                            $target_id = $row['target_id'];
-                            if($target_id == 0) {
-                                $target_name = "Lynch no one";
-                            } else {
-                                $target_name = get_user_name($target_id);
-                            }
-                            $to_return .= "<vote_tally>";
-                            $to_return .= "<name>$target_name</name>\n";
-                            $to_return .= "<vote>$votes votes</vote>\n";
-                            $to_return .= "</vote_tally>\n";
-                        }
-                    }
+                    $to_return .= get_game_vote_tally($game_id, $game_phase, $game_turn);
                 } else if($game_phase == 0) { //Return a ready list
-                    $query = "SELECT user_id, player_ready ".
-                             "FROM game_players ".
-                             "WHERE game_id='$game_id' ".
-                             "ORDER BY player_ready ASC";
-                    if($rows = mysqli_get_many($query)) {
-                        foreach($rows as $row) {
-                            $name = get_user_name($row['user_id']);
-                            if($row['player_ready'] == 'Y') {
-                                $ready = "Ready";
-                            } else {
-                                $ready = "NOT Ready";
-                            }
-                            $to_return .= "<vote_tally>\n";
-                            $to_return .= "<name>$name</name>\n";
-                            $to_return .= "<vote>$ready</vote>\n";
-                            $to_return .= "</vote_tally>\n";
-                        }
-                    }
+                    $to_return .= get_game_ready_list($game_id, $game_phase, $game_turn);
                 }
                 $to_return .= "<player_list>\n";
                 $query = "SELECT users.user_name, users.user_avatar, ".
