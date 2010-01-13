@@ -2,7 +2,7 @@
   and Bucica, an excellent resource, and a book I highly recommend!*/
 var gameInfoURL = './game_information.php';
 var updateInterval = 1000;
-var boxesPerRow = 2;
+var boxesPerRow = 8;
 var playerCount = 1;
 var gameTracker = -1;
 var forceUpdate = true;
@@ -112,20 +112,6 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
     aliveListHTML.innerHTML = "";
     deadListHTML.innerHTML = "";
     playerTable = "";
-    if(bannerMessage != "") {
-        playerTable += "<div id='action_banner' ";
-        if(bannerAction && bannerAction != "") {
-            playerTable += "onclick='performAction(" + bannerAction + ",0);'";
-        }
-        playerTable += ">" + bannerMessage + "</div>\n";
-    }
-    if(altBannerMessage != "") {
-        playerTable += "<div id='action_banner' ";
-        if(altBannerAction) {
-            playerTable += "onclick='performAction(" + altBannerAction + ",0);'";
-        }
-        playerTable += ">" + altBannerMessage + "</div>\n";
-    }
     playerTable += "<table align='center'>";
     var alivePlayers = 0;
     var deadPlayers = 0;
@@ -208,6 +194,20 @@ function displayPlayers(playerArray, gamePhase, bannerMessage, bannerAction, alt
         playerTable += "</tr>\n";
     }
     playerTable += "</table>\n";
+    if(bannerMessage != "") {
+        playerTable += "<div id='action_banner' ";
+        if(bannerAction && bannerAction != "") {
+            playerTable += "onclick='performAction(" + bannerAction + ",0);'";
+        }
+        playerTable += ">" + bannerMessage + "</div>\n";
+    }
+    if(altBannerMessage != "") {
+        playerTable += "<div id='action_banner' ";
+        if(altBannerAction) {
+            playerTable += "onclick='performAction(" + altBannerAction + ",0);'";
+        }
+        playerTable += ">" + altBannerMessage + "</div>\n";
+    }
     playerBoxTable.innerHTML = playerTable;
     document.getElementById("game_alive").innerHTML = alivePlayers;
     document.getElementById("game_dead").innerHTML = deadPlayers;
