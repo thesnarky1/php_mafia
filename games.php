@@ -143,6 +143,11 @@
             if($user_id) {
                 $role_id = $row['role_id'];
             }
+
+            //Make person table
+            echo "<div id='player_box_table'>\n";
+            echo "</div>\n"; //Close player_box_table
+
             //Make banner
             if($error != "") {
                 echo "<p class='banner'><span class='error'>$error</span></p>\n";
@@ -184,9 +189,6 @@
             echo "</ul>\n";
             echo "</div>\n";
 
-            //Make person table
-            echo "<div id='player_box_table'>\n";
-            echo "</div>\n"; //Close player_box_table
 
             //Game chat
             echo "<div id='game_chat'>\n";
