@@ -4,6 +4,7 @@
 
     render_header("Thieves Tavern Help");
     echo "<ol>\n";
+    echo "<li>For basic information, try <a href='http://wiki.mafiascum.net/index.php?title=Newbie_Guide'>this page</a>.</li>";
     echo "<li>\n";
     echo "Roles";
     echo "<br />\n";
