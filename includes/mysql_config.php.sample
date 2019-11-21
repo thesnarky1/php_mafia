@@ -1,0 +1,10 @@
+<?php
+
+    $db_host = "hostname or url";
+    $db_user = "username";
+    $db_pass = "password";
+    $db_name = "php_mafia";
+
+    $dbh = new mysqli($db_host, $db_user, $db_pass, $db_name) or die("Can't connect to DB");
+
+?>
