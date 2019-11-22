@@ -1,5 +1,8 @@
 <?php
 
+    $site_domain = "fillmein.com";
+    $site_protocol = "http";
+
     function capitalize($str) {
         $str = strtoupper(substr($str, 0, 1)) . 
                substr($str, 1);
@@ -53,14 +56,15 @@
     }
 
     function send_invite_email($email, $reg_code, $inviter) {
+        global $site_domain, $site_protocol;
         $body = "Hey there!\n".
                 "Someone over at Thieves Tavern ($inviter) thought you'd have a blast if you joined. If you would like to, please use the invitation link below to create a user on our site.\n\n".
-                "http://thievestavern.com/register.php?email=$email&code=$reg_code\n\n".
+                "$site_protocol://$site_domain/register.php?email=$email&code=$reg_code\n\n".
                 "If the above address doesn't show up as a link, try cutting and pasting the URL into a browser.\n".
                 "Have a great day, and survive the night!\n".
                 "--Thieves Tavern Management\n";
         $name = "Thieves Tavern";
-        $from_email = "no-reply@thievestavern.com";
+        $from_email = "no-reply@$site_domain";
         $subject = "Thieves Tavern (Mafia) Invitation";
         $headers = "From: " . $name . " <" . $from_email . ">\r\n";
         return mail($email, $subject, $body, $headers);
@@ -298,7 +302,6 @@
         echo "<link rel='stylesheet' href='./includes/style.css' type='text/css' media='screen' />\n";
         echo "<link rel='icon' type='image/gif' href='images/favicon.gif' />\n";
         echo "<title>$title</title>\n";
-        echo "<script src='http://www.google.com/jsapi?key=ABQIAAAAUsFEjhe8hOp3ncAxs_I-ZxTuReQOfkQuMttBdN_0aRFZ3els6xTBpqQ46vNpQyeS1piAI3qyWSxRaw' type='text/javascript'></script>";
         if(strtolower($file_name) == "games.php" && isset($_REQUEST['game_id'])) {
             echo get_required_javascript_specific_game();
         }
