@@ -1,9 +1,9 @@
 # PHP_Mafia
-===========
 
 **Warning: This code is extremely old and essentially just being updated to record all changes that were made. It is *not* up to snuff security-wise and should just be a starting point for a workable web version, not an actual product. Can't stress this enough, this is just a dumping ground of oldness**
 
-##Goal
+## Goal
+
 This project hoped to bring the amazing game of Mafia (also known as 
 Werewolf) to the web in a non-forum manner. It won't be as detailed as some of
 the forum run games can be, due to the sheer number of special cases in roles
